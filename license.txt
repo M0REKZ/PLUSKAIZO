@@ -1,0 +1,68 @@
+PLUSKAIZO (c) Copyright Benjamín Gajardo All rights reserved
+
+PLUSKAIZO (also known as "+KAIZO") is made and owned by Benjamín Gajardo (also known as "+KZ")
+and PLUSKAIZO is under the "PLUSKAIZO LICENSE" that can be found below.
+
+PLUSKAIZO implies all files located here, which are under the "PLUSKAIZO LICENSE"
+that can be found below, however there are the next exceptions:
+
+-   All files in the "src/external" directory are not under the "PLUSKAIZO LICENSE",
+    since these are external libraries used by PLUSKAIZO, which have their own license.
+-   All files mentioned in the file "others.txt" (which is located in this same directory)
+    are not under the "PLUSKAIZO LICENSE".
+-   All files in the "data" directory that are not mentioned in the file "others.txt"
+    (which is located in this same directory) are not under the "PLUSKAIZO LICENSE", instead
+    they are under "CC BY-SA 4.0" License.
+
+
+The "PLUSKAIZO LICENSE" basically says that if you modify the game:
+
+-   You must mention me and PLUSKAIZO in your altered version
+-   Always say if you modified PLUSKAIZO
+-   Keep your altered version "Open Source"
+-   Source code of your version must be available to the public under same unaltered license
+-   For the license itself see below...
+
+
+============================================================================================
+LICENSE START:
+============================================================================================
+
+(c) Copyright Benjamín Gajardo All rights reserved
+
+PLUSKAIZO LICENSE VERSION 1.0:
+
+This software is provided "as-is" without any kind of warranty,
+authors of this software are not responsible of any damage caused by using this software.
+
+Permission is granted to anyone to use this software for any purpose,
+even for modifying it and redistribute it freely, subject to the following restrictions:
+
+1.  The origin of this software must not be misrepresented; you must NOT
+    claim that you wrote the original software.
+    -   If you modify this software, an acknowledgment in the altered
+        version is required.
+    -   If you use this software in a product, an acknowledgment in the
+        product is required
+2.  Altered versions must be plainly marked as such, and must not be
+    misrepresented as being the original software.
+3.  Source code of altered versions of "PLUSKAIZO" that is not in a official
+    "PLUSKAIZO" source code (one made by Benjamín Gajardo) must be made
+    available to EVERYONE for free by publishing it to the internet on a public
+    website that can be accessed by everyone that has access to the internet,
+    allowing them to download it to their device.
+    -   That source code must NOT be obfuscated, protected with a password
+        or with any way of excluding access to it.
+4.  Altered versions must point WHERE to download the source code for
+    that altered version in the "readme.txt" file.
+5.  Altered versions must be under one of the next licenses:
+    -   This exact same license (PLUSKAIZO LICENSE)
+    -   The license used by the official "PLUSKAIZO" made by Benjamín Gajardo.
+    -   Other license approved by Benjamín Gajardo
+
+This license must not be removed or altered from any binary or source distribution.
+
+If you want to do something that this license does not allow,
+feel free to contact Benjamín Gajardo for a different license:
+
+email: pluskaizo@gmail.com

@@ -1,0 +1,24 @@
+The following files have their own license, or they were taken from the public domain:
+
+Files on the Public Domain:
+
+/data/images/bg/forest.png
+/data/images/bg/landscape.png
+/data/images/tiles/tile_1.png
+/data/images/tiles/tile_2.png
+/data/images/tiles/tile_3.png
+/data/images/tiles/tile_4.png
+/data/images/tiles/tile_5.png
+/data/images/tiles/tile_6.png
+/data/images/tiles/tile_7.png
+/data/images/tiles/tile_8.png
+/data/images/tiles/tile_9.png
+/data/music/metal.wav
+/data/sounds/sound_1.mp3
+/data/sounds/sound_2.mp3
+/data/sounds/sound_3.mp3
+/data/sounds/sound_4.mp3
+/data/sounds/sound_5.mp3
+/data/sounds/sound_6.mp3
+/data/sounds/sound_7.mp3
+
