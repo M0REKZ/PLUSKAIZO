@@ -106,18 +106,15 @@ function InputHandler:UpdateInput()
             self.mouse_x, self.mouse_y = x, y
         end
     else
-        local RealWindowSize = {x = love.graphics.getWidth(), y = love.graphics.getHeight()}
         local x, y
 
-        local joystick = {pos = {x = 20, y = RealWindowSize.y - (RealWindowSize.y/2 + 20)}, size = {x = (RealWindowSize.y/2), y = (RealWindowSize.y/2)}}
-        local jump_button = {pos = {x = RealWindowSize.x - ((RealWindowSize.y/4) + 51), y = RealWindowSize.y - (RealWindowSize.y/2 + 20)}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/4}}
-        local run_button = {pos = {x = RealWindowSize.x - ((RealWindowSize.y/2) + 51), y = RealWindowSize.y - (RealWindowSize.y/4 + 20)}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/4}}
-        local reset_button = {pos = {x = RealWindowSize.x/2 - 40, y = 10}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/8}}
-
         local handledjoy = false
+        local handledspinjump = false
         local handledjump = false
         local handledrun = false
         local handledreset = false
+        local handledsavestate = false
+        local handledloadstate = false
 
         self.down = false
         self.up = false
@@ -127,38 +124,50 @@ function InputHandler:UpdateInput()
         self.run = false
         self.reset = false
         self.mouse_click = false
+        self.spinjump = false
+        self.loadstate = false
+        self.savestate = false
 
         for _, id in ipairs(love.touch.getTouches()) do
             x, y = love.touch.getPosition(id)
 
-            if not handledjoy and y > joystick.pos.y and y < joystick.pos.y + joystick.size.y and x > joystick.pos.x and x < joystick.pos.x + joystick.size.x then
-                local offsety = y - joystick.pos.y
-                local offsetx = x - joystick.pos.x
+            if not handledjoy and y > self.joystick.pos.y and y < self.joystick.pos.y + self.joystick.size.y and x > self.joystick.pos.x and x < self.joystick.pos.x + self.joystick.size.x then
+                local offsety = y - self.joystick.pos.y
+                local offsetx = x - self.joystick.pos.x
 
-                if offsetx < joystick.size.x/3 then
+                if offsetx < self.joystick.size.x/3 then
                     self.left = true
                 end
 
-                if offsetx > (joystick.size.x/3)*2 then
+                if offsetx > (self.joystick.size.x/3)*2 then
                     self.right = true
                 end
 
-                if offsety < joystick.size.y/3 then
+                if offsety < self.joystick.size.y/3 then
                     self.up = true
                 end
 
-                if offsety > (joystick.size.y/3)*2 then
+                if offsety > (self.joystick.size.y/3)*2 then
                     self.down = true 
                 end
 
                 handledjoy = true
-            elseif not handledjump and y > jump_button.pos.y and y < jump_button.pos.y + jump_button.size.y and x > jump_button.pos.x and x < jump_button.pos.x + jump_button.size.x then
+            elseif not handledjump and y > self.jump_button.pos.y and y < self.jump_button.pos.y + self.jump_button.size.y and x > self.jump_button.pos.x and x < self.jump_button.pos.x + self.jump_button.size.x then
                 self.jump = true
                 handledjump = true
-            elseif not handledrun and y > run_button.pos.y and y < run_button.pos.y + run_button.size.y and x > run_button.pos.x and x < run_button.pos.x + run_button.size.x then
+            elseif not handledspinjump and y > self.spinjump_button.pos.y and y < self.spinjump_button.pos.y + self.spinjump_button.size.y and x > self.spinjump_button.pos.x and x < self.spinjump_button.pos.x + self.spinjump_button.size.x then
+                self.spinjump = true
+                handledspinjump = true
+            elseif not handledsavestate and y > self.savestate_button.pos.y and y < self.savestate_button.pos.y + self.savestate_button.size.y and x > self.savestate_button.pos.x and x < self.savestate_button.pos.x + self.savestate_button.size.x then
+                self.savestate = true
+                handledsavestate = true
+            elseif not handledloadstate and y > self.loadstate_button.pos.y and y < self.loadstate_button.pos.y + self.loadstate_button.size.y and x > self.loadstate_button.pos.x and x < self.loadstate_button.pos.x + self.loadstate_button.size.x then
+                self.loadstate = true
+                handledloadstate = true
+            elseif not handledrun and y > self.run_button.pos.y and y < self.run_button.pos.y + self.run_button.size.y and x > self.run_button.pos.x and x < self.run_button.pos.x + self.run_button.size.x then
                 self.run = true
                 handledrun = true
-            elseif not handledreset and y > reset_button.pos.y and y < reset_button.pos.y + reset_button.size.y and x > reset_button.pos.x and x < reset_button.pos.x + reset_button.size.x then
+            elseif not handledreset and y > self.reset_button.pos.y and y < self.reset_button.pos.y + self.reset_button.size.y and x > self.reset_button.pos.x and x < self.reset_button.pos.x + self.reset_button.size.x then
                 self.reset = true
                 handledreset = true
             else
@@ -185,17 +194,34 @@ function InputHandler:InitLOVEMobileGamepad()
     if not self.mobile_ui_image then
         error("could not find mobile ui image")
     end
+
+    self:RecalculateLOVEMobileButtonPostions()
+
+end
+
+function InputHandler:RecalculateLOVEMobileButtonPostions()
+    self.joystick = {pos = {x = 20, y = RealWindowSize.y - (RealWindowSize.y/2 + 20)}, size = {x = (RealWindowSize.y/2), y = (RealWindowSize.y/2)}}
+    self.spinjump_button = {pos = {x = RealWindowSize.x - ((RealWindowSize.y/4) + 51), y = RealWindowSize.y - (RealWindowSize.y/2 + 20)}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/4}}
+    self.jump_button = {pos = {x = RealWindowSize.x - ((RealWindowSize.y/4) + 51), y = RealWindowSize.y - (RealWindowSize.y/4 + 20)}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/4}}
+    self.run_button = {pos = {x = RealWindowSize.x - ((RealWindowSize.y/2) + 51), y = RealWindowSize.y - (RealWindowSize.y/4 + 20)}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/4}}
+    self.reset_button = {pos = {x = RealWindowSize.x/2 - (RealWindowSize.y/2 + 10), y = 10}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/8}}
+    self.savestate_button = {pos = {x = RealWindowSize.x/2 - (RealWindowSize.y/8), y = 10}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/8}}
+    self.loadstate_button = {pos = {x = RealWindowSize.x/2 + (RealWindowSize.y/4 + 10), y = 10}, size = {x = RealWindowSize.y/4, y = RealWindowSize.y/8}}
 end
 
 function InputHandler:DrawLOVEMobileGamepad()
 
-    local RealWindowSize = {x = love.graphics.getWidth(), y = love.graphics.getHeight()}
+    self.mobile_ui_image:render_scaled_from_to(0, 0, 64, 64, self.joystick.pos.x, self.joystick.pos.y, self.joystick.size.x, self.joystick.size.y)
 
-    self.mobile_ui_image:render_scaled_from_to(0,0, 64, 64, 20, RealWindowSize.y - (RealWindowSize.y/2 + 20), RealWindowSize.y/2, RealWindowSize.y/2)
+    self.mobile_ui_image:render_scaled_from_to(64, 0, 31, 31, self.spinjump_button.pos.x, self.spinjump_button.pos.y, self.spinjump_button.size.x, self.spinjump_button.size.y)
 
-    self.mobile_ui_image:render_scaled_from_to(64,0, 31, 31, RealWindowSize.x - ((RealWindowSize.y/4) + 51), RealWindowSize.y - (RealWindowSize.y/2 + 20), RealWindowSize.y/4, RealWindowSize.y/4)
+    self.mobile_ui_image:render_scaled_from_to(64, 0, 31, 31, self.jump_button.pos.x, self.jump_button.pos.y, self.jump_button.size.x, self.jump_button.size.y)
 
-    self.mobile_ui_image:render_scaled_from_to(64,31, 31, 31, RealWindowSize.x - ((RealWindowSize.y/2) + 51), RealWindowSize.y - (RealWindowSize.y/4 + 20), RealWindowSize.y/4, RealWindowSize.y/4)
+    self.mobile_ui_image:render_scaled_from_to(64, 31, 31, 31, self.run_button.pos.x, self.run_button.pos.y, self.run_button.size.x, self.run_button.size.y)
 
-    self.mobile_ui_image:render_scaled_from_to(95,0, 31, 17, RealWindowSize.x/2 - 40, 10, RealWindowSize.y/4, RealWindowSize.y/8)
+    self.mobile_ui_image:render_scaled_from_to(95, 0, 31, 17, self.reset_button.pos.x, self.reset_button.pos.y, self.reset_button.size.x, self.reset_button.size.y)
+
+    self.mobile_ui_image:render_scaled_from_to(95, 17, 31, 17, self.savestate_button.pos.x, self.savestate_button.pos.y, self.savestate_button.size.x, self.savestate_button.size.y)
+
+    self.mobile_ui_image:render_scaled_from_to(95, 17, 31, 17, self.loadstate_button.pos.x, self.loadstate_button.pos.y, self.loadstate_button.size.x, self.loadstate_button.size.y)
 end

@@ -10,6 +10,7 @@ GameContext = 0
 
 Camera = {x = 0, y = 0}
 WindowSize = {x = 768, y = 512}
+RealWindowSize = {}
 
 KaizoConfig = {
     "up", -- 1 up

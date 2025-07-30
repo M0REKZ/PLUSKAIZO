@@ -16,6 +16,9 @@ function love.resize(width, height)
     FrameRenderer = nil -- reset canvas
     FrameRenderer = love.graphics.newCanvas(width,height) --to keep drawing even if there are not changes in the game
 	push.resize(width, height)
+    RealWindowSize = {x = love.graphics.getWidth(), y = love.graphics.getHeight()}
+
+    InputHandler:RecalculateLOVEMobileButtonPostions()
 end
 
 function love.load()
@@ -30,6 +33,7 @@ function love.load()
     
 
     push.setupScreen(WindowSize.x, WindowSize.y, {upscale = "normal"})
+    RealWindowSize = {x = love.graphics.getWidth(), y = love.graphics.getHeight()}
 
 
     love.window.maximize()

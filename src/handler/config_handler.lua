@@ -19,10 +19,13 @@ end
 
 function KaizoConfigHandler:update()
     if self.activate then
-        self.active = true
+        if not IS_MOBILE then
+            self.active = true
+            --self.NextConfig = KaizoConfig
+            self.waiting_for_key_release = true
+        end
+
         self.activate = false
-        --self.NextConfig = KaizoConfig
-        self.waiting_for_key_release = true
     end
 
     if self.active then
