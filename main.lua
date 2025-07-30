@@ -54,9 +54,9 @@ function love.load()
 end
 
 function love.update(dt)
-    --love.timer.sleep( 1/60 ) --force 60 fps
+
     FrameTiming = FrameTiming + dt --update timing
-    if FrameTiming > 1/50 then --60 fps
+    if FrameTiming > 1/50 then -- update each 1/50 of a second
         GameContext:update()
 
         if GameContext.Quit then
@@ -66,6 +66,10 @@ function love.update(dt)
         FrameRenderingFPS = FrameTiming
         FrameTiming = 0
         FrameRender = true
+
+        -- we have 1/50 - 1/1000 of a second to sleep, so we sleep a while,
+        -- otherwise löve uses 50% of CPU, since vsync is disabled
+        love.timer.sleep(1/60)
     end
 end
 
