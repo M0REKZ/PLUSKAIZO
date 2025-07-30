@@ -87,11 +87,9 @@ function KaizoLevelHandler:LoadLevelFromName(name)
 
     for num = 1, 100, 1 do --max 100 sections
         local str = love.filesystem.read("data/levels/" .. name .. "/section_" .. num .. ".json")
-        print("data/levels/" .. name .. "/section_" .. num .. ".json")
         if not str then
             --try tmj
             str = love.filesystem.read("data/levels/" .. name .. "/section_" .. num .. ".tmj")
-            print("data/levels/" .. name .. "/section_" .. num .. ".tmj")
             if not str then
                 break
             end
@@ -109,7 +107,7 @@ function KaizoLevelHandler:LoadLevelFromName(name)
     local sec = GameContext.CurrentLevel:get_current_section()
 
     if sec.Music then
-        sec.Music.Loop()
+        sec.Music:Loop()
         sec.Music:Play()
     end
 

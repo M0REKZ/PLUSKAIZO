@@ -26,3 +26,7 @@ function SaveStateHandler:LoadState()
         sec.Music:Play()
     end
 end
+
+function SaveStateHandler:StateExists()
+    return love.filesystem.getInfo("saves/save.kzstate")
+end

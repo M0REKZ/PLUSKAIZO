@@ -1,6 +1,8 @@
 -- PLUSKAIZO (c) Copyright Benjamín Gajardo All rights reserved
 -- See license.txt at the root of the PLUSKAIZO directory for license
 
+require("common.kaizo_globals")
+
 InputHandler = {
     left = false,
     right = false,
@@ -15,66 +17,78 @@ InputHandler = {
     mouse_x = -1,
     mouse_y = -1,
     mouse_click = false,
+    pause = false,
+    wait_before_pause = 0,
 }
 
 function InputHandler:UpdateInput()
 
     if not IS_MOBILE then
-        if love.keyboard.isDown("left") then
+
+        if self.wait_before_pause > 0 then
+            self.wait_before_pause = self.wait_before_pause -1
+            self.pause = false
+        elseif LoveKeysPressed["escape"] then
+            self.pause = true
+        else
+            self.pause = false
+        end
+
+        if love.keyboard.isDown(KaizoConfig[3]) then
             self.left = true
         else
             self.left = false
         end
 
-        if love.keyboard.isDown("right") then
+        if love.keyboard.isDown(KaizoConfig[4]) then
             self.right = true
         else
             self.right = false
         end
 
-        if love.keyboard.isDown("down") then
+        if love.keyboard.isDown(KaizoConfig[2]) then
             self.down = true
         else
             self.down = false
         end
 
-        if love.keyboard.isDown("up") then
+        if love.keyboard.isDown(KaizoConfig[1]) then
             self.up = true
         else
             self.up = false
         end
 
-        if love.keyboard.isDown("z") then
+        if love.keyboard.isDown(KaizoConfig[5]) then
             self.jump = true
         else
             self.jump = false
         end
 
-        if love.keyboard.isDown("a") then
+        if love.keyboard.isDown(KaizoConfig[6]) then
             self.spinjump = true
         else
             self.spinjump = false
         end
 
-        if love.keyboard.isDown("s") then
+        if love.keyboard.isDown(KaizoConfig[7]) then
             self.run = true
         else
             self.run = false
         end
 
-        if love.keyboard.isDown("l") then
+        if love.keyboard.isDown(KaizoConfig[8]) then
             self.loadstate = true
         else
             self.loadstate = false
         end
 
-        if love.keyboard.isDown("k") then
+        if love.keyboard.isDown(KaizoConfig[9]) then
             self.savestate = true
         else
             self.savestate = false
         end
 
-        if love.keyboard.isDown("r") then
+        if love.keyboard.isDown(KaizoConfig[10]) then
             self.reset = true
         else
             self.reset = false

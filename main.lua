@@ -88,3 +88,11 @@ function love.draw()
     end
     love.graphics.draw(FrameRenderer) -- always draw last frame, even if game is not updated
 end
+
+function love.keypressed(a, b)
+    LoveKeysPressed[a]= true
+    LoveLastKeyPressed = a
+end
+function love.keyreleased(a)
+    LoveKeysPressed[a] = false
+end

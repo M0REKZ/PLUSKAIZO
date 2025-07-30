@@ -145,6 +145,7 @@ function KaizoPlayer:update()
     if self.die then
         self:destroy()
         self.hurt_sound:Play()
+        GameContext.DeathLoadState = 50
     end
 end
 
