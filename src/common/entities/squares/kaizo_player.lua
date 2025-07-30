@@ -89,13 +89,15 @@ function KaizoPlayer:update()
     if not self.going_right then
         if InputHandler.left then
             if self.vel.x > -5 or (InputHandler.run and self.vel.x > -10) then
-                self.vel.x = self.vel.x - 1
+                self.vel.x = self.vel.x - 0.5
             end
             self.going_left = true
             self.looking = -1
         else
-            if self.vel.x < 0 then
-                self.vel.x = self.vel.x + 1
+            if self.vel.x < -1 then
+                self.vel.x = self.vel.x + 0.5
+            elseif self.vel.x < 0 then
+                self.vel.x = 0
             end
             self.going_left = false
         end
@@ -104,20 +106,21 @@ function KaizoPlayer:update()
     if not self.going_left then
         if InputHandler.right then
             if self.vel.x < 5 or (InputHandler.run and self.vel.x < 10) then
-                self.vel.x = self.vel.x + 1
+                self.vel.x = self.vel.x + 0.5
             end
             self.going_right = true
             self.looking = 1
         else
-            if self.vel.x > 0 then
-                self.vel.x = self.vel.x - 1
+            if self.vel.x > 1 then
+                self.vel.x = self.vel.x - 0.5
+            elseif self.vel.x > 0 then
+                self.vel.x = 0
             end
             self.going_right = false
         end
     end
 
     if (not self.jumped) and self.grounded and (InputHandler.jump or InputHandler.spinjump) then
-        self.vel.y = -15
         self.jumped = true
         self.jump_sound:Stop()
         self.jump_sound:Play()
@@ -125,6 +128,9 @@ function KaizoPlayer:update()
             self.is_spin_jump = true
             self.spin_jump_sound:Stop()
             self.spin_jump_sound:Play()
+            self.vel.y = -13
+        else
+            self.vel.y = -15
         end
     end
 
