@@ -1,6 +1,6 @@
 PLUSKAIZO (c) Copyright Benjamín Gajardo All rights reserved
 
-PLUSKAIZO By Benjamín Gajardo (also known as +KZ) is a difficult game that has a world with the next context:
+PLUSKAIZO By +KZ is a difficult game inspired by SMBX that has a world with the next context:
 
 Chydia (the main character) was living in the city, until some random day the reality
 started to get distorted, the city turned into a dangerous forest and a lot of weird
