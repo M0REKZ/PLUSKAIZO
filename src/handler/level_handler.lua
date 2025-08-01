@@ -296,8 +296,10 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                 
 
                 if gamename == "\"TheXTech\"" then --convert to PLUSKAIZO counterpart
-                    if id == 1 or id == 2 then
+                    if id == 1 or id == 2 or id == 27 or id == 98 or id == 242 then
                         name = "KaizoTomate"
+                    elseif id == 47 then
+                        name = "KaizoChicken"
                     else
                         name = "KaizoSquare" -- unidentified npc
                     end
