@@ -278,6 +278,66 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
             end
         end
 
+        if lvlxdata.NPCs then
+            
+
+            local npcpos = {x = -1, y = -1}
+            local npcposinsection = {x = -1, y = -1}
+            local lvlxlayername = nil
+            local id = 0
+            local name = "KaizoSquare"
+            for num, npc in ipairs(lvlxdata.NPCs) do
+                npcpos = {x = tonumber(npc["X"]),y = tonumber(npc["Y"])}
+                lvlxlayername = npc["LR"]
+
+                id = tonumber(npc["ID"])
+                
+
+                if gamename == "\"TheXTech\"" then --convert to PLUSKAIZO counterpart
+                    if id == 1 or id == 2 then
+                        name = "KaizoTomate"
+                    else
+                        name = "KaizoSquare" -- unidentified npc
+                    end
+                elseif gamename == "PLUSKAIZO" then
+                    if id == 1 then
+                        name = "KaizoSquare"
+                    elseif id == 2 then
+                        name = "KaizoPlayer"
+                    elseif id == 3 then
+                        name = "KaizoEGG"
+                    end
+                end
+
+                for num2, section in ipairs(templevel.Sections) do
+                    npcposinsection = {x = npcpos.x - tempsectiondata[num2].x, y = npcpos.y - tempsectiondata[num2].y}
+                    if IsPointInsideSquare(npcposinsection.x,npcposinsection.y,0,0,section.Size.x*32,section.Size.y*32) then
+                        local layerfound = false
+                        for num3, layer in ipairs(section.Layers) do
+                            if layer.name == lvlxlayername then
+                                local ent = KaizoEntitiesCreator[name]:new(npcposinsection.x, npcposinsection.y)
+                                layer:add_entity(ent)
+                                layerfound = true
+                                break
+                            end
+                        end
+                        if not layerfound then
+                            for num3, layer in ipairs(section.Layers) do
+                                if layer.name == "\"Default\"" then
+                                    local ent = KaizoEntitiesCreator[name]:new(npcposinsection.x, npcposinsection.y)
+                                    layer:add_entity(ent)
+                                    layerfound = true
+                                    break
+                                end
+                            end
+                        end
+
+                        break
+                    end
+                end
+            end
+        end
+
         if lvlxdata.StartPoints then
             local startpos = {x = -1, y = -1}
             local startposinsection = {x = -1, y = -1}
