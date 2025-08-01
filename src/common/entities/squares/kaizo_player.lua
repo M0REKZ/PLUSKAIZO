@@ -40,6 +40,7 @@ function KaizoPlayer:new(x,y)
     o.frametime = 0
     o.looking = 1
     o.is_spin_jump = false
+    o.pressing_jump = false
 
     o.active_out_of_camera = true
 
@@ -84,6 +85,12 @@ function KaizoPlayer:update()
 
     if self.vel.y < 15 then --max fall vel
         self.vel.y = self.vel.y + 1
+    end
+
+    if InputHandler.jump then --for higher bouncing when killing enemies
+        self.pressing_jump = true
+    else
+        self.pressing_jump = false
     end
 
     if not self.going_right then
@@ -131,6 +138,14 @@ function KaizoPlayer:update()
             self.vel.y = -13
         else
             self.vel.y = -15
+        end
+
+        if math.abs(self.vel.x) >= 5 then
+            if math.abs(self.vel.x) < 8 then
+                self.vel.y = self.vel.y - (8 - 5)
+            else
+                self.vel.y = self.vel.y - 3 
+            end
         end
     end
 
@@ -347,6 +362,7 @@ function KaizoPlayer:SaveState()
         frametime = self.frametime,
         looking = self.looking,
         active = self.active,
+        pressing_jump = self.pressing_jump,
     }
 end
 
@@ -373,5 +389,6 @@ function KaizoPlayer:LoadState(state)
     self.frametime = state.frametime
     self.looking = state.looking
     self.active = state.active
+    self.pressing_jump = state.pressing_jump
     
 end
