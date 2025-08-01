@@ -282,6 +282,13 @@ function IsInCamera(x, y, w, h)
     return false
 end
 
+function IsPointInsideSquare(x, y, x2, y2,w2, h2)
+    if (x <= x2 + w2) and (x >= x2) and (y <= y2 + h2) and (y >= y2) then
+        return true
+    end
+    return false
+end
+
 function IsPosInCamera(pos, size)
     return IsInCamera(pos.x, pos.y, size.x, size.y)
 end

@@ -3,10 +3,12 @@
 
 require("handler.json_handler")
 require("common.entities.kaizo_entity_list")
+require("lib.kaizo_lvlx_reader")
+require("common.kaizo_collision")
 
 KaizoLevelHandler = {}
 
-function KaizoLevelHandler:LoadSectionFromString(str)
+function KaizoLevelHandler:LoadTMJSectionFromString(str)
     local sectiondata = KaizoJSONHandler:FromJSON(str)
     local newsection = KaizoSection:new()
     if sectiondata then
@@ -83,24 +85,34 @@ end
 function KaizoLevelHandler:LoadLevelFromName(name)
     love.audio.stop()
     GameContext.CurrentLevel = nil
-    GameContext.CurrentLevel = KaizoLevel:new()
 
-    for num = 1, 100, 1 do --max 100 sections
-        local str = love.filesystem.read("data/levels/" .. name .. "/section_" .. num .. ".json")
-        if not str then
-            --try tmj
-            str = love.filesystem.read("data/levels/" .. name .. "/section_" .. num .. ".tmj")
+    local str = "data/levels/" .. name .. ".lvlx"
+
+    if love.filesystem.getInfo(str) then
+        local lvlxdata = KaizoLVLXReader:ReadLVLX(str)
+        GameContext.CurrentLevel = KaizoLevel:new()
+        self:LoadLVLXLevelFromTable(lvlxdata) --Load entire level from lvlx
+    else
+        GameContext.CurrentLevel = KaizoLevel:new() --Create level by myself, we will add sections from tmj
+        for num = 1, 100, 1 do --max 100 sections
+            local str = love.filesystem.read("data/levels/" .. name .. "/section_" .. num .. ".json")
             if not str then
-                break
+                --try tmj
+                str = love.filesystem.read("data/levels/" .. name .. "/section_" .. num .. ".tmj")
+                if not str then
+                    break
+                end
+            end
+            local newsection = self:LoadTMJSectionFromString(str)
+            GameContext.CurrentLevel:add_section(newsection)
+            if newsection.is_initial_section then
+                GameContext.CurrentLevel:set_current_section(num)
             end
         end
-        local newsection = self:LoadSectionFromString(str)
-        GameContext.CurrentLevel:add_section(newsection)
-        if newsection.is_initial_section then
-            GameContext.CurrentLevel:set_current_section(num)
-        end
     end
+
     if GameContext.CurrentLevel.CurrentSection == 0 then
+        print("No current section set, fallback to section 1")
         GameContext.CurrentLevel:set_current_section(1)
     end
 
@@ -112,4 +124,192 @@ function KaizoLevelHandler:LoadLevelFromName(name)
     end
 
     GameContext.CurrentLevel.Name = name
+end
+
+function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
+    local templevel = GameContext.CurrentLevel
+
+    local tempsectiondata = {}
+    local temptilelayers = {} --temptilelayers[section][layer][tile]
+
+    local gamename = "PLUSKAIZO"
+    if lvlxdata.Head then
+        for num, head_element in ipairs(lvlxdata.Head) do
+            if head_element["CPID"] then
+                gamename = head_element["CPID"]
+            end
+        end
+    end
+
+    if lvlxdata.Sections then
+        local tempsection = nil
+        for num, lvlxsection in ipairs(lvlxdata.Sections) do
+            tempsection = KaizoSection:new()
+            tempsectiondata[num] = {}
+
+            --both offsets used to calculate tiles and entities positions and the section they belong to
+            --since PLUSKAIZO does not have sections in a same "world", unlike SMBX engine
+            tempsectiondata[num].x = tonumber(lvlxsection["L"]) --x offset
+            tempsectiondata[num].y = tonumber(lvlxsection["T"]) --y offset
+            tempsectiondata[num].w = tonumber(lvlxsection["R"]) - tonumber(lvlxsection["L"]) --get section size this way...
+            tempsectiondata[num].h = tonumber(lvlxsection["B"]) - tonumber(lvlxsection["T"]) --get section size this way...
+
+            tempsection.Size.x = math.ceil(tempsectiondata[num].w / 32) --...so i can set it on the PLUSKAIZO section
+            tempsection.Size.y = math.ceil(tempsectiondata[num].h / 32) --...so i can set it on the PLUSKAIZO section
+
+            templevel:add_section(tempsection)
+            tempsection = nil
+        end
+
+        if lvlxdata.Layers then
+            
+            local templayer = nil
+
+            for num, lvlxlayer in ipairs(lvlxdata.Layers) do
+                templayer = KaizoLayer:new()
+                templayer.name = lvlxlayer["LR"] --save layer name, so we can identify it
+
+                --add layer to all sections
+                --why!?!?!? because SMBX has layers globally, but PLUSKAIZO have them inside each section
+                --so trying to keep compatibility we do this
+                --of course can be improved...
+                for i = 1, #templevel.Sections, 1 do
+                    templevel.Sections[i]:add_layer(templayer)
+                end
+                templayer = nil
+            end
+
+        end
+
+        if lvlxdata.Blocks then
+            
+            --here is the hard thing, we need to check blocks positions to know in which section they belong to.
+            --and we need to divide the position by 32 to set them in a unidimensional array of tiles that uses 0 for
+            --empty tiles...
+
+            --sadly, we CAN NOT know to which section belong the blocks that are OUTSIDE a LVLX section.
+            --if someone can help solving this, pull requests are welcome
+
+            --init tile layers
+            for i = 1, #templevel.Sections, 1 do
+                temptilelayers[i] = {}
+                for j = 1, #templevel.Sections[i].Layers, 1 do
+                    temptilelayers[i][j] = {}
+                    temptilelayers[i][j].name = templevel.Sections[i].Layers[j].name
+                    for k = 1, templevel.Sections[i].Size.x * templevel.Sections[i].Size.y, 1 do
+                        temptilelayers[i][j][k] = 0
+                    end
+                end
+            end
+
+            local blockpos = {x = -1, y = -1}
+            local blockposinsection = {x = -1, y = -1}
+            local lvlxlayername = nil
+            local id = 0
+            for num, block in ipairs(lvlxdata.Blocks) do
+                blockpos = {x = tonumber(block["X"]),y = tonumber(block["Y"])}
+                lvlxlayername = block["LR"]
+
+                id = tonumber(block["ID"])
+
+                if gamename == "\"TheXTech\"" then --convert to PLUSKAIZO counterpart
+                    if id == 3 then
+                        id = 2
+                    elseif id == 6 then
+                        id = 3
+                    elseif id == 7 then
+                        id = 1
+                    elseif id == 15 then
+                        id = 4
+                    elseif id == 16 then
+                        id = 5
+                    elseif id == 17 then
+                        id = 6
+                    elseif id == 274 then
+                        id = 7
+                    elseif id == 275 then
+                        id = 8
+                    elseif id == 276 then
+                        id = 9
+                    else
+                        id = 11 -- unidentified block
+                    end
+                end
+
+                for num2, section in ipairs(templevel.Sections) do
+                    blockposinsection = {x = blockpos.x - tempsectiondata[num2].x, y = blockpos.y - tempsectiondata[num2].y}
+                    if IsPointInsideSquare(blockposinsection.x,blockposinsection.y,0,0,section.Size.x*32,section.Size.y*32) then
+                        local layerfound = false
+                        for num3, layer in ipairs(section.Layers) do
+                            if layer.name == lvlxlayername then
+                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                temptilelayers[num2][num3].has_tiles = true
+                                layerfound = true
+                                break
+                            end
+                        end
+                        if not layerfound then
+                            for num3, layer in ipairs(section.Layers) do
+                                if layer.name == "\"Default\"" then
+                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                    temptilelayers[num2][num3].has_tiles = true
+                                    layerfound = true
+                                    break
+                                end
+                            end
+                        end
+
+                        break
+                    end
+                end
+            end
+
+            --set tiles on each layer
+
+            for num1, section in ipairs(templevel.Sections) do
+                if num1 > 1 then
+                    break
+                end
+                for num2, layer in ipairs(section.Layers) do
+                    if temptilelayers[num1][num2].has_tiles then
+                        layer:set_tiles(temptilelayers[num1][num2], templevel.Sections[num1].Size.x, templevel.Sections[num1].Size.y)
+                    end
+                end
+            end
+        end
+
+        if lvlxdata.StartPoints then
+            local startpos = {x = -1, y = -1}
+            local startposinsection = {x = -1, y = -1}
+            local foundstart = false
+            for num, startpoint in ipairs(lvlxdata.StartPoints) do
+                startpos = {x = tonumber(startpoint["X"]),y = tonumber(startpoint["Y"])}
+                for num2, section in ipairs(templevel.Sections) do
+                    startposinsection = {x = startpos.x - tempsectiondata[num2].x,y = startpos.y - tempsectiondata[num2].y}
+                    if IsPointInsideSquare(startposinsection.x,startposinsection.y,0,0,section.Size.x*32,section.Size.y*32) then
+                        templevel:set_current_section(num2)
+                        foundstart = true
+                        break
+
+                    end
+                    if foundstart then
+                        break
+                    end
+                end
+
+                if foundstart then
+                    local player = KaizoPlayer:new(startposinsection.x, startposinsection.y)
+                    for num3, layer in ipairs(templevel:get_current_section().Layers) do
+                        if layer.name == "\"Default\"" then
+                            layer:add_entity(player)
+                            break
+                        end
+                    end
+                    break
+                end
+            end
+        end
+    end
+
+    return templevel
 end
