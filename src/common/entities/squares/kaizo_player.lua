@@ -87,7 +87,7 @@ function KaizoPlayer:update()
         self.vel.y = self.vel.y + 1
     end
 
-    if InputHandler.jump then --for higher bouncing when killing enemies
+    if InputHandler.jump or InputHandler.spinjump then --for higher bouncing when killing enemies
         self.pressing_jump = true
     else
         self.pressing_jump = false
