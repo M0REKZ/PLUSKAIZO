@@ -131,6 +131,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
 
     local tempsectiondata = {}
     local temptilelayers = {} --temptilelayers[section][layer][tile]
+    local layerhastiles = {}
 
     local gamename = "PLUSKAIZO"
     if lvlxdata.Head then
@@ -193,9 +194,10 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
             --init tile layers
             for i = 1, #templevel.Sections, 1 do
                 temptilelayers[i] = {}
+                layerhastiles[i] = {}
                 for j = 1, #templevel.Sections[i].Layers, 1 do
                     temptilelayers[i][j] = {}
-                    temptilelayers[i][j].name = templevel.Sections[i].Layers[j].name
+                    layerhastiles[i][j] = false
                     for k = 1, templevel.Sections[i].Size.x * templevel.Sections[i].Size.y, 1 do
                         temptilelayers[i][j][k] = 0
                     end
@@ -243,7 +245,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         for num3, layer in ipairs(section.Layers) do
                             if layer.name == lvlxlayername then
                                 temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
-                                temptilelayers[num2][num3].has_tiles = true
+                                layerhastiles[num2][num3] = true
                                 layerfound = true
                                 break
                             end
@@ -252,7 +254,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                             for num3, layer in ipairs(section.Layers) do
                                 if layer.name == "\"Default\"" then
                                     temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
-                                    temptilelayers[num2][num3].has_tiles = true
+                                    layerhastiles[num2][num3] = true
                                     layerfound = true
                                     break
                                 end
@@ -271,7 +273,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                     break
                 end
                 for num2, layer in ipairs(section.Layers) do
-                    if temptilelayers[num1][num2].has_tiles then
+                    if layerhastiles[num1][num2] then
                         layer:set_tiles(temptilelayers[num1][num2], templevel.Sections[num1].Size.x, templevel.Sections[num1].Size.y)
                     end
                 end

@@ -23,6 +23,7 @@ function KaizoContext:new(o)
     o.QueuedLevelName = nil
     o.Quit = false
     o.DeathLoadState = -1
+    o.SavedOnCurrentLevel = false
     return o
 end
 
@@ -53,7 +54,7 @@ function KaizoContext:update()
     if self.DeathLoadState > 0 then
         self.DeathLoadState = self.DeathLoadState - 1
     elseif self.DeathLoadState == 0 then
-        if SaveStateHandler:StateExists() then
+        if SaveStateHandler:StateExists() and self.SavedOnCurrentLevel then
             SaveStateHandler:LoadState()
         else --else reset level
             local name = self.CurrentLevel.Name
@@ -64,6 +65,7 @@ function KaizoContext:update()
 
     if InputHandler.savestate and self.DeathLoadState == -1 then
         SaveStateHandler:SaveState()
+        self.SavedOnCurrentLevel = true
     elseif InputHandler.loadstate then
         self.DeathLoadState = -1
         if SaveStateHandler:StateExists() then
@@ -72,6 +74,7 @@ function KaizoContext:update()
     elseif InputHandler.reset then
         local name = self.CurrentLevel.Name
         KaizoLevelHandler:LoadLevelFromName(name)
+        self.SavedOnCurrentLevel = false
     end
     if(self.CurrentLevel) then
         self.CurrentLevel:update()
