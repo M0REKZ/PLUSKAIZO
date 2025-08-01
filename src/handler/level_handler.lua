@@ -233,6 +233,8 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         id = 8
                     elseif id == 276 then
                         id = 9
+                    elseif id == 110 then
+                        id = 10
                     else
                         id = 11 -- unidentified block
                     end
