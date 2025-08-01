@@ -140,7 +140,7 @@ function KaizoPlayer:update()
             self.vel.y = -15
         end
 
-        if math.abs(self.vel.x) >= 5 then
+        if math.abs(self.vel.x) > 5 then
             if math.abs(self.vel.x) < 8 then
                 self.vel.y = self.vel.y - (8 - 5)
             else
