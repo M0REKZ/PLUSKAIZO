@@ -171,37 +171,52 @@ end
 function KaizoEGG:do_collision()
      --reset some vars before collision
     local collide = {}
+    local collidepoint = nil
+    local verticalmovement = 0
     self.grounded = false
     
     for _, layer in ipairs(self.sec.Layers) do
         local temp_tiles = {}
-        local tilepos = {}
 
-        tilepos[1] = {x = self.pos.x + self.vel.x, y = self.pos.y + self.vel.y}
-        tilepos[2] = {x = self.pos.x + self.vel.x + self.size.x, y = self.pos.y + self.vel.y + self.size.y}
-        tilepos[3] = {x = self.pos.x + self.vel.x + self.size.x, y = self.pos.y + self.vel.y}
-        tilepos[4] = {x = self.pos.x + self.vel.x, y = self.pos.y + self.vel.y + self.size.y}
+        temp_tiles[1] = {x = self.pos.x + self.vel.x, y = self.pos.y + self.vel.y}
+        temp_tiles[2] = {x = self.pos.x + self.vel.x + self.size.x, y = self.pos.y + self.vel.y + self.size.y}
+        temp_tiles[3] = {x = self.pos.x + self.vel.x + self.size.x, y = self.pos.y + self.vel.y}
+        temp_tiles[4] = {x = self.pos.x + self.vel.x, y = self.pos.y + self.vel.y + self.size.y}
 
-        temp_tiles[1] = layer:get_tile_id(tilepos[1].x, tilepos[1].y)
-        temp_tiles[2] = layer:get_tile_id(tilepos[2].x, tilepos[2].y)
-        temp_tiles[3] = layer:get_tile_id(tilepos[3].x, tilepos[3].y)
-        temp_tiles[4] = layer:get_tile_id(tilepos[4].x, tilepos[4].y)
+        temp_tiles[1].id = layer:get_tile_id(temp_tiles[1].x, temp_tiles[1].y)
+        temp_tiles[2].id = layer:get_tile_id(temp_tiles[2].x, temp_tiles[2].y)
+        temp_tiles[3].id = layer:get_tile_id(temp_tiles[3].x, temp_tiles[3].y)
+        temp_tiles[4].id = layer:get_tile_id(temp_tiles[4].x, temp_tiles[4].y)
 
-        if self.is_edge_careful then
-            if not (TileToCollision(temp_tiles[2]).up == 1) ~= not (TileToCollision(temp_tiles[4]).up == 1) then
-                self.dir = self.dir * -1
-            end
-        end
+        temp_tiles[1].w = 32
+        temp_tiles[1].h = 32
+
+        temp_tiles[2].w = 32
+        temp_tiles[2].h = 32
+
+        temp_tiles[3].w = 32
+        temp_tiles[3].h = 32
+
+        temp_tiles[4].w = 32
+        temp_tiles[4].h = 32
 
         for num, tile in ipairs(temp_tiles) do
+
+            tile.x = tile.x - (tile.x % 32)
+            tile.y = tile.y - (tile.y % 32)
             if not (tile == 0) then
-                collide = DetectVerticalSquareCollision( self.pos.x, self.pos.y, self.vel.y, self.size.x, self.size.y, tilepos[num].x - (tilepos[num].x % 32), tilepos[num].y - (tilepos[num].y % 32), 32, 32, TileToCollision(tile))
-                self:handle_collision(collide, {x = tilepos[num].x - (tilepos[num].x % 32), y = tilepos[num].y - (tilepos[num].y % 32)}, {x = 32, y = 32})
+                collide, collidepoint = DetectVerticalSquareCollision( self.pos.x, self.pos.y, self.vel.y, self.size.x, self.size.y, tile.x , tile.y , tile.w, tile.h, TileToCollision(tile.id), tile.id)
+                self:handle_collision(collide, {x = tile.x, y = collidepoint}, {x = tile.w, y = tile.h})
                 collide = nil
-                collide = DetectHorizontalSquareCollision( self.pos.x, self.pos.y, self.vel.x, self.size.x, self.size.y, tilepos[num].x - (tilepos[num].x % 32), tilepos[num].y - (tilepos[num].y % 32), 32, 32, TileToCollision(tile))
-                self:handle_collision(collide, {x = tilepos[num].x - (tilepos[num].x % 32), y = tilepos[num].y - (tilepos[num].y % 32)}, {x = 32, y = 32})
+                collidepoint = nil
+                collide, collidepoint, verticalmovement = DetectHorizontalSquareCollision( self.pos.x, self.pos.y, self.vel.x, self.size.x, self.size.y, tile.x, tile.y, tile.w, tile.h, TileToCollision(tile.id), tile.id)
+                self.pos.y = self.pos.y + verticalmovement
+                self:handle_collision(collide, {x = collidepoint, y = tile.y}, {x = tile.w, y = tile.h})
                 collide = nil
+                collidepoint = nil
+                verticalmovement = 0
             end
+            ::continue::
         end
 
         for _, ent in ipairs(layer.Entities) do
@@ -218,7 +233,7 @@ function KaizoEGG:do_collision()
             end
 
             if ent.has_collision_square then
-                collide = DetectSquareToSquareCollisionQB64(self.pos.x + self.vel.x, self.pos.y + self.vel.y, self.size.x, self.size.y, ent.pos.x, ent.pos.y, ent.size.x, ent.size.y, ent.col)
+                collide = DetectSquareToSquareCollisionQB64OldNew(self.pos.x, self.pos.y, self.pos.x + self.vel.x, self.pos.y + self.vel.y, self.size.x, self.size.y, ent.pos.x, ent.pos.y, ent.size.x, ent.size.y, ent.col)
                 self:handle_collision(collide, ent.pos, ent.size, ent)
                 collide = {up = 0, down = 0, left = 0, right = 0}
             end

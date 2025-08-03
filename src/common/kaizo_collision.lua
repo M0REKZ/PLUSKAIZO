@@ -5,12 +5,22 @@ KaizoLocation = {}
 
 --[[
 
+Collision types
+
 0 = air
 1 = solid
 2 = player death/npc solid collision
 3 = player should kill it
 4 = player call entity OnInteract() if it can do it
 5 = DIE 100%
+
+Slope rotation
+
+0 = up
+1 = right
+2 = down
+3 = left
+
 
 --]]
 
@@ -51,9 +61,26 @@ function TileToCollision(tile_id)
 
 	if tile_id == 10 then
 		return {up = 2, down = 1, left = 1, right = 1} --spike up
+	elseif tile_id == 14 then
+		return {up = 1, down = 1, left = 2, right = 1} --spike left
+	elseif tile_id == 15 then
+		return {up = 1, down = 2, left = 1, right = 1} --spike down
+	elseif tile_id == 16 then
+		return {up = 1, down = 1, left = 2, right = 2} --spike right
 	end
 
     return {up = 1, down = 1, left = 1, right = 1}
+end
+
+function GetSlopeInfo(tile_id)
+
+	--- altitude left, altitude right, rotation
+	if tile_id == 12 then
+		return 32,0,0
+	elseif tile_id == 13 then
+		return 0,32,0
+	end
+	return nil
 end
 
 
@@ -238,40 +265,67 @@ function DetectSquareToSquareCollisionQB64(x, y, w, h, x2, y2, w2, h2, coltypes)
 	return collision
 end
 
-function DetectVerticalSquareCollision(x, y, vely, w, h, x2, y2, w2, h2, coltypes)
+function DetectVerticalSquareCollision(x, y, vely, w, h, x2, y2, w2, h2, coltypes, id)
     local SquareOneCoor = {x = x,y = y + vely}
 	local SquareOneSize = {x = w,y = h}
 	local SquareTwoCoor = {x = x2,y = y2}
 	local SquareTwoSize = {x = w2,y = h2}
 
     local collision = {up = 0, down = 0, left = 0, right = 0}
-    if (SquareOneCoor.y <= (SquareTwoCoor.y + SquareTwoSize.y) and (SquareOneCoor.y + SquareOneSize.y) >= SquareTwoCoor.y and SquareOneCoor.x < (SquareTwoCoor.x + SquareTwoSize.x) and (SquareOneCoor.x + SquareOneSize.x) > SquareTwoCoor.x) then
+	local collidepoint = nil
+
+	local alt1, alt2, rotation = GetSlopeInfo(id)
+
+	if alt1 then
+		SquareTwoCoor.x, SquareTwoCoor.y, SquareTwoSize.x, SquareTwoSize.y = ManipulateTileSizeForSlopes(alt1, alt2, rotation, x, y + vely, w, h, x2, y2, w2, h2)
+	end
+
+	if (SquareOneCoor.y <= (SquareTwoCoor.y + SquareTwoSize.y) and (SquareOneCoor.y + SquareOneSize.y) >= SquareTwoCoor.y and SquareOneCoor.x < (SquareTwoCoor.x + SquareTwoSize.x) and (SquareOneCoor.x + SquareOneSize.x) > SquareTwoCoor.x) then
         if SquareOneCoor.y + SquareOneSize.y/2 < SquareTwoCoor.y + SquareTwoSize.y/2 then
             collision.down = coltypes.up
+			collidepoint = SquareTwoCoor.y
         else
             collision.up = coltypes.down
+			collidepoint = SquareTwoCoor.y
         end
     end
 
-    return collision
+    return collision, collidepoint
 end
 
-function DetectHorizontalSquareCollision(x, y, velx, w, h, x2, y2, w2, h2, coltypes)
+function DetectHorizontalSquareCollision(x, y, velx, w, h, x2, y2, w2, h2, coltypes, id)
     local SquareOneCoor = {x = x + velx,y = y}
 	local SquareOneSize = {x = w,y = h}
 	local SquareTwoCoor = {x = x2,y = y2}
 	local SquareTwoSize = {x = w2,y = h2}
 
     local collision = {up = 0, down = 0, left = 0, right = 0}
+
+	local collidepoint = nil
+
+	local verticalmovement = 0
+
+	local alt1, alt2, rotation = GetSlopeInfo(id)
+
+	if alt1 then
+		SquareTwoCoor.x, SquareTwoCoor.y, SquareTwoSize.x, SquareTwoSize.y = ManipulateTileSizeForSlopes(alt1, alt2, rotation, x + velx, y, w, h, x2, y2, w2, h2)
+	end
+
     if (SquareOneCoor.y < (SquareTwoCoor.y + SquareTwoSize.y) and (SquareOneCoor.y + SquareOneSize.y) > SquareTwoCoor.y and SquareOneCoor.x <= (SquareTwoCoor.x + SquareTwoSize.x) and (SquareOneCoor.x + SquareOneSize.x) >= SquareTwoCoor.x) then
-        if SquareOneCoor.x + SquareOneSize.x/2 < SquareTwoCoor.x + SquareTwoSize.x/2 then
+
+		if alt1 and rotation == 0 and SquareOneCoor.y + SquareOneSize.y/2 < SquareTwoCoor.y then
+			verticalmovement = SquareTwoCoor.y - (SquareOneCoor.y + SquareOneSize.y)
+			collidepoint = SquareOneCoor.x + velx
+		elseif SquareOneCoor.x + SquareOneSize.x/2 < SquareTwoCoor.x + SquareTwoSize.x/2 then
             collision.right = coltypes.left
+			collidepoint = SquareTwoCoor.x
         else
             collision.left = coltypes.right
+			collidepoint = SquareTwoCoor.x
         end
     end
 
-    return collision
+    return collision, collidepoint, verticalmovement
 end
 
 function IsInCamera(x, y, w, h)
@@ -291,4 +345,49 @@ end
 
 function IsPosInCamera(pos, size)
     return IsInCamera(pos.x, pos.y, size.x, size.y)
+end
+
+function ManipulateTileSizeForSlopes(alt1, alt2, rotation, x, y, w, h, x2, y2, w2, h2, id)
+
+	local tempx = x2
+	local tempy = y2
+	local tempw = w2
+	local temph = h2
+	if rotation == 0 then
+		tempy = tempy
+		local xpoint = 0
+		local altdifference = 0
+		local mult = 0
+		if alt1 > alt2 then
+			xpoint = x
+			altdifference = alt1 - alt2
+			mult = altdifference / 32
+
+			if xpoint <= x2 then
+				--dont change tile size
+			elseif xpoint >= x2 + w2 then
+				tempy = tempy + altdifference
+				temph = temph - altdifference
+			else
+				tempy = tempy + ((xpoint - x2) * mult)
+				temph = temph - ((xpoint - x2) * mult)
+			end
+		else
+			xpoint = x + w
+			altdifference = alt2 - alt1
+			mult = altdifference / 32
+
+			if xpoint <= x2 then
+				tempy = tempy + altdifference
+				temph = temph - altdifference
+			elseif xpoint >= x2 + w2 then
+				--dont change tile size
+			else
+				tempy = tempy + ((x2 + w2) - xpoint) * mult
+				temph = temph - ((x2 + w2) - xpoint) * mult
+			end
+		end
+	end
+
+	return tempx, tempy, tempw, temph
 end
