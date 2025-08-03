@@ -247,6 +247,8 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         id = 15
                     elseif id == 267 then
                         id = 16
+                    elseif id == 1 then
+                        id = 17
                     elseif id == 4 then
                         id = 0
                         entityname = "KaizoGlass"
