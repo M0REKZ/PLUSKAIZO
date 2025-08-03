@@ -5,6 +5,7 @@ require("handler.json_handler")
 require("common.entities.kaizo_entity_list")
 require("lib.kaizo_lvlx_reader")
 require("common.kaizo_collision")
+require("handler.file_handler")
 
 KaizoLevelHandler = {}
 
@@ -88,17 +89,17 @@ function KaizoLevelHandler:LoadLevelFromName(name)
 
     local str = "data/levels/" .. name .. ".lvlx"
 
-    if love.filesystem.getInfo(str) then
+    if KaizoFileHandler:FileExists(str) then
         local lvlxdata = KaizoLVLXReader:ReadLVLX(str)
         GameContext.CurrentLevel = KaizoLevel:new()
         self:LoadLVLXLevelFromTable(lvlxdata) --Load entire level from lvlx
     else
         GameContext.CurrentLevel = KaizoLevel:new() --Create level by myself, we will add sections from tmj
         for num = 1, 100, 1 do --max 100 sections
-            local str = love.filesystem.read("data/levels/" .. name .. "/section_" .. num .. ".json")
+            local str = KaizoFileHandler:GetFileAsString("data/levels/" .. name .. "/section_" .. num .. ".json")
             if not str then
                 --try tmj
-                str = love.filesystem.read("data/levels/" .. name .. "/section_" .. num .. ".tmj")
+                str = KaizoFileHandler:GetFileAsString("data/levels/" .. name .. "/section_" .. num .. ".tmj")
                 if not str then
                     break
                 end

@@ -5,6 +5,7 @@ love.filesystem.setRequirePath("?.lua;?/init.lua;src/?.lua;src/?/init.lua")
 require("common/kaizo_globals")
 require("kaizo_context")
 require("common/kaizo_level")
+require("handler.file_handler")
 push = require("external.push") --required for pixel perfect scaling 
 
 local FrameTiming = 0
@@ -28,6 +29,8 @@ function love.load()
     if mobile == "Android" or mobile == "iOS" then
         IS_MOBILE = true
     end
+
+    KaizoFileHandler:InitUserPath()
 
     love.window.setMode(WindowSize.x,WindowSize.y,{vsync = 0, resizable = true})
     

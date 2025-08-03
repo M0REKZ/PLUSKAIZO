@@ -1,6 +1,7 @@
 require("common.kaizo_globals")
 require("handler.input_handler")
 require("handler.render_handler")
+require("handler.file_handler")
 
 KaizoConfigHandler = {
     activate = false,
@@ -77,13 +78,13 @@ function KaizoConfigHandler:render()
 end
 
 function KaizoConfigHandler:SaveConfig()
-    love.filesystem.createDirectory("config")
+    KaizoFileHandler:CreateDirectory("config")
     local str = KaizoJSONHandler:ToJSON(KaizoConfig)
-    love.filesystem.write("config/kzconfig.json", str)
+    KaizoFileHandler:WriteFileTo("config/kzconfig.json", str)
 end
 
 function KaizoConfigHandler:LoadConfig()
-    local jsonstr = love.filesystem.read("config/kzconfig.json")
+    local jsonstr = KaizoFileHandler:GetFileAsString("config/kzconfig.json")
     
     if jsonstr then
         local configfile = nil

@@ -1,6 +1,8 @@
 -- PLUSKAIZO (c) Copyright Benjamín Gajardo All rights reserved
 -- See license.txt at the root of the PLUSKAIZO directory for license
 
+require("handler.file_handler") -- to read file line by line
+
 KaizoLVLXReader = {}
 
 function KaizoLVLXReader:ReadLVLX(filepath)
@@ -28,7 +30,7 @@ function KaizoLVLXReader:ReadLVLX(filepath)
 
     local LVLXData = {}
 
-    for line in love.filesystem.lines(filepath) do
+    for line in KaizoFileHandler:GetFileLine(filepath) do
 
         --HEAD
         if line == "HEAD" then

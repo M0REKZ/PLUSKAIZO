@@ -3,19 +3,20 @@
 
 require("common.kaizo_globals")
 require("handler.json_handler")
+require("handler.file_handler")
 
 SaveStateHandler = {}
 
 function SaveStateHandler:SaveState()
-    love.filesystem.createDirectory("saves")
+    KaizoFileHandler:CreateDirectory("saves")
     local str = KaizoJSONHandler:ToJSON(GameContext.CurrentLevel:SaveState())
-    love.filesystem.write("saves/save.kzstate", str)
+    KaizoFileHandler:WriteFileTo("saves/save.kzstate", str)
 end
 
 function SaveStateHandler:LoadState()
     love.audio.stop()
     GameContext.CurrentLevel = nil
-    local jsonstr = love.filesystem.read("saves/save.kzstate")
+    local jsonstr = KaizoFileHandler:GetFileAsString("saves/save.kzstate")
     local state = KaizoJSONHandler:FromJSON(jsonstr)
     GameContext.CurrentLevel = KaizoLevel:new()
     GameContext.CurrentLevel:LoadState(state)
@@ -28,5 +29,5 @@ function SaveStateHandler:LoadState()
 end
 
 function SaveStateHandler:StateExists()
-    return love.filesystem.getInfo("saves/save.kzstate")
+    return KaizoFileHandler:FileExists("saves/save.kzstate")
 end
