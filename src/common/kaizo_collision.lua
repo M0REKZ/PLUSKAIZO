@@ -80,6 +80,14 @@ function GetSlopeInfo(tile_id)
 		return 32,0,0
 	elseif tile_id == 13 then
 		return 0,32,0
+	elseif tile_id == 18 then
+		return 32,16,0
+	elseif tile_id == 19 then
+		return 16,0,0
+	elseif tile_id == 20 then
+		return 0,16,0
+	elseif tile_id == 21 then
+		return 16,32,0
 	end
 	return nil
 end
@@ -354,6 +362,8 @@ function ManipulateTileSizeForSlopes(alt1, alt2, rotation, x, y, w, h, x2, y2, w
 	local tempy = y2
 	local tempw = w2
 	local temph = h2
+
+	local altoffset = 0
 	if rotation == 0 then
 		tempy = tempy
 		local xpoint = 0
@@ -363,6 +373,7 @@ function ManipulateTileSizeForSlopes(alt1, alt2, rotation, x, y, w, h, x2, y2, w
 			xpoint = x
 			altdifference = alt1 - alt2
 			mult = altdifference / 32
+			altoffset = h2 - alt1
 
 			if xpoint <= x2 then
 				--dont change tile size
@@ -377,6 +388,7 @@ function ManipulateTileSizeForSlopes(alt1, alt2, rotation, x, y, w, h, x2, y2, w
 			xpoint = x + w
 			altdifference = alt2 - alt1
 			mult = altdifference / 32
+			altoffset = h2 - alt2
 
 			if xpoint <= x2 then
 				tempy = tempy + altdifference
@@ -388,6 +400,8 @@ function ManipulateTileSizeForSlopes(alt1, alt2, rotation, x, y, w, h, x2, y2, w
 				temph = temph - ((x2 + w2) - xpoint) * mult
 			end
 		end
+
+		tempy = tempy + altoffset
 	end
 
 	return tempx, tempy, tempw, temph

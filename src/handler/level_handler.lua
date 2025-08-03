@@ -210,6 +210,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
             local lvlxlayername = nil
             local id = 0
             local entityname = nil
+            local multiid = false --for big blocks with size divisible by 32
             for num, block in ipairs(lvlxdata.Blocks) do
                 blockpos = {x = tonumber(block["X"]),y = tonumber(block["Y"])}
                 lvlxlayername = block["LR"]
@@ -252,6 +253,8 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                     elseif id == 4 then
                         id = 0
                         entityname = "KaizoGlass"
+                    elseif id == 604 or id == 605 then --big blocks divisible by 32
+                        multiid = true
                     else
                         id = 11 -- unidentified block
                     end
@@ -264,7 +267,20 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         for num3, layer in ipairs(section.Layers) do
                             if layer.name == lvlxlayername then
                                 if not entityname then
-                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                    if not multiid then
+                                        temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                    else
+                                        if gamename == "\"TheXTech\"" then
+                                            if id == 604 then
+                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 20
+                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 21
+                                            elseif id == 605 then
+                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 18
+                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 19
+                                            end
+                                        end
+                                        multiid = false
+                                    end
                                     layerhastiles[num2][num3] = true
                                     layerfound = true
                                 else
@@ -280,7 +296,20 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                             for num3, layer in ipairs(section.Layers) do
                                 if layer.name == "\"Default\"" then
                                     if not entityname then
-                                        temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                        if not multiid then
+                                            temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                        else
+                                            if gamename == "\"TheXTech\"" then
+                                                if id == 604 then
+                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 20
+                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 21
+                                                elseif id == 605 then
+                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 18
+                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 19
+                                                end
+                                            end
+                                            multiid = false
+                                        end
                                         layerhastiles[num2][num3] = true
                                         layerfound = true
                                     else
