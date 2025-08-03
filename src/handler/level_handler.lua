@@ -253,7 +253,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                     elseif id == 4 then
                         id = 0
                         entityname = "KaizoGlass"
-                    elseif id == 604 or id == 605 then --big blocks divisible by 32
+                    elseif id == 604 or id == 605 or id == 21 or id == 22 then --big blocks divisible by 32
                         multiid = true
                     else
                         id = 11 -- unidentified block
@@ -277,9 +277,14 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                                             elseif id == 605 then
                                                 temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 18
                                                 temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 19
+                                            elseif id == 21 then
+                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 22
+                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 23
+                                            elseif id == 22 then
+                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 24
+                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 25
                                             end
                                         end
-                                        multiid = false
                                     end
                                     layerhastiles[num2][num3] = true
                                     layerfound = true
@@ -306,9 +311,14 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                                                 elseif id == 605 then
                                                     temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 18
                                                     temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 19
+                                                elseif id == 21 then
+                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 22
+                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 23
+                                                elseif id == 22 then
+                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 24
+                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 25
                                                 end
                                             end
-                                            multiid = false
                                         end
                                         layerhastiles[num2][num3] = true
                                         layerfound = true
@@ -326,6 +336,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         break
                     end
                 end
+                multiid = false
             end
 
             --set tiles on each layer
