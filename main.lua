@@ -51,6 +51,10 @@ function love.load()
         InputHandler:InitLOVEMobileGamepad()
     end
 
+    if KaizoFileHandler:FileExists("kaizo_mod.lua") then
+        dofile("kaizo_mod.lua")
+    end
+
     GameContext = KaizoContext:new()
     GameContext.CurrentLevel = KaizoLevel:new()
     GameContext:init()
