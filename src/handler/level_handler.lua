@@ -208,6 +208,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
             local blockposinsection = {x = -1, y = -1}
             local lvlxlayername = nil
             local id = 0
+            local entityname = nil
             for num, block in ipairs(lvlxdata.Blocks) do
                 blockpos = {x = tonumber(block["X"]),y = tonumber(block["Y"])}
                 lvlxlayername = block["LR"]
@@ -245,6 +246,9 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         id = 15
                     elseif id == 267 then
                         id = 16
+                    elseif id == 4 then
+                        id = 0
+                        entityname = "KaizoGlass"
                     else
                         id = 11 -- unidentified block
                     end
@@ -256,18 +260,32 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         local layerfound = false
                         for num3, layer in ipairs(section.Layers) do
                             if layer.name == lvlxlayername then
-                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
-                                layerhastiles[num2][num3] = true
-                                layerfound = true
+                                if not entityname then
+                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                    layerhastiles[num2][num3] = true
+                                    layerfound = true
+                                else
+                                    local ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y)
+                                    layer:add_entity(ent)
+                                    layerfound = true
+                                    entityname = nil
+                                end
                                 break
                             end
                         end
                         if not layerfound then
                             for num3, layer in ipairs(section.Layers) do
                                 if layer.name == "\"Default\"" then
-                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
-                                    layerhastiles[num2][num3] = true
-                                    layerfound = true
+                                    if not entityname then
+                                        temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                        layerhastiles[num2][num3] = true
+                                        layerfound = true
+                                    else
+                                        local ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y)
+                                        layer:add_entity(ent)
+                                        layerfound = true
+                                        entityname = nil
+                                    end
                                     break
                                 end
                             end

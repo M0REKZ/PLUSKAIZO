@@ -240,6 +240,23 @@ function KaizoPlayer:destroy()
 end
 
 function KaizoPlayer:handle_collision(collide, pos2, size2, ent)
+
+    if collide.up == 4 or collide.down == 4 or collide.left == 4 or collide.right == 4 then
+        local temp = nil
+        temp = ent:HandlePlayerCollision(self, collide)
+        if temp then
+            collide = temp
+        end
+    end
+
+    if collide.up == 6 or collide.down == 6 or collide.left == 6 or collide.right == 6 then
+        local temp = nil
+        temp = ent:HandleEntityCollision(self, collide)
+        if temp then
+            collide = temp
+        end
+    end
+
     if collide.down == 1 and self.vel.y > 0 then
         self.vel.y = 0
         self.pos.y = pos2.y - self.size.y
@@ -270,8 +287,6 @@ function KaizoPlayer:handle_collision(collide, pos2, size2, ent)
         self.die = true
     elseif (collide.up == 3 or collide.down == 3 or collide.left == 3 or collide.right == 3) and ent and ent.can_die then
         ent.die = true
-    elseif collide.up == 4 or collide.down == 4 or collide.left == 4 or collide.right == 4 then
-        ent:HandlePlayerCollision(self, collide)
     elseif collide.up == 5 or collide.down == 5 or collide.left == 5 or collide.right == 5 then
         self.die = true
     end
@@ -345,9 +360,22 @@ function KaizoPlayer:do_collision()
             end
 
             if ent.has_collision_square then
-                collide = DetectSquareToSquareCollisionQB64OldNew(self.pos.x, self.pos.y, self.pos.x + self.vel.x, self.pos.y + self.vel.y, self.size.x, self.size.y, ent.pos.x, ent.pos.y, ent.size.x, ent.size.y, ent.col)
-                self:handle_collision(collide, ent.pos, ent.size, ent)
-                collide = {up = 0, down = 0, left = 0, right = 0}
+                if ent.has_qb64_collision then
+                    collide = DetectSquareToSquareCollisionQB64OldNew(self.pos.x, self.pos.y, self.pos.x + self.vel.x, self.pos.y + self.vel.y, self.size.x, self.size.y, ent.pos.x, ent.pos.y, ent.size.x, ent.size.y, ent.col)
+                    self:handle_collision(collide, ent.pos, ent.size, ent)
+                    collide = {up = 0, down = 0, left = 0, right = 0}
+                else
+                    collide, collidepoint = DetectVerticalSquareCollision( self.pos.x, self.pos.y, self.vel.y, self.size.x, self.size.y, ent.pos.x , ent.pos.y , ent.size.x, ent.size.y, ent.col)
+                    self:handle_collision(collide, {x = ent.pos.x, y = collidepoint}, {x = ent.size.x, y = ent.size.y}, ent)
+                    collide = nil
+                    collidepoint = nil
+                    collide, collidepoint, verticalmovement = DetectHorizontalSquareCollision( self.pos.x, self.pos.y, self.vel.x, self.size.x, self.size.y, ent.pos.x, ent.pos.y, ent.size.x, ent.size.y, ent.col)
+                    self.pos.y = self.pos.y + verticalmovement
+                    self:handle_collision(collide, {x = collidepoint, y = ent.pos.y}, {x = ent.size.x, y = ent.size.y}, ent)
+                    collide = nil
+                    collidepoint = nil
+                    verticalmovement = 0
+                end
             end
 
             

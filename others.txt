@@ -1,6 +1,6 @@
 The following files have their own license, or they were taken from the public domain:
 
-Files on the Public Domain:
+Files on the Public Domain or CC0 License:
 
 /data/images/bg/forest.png
 /data/images/bg/landscape.png
@@ -13,6 +13,8 @@ Files on the Public Domain:
 /data/images/tiles/tile_7.png
 /data/images/tiles/tile_8.png
 /data/images/tiles/tile_9.png
+/data/images/tiles/tile_12.png (edited)
+/data/images/tiles/tile_13.png (edited)
 /data/music/metal.wav
 /data/sounds/sound_1.mp3
 /data/sounds/sound_2.mp3
@@ -21,4 +23,5 @@ Files on the Public Domain:
 /data/sounds/sound_5.mp3
 /data/sounds/sound_6.mp3
 /data/sounds/sound_7.mp3
+/data/sounds/sound_8.mp3
 

@@ -44,6 +44,7 @@ function KaizoEGG:new(x,y)
     o.is_coward = false
 
     o.can_load_level_properties = true
+    o.has_qb64_collision = true
 
     o.death_sound = GameContext.CurrentLevel:get_sound(1)
 
@@ -239,9 +240,22 @@ function KaizoEGG:do_collision()
             end
 
             if ent.has_collision_square then
-                collide = DetectSquareToSquareCollisionQB64OldNew(self.pos.x, self.pos.y, self.pos.x + self.vel.x, self.pos.y + self.vel.y, self.size.x, self.size.y, ent.pos.x, ent.pos.y, ent.size.x, ent.size.y, ent.col)
-                self:handle_collision(collide, ent.pos, ent.size, ent)
-                collide = {up = 0, down = 0, left = 0, right = 0}
+                if ent.has_qb64_collision then
+                    collide = DetectSquareToSquareCollisionQB64OldNew(self.pos.x, self.pos.y, self.pos.x + self.vel.x, self.pos.y + self.vel.y, self.size.x, self.size.y, ent.pos.x, ent.pos.y, ent.size.x, ent.size.y, ent.col)
+                    self:handle_collision(collide, ent.pos, ent.size, ent)
+                    collide = {up = 0, down = 0, left = 0, right = 0}
+                else
+                    collide, collidepoint = DetectVerticalSquareCollision( self.pos.x, self.pos.y, self.vel.y, self.size.x, self.size.y, ent.pos.x , ent.pos.y , ent.size.x, ent.size.y, ent.col)
+                    self:handle_collision(collide, {x = ent.pos.x, y = collidepoint}, {x = ent.size.x, y = ent.size.y}, ent)
+                    collide = nil
+                    collidepoint = nil
+                    collide, collidepoint, verticalmovement = DetectHorizontalSquareCollision( self.pos.x, self.pos.y, self.vel.x, self.size.x, self.size.y, ent.pos.x, ent.pos.y, ent.size.x, ent.size.y, ent.col)
+                    self.pos.y = self.pos.y + verticalmovement
+                    self:handle_collision(collide, {x = collidepoint, y = ent.pos.y}, {x = ent.size.x, y = ent.size.y}, ent)
+                    collide = nil
+                    collidepoint = nil
+                    verticalmovement = 0
+                end
             end
 
             
@@ -252,6 +266,15 @@ function KaizoEGG:do_collision()
 end
 
 function KaizoEGG:handle_collision(collide, pos2, size2, ent)
+
+    if collide.up == 6 or collide.down == 6 or collide.left == 6 or collide.right == 6 then
+        local temp = nil
+        temp = ent:HandleEntityCollision(self, collide)
+        if temp then
+            collide = temp
+        end
+    end
+
     if (collide.down == 1 or (collide.down == 2)) and self.vel.y > 0 then
         self.vel.y = 0
         self.pos.y = pos2.y - self.size.y

@@ -1017,6 +1017,24 @@
                          "width":23,
                          "x":766.837935390724,
                          "y":364.578776394153
+                        }, 
+                        {
+                         "gid":31,
+                         "height":32,
+                         "id":75,
+                         "name":"",
+                         "properties":[
+                                {
+                                 "name":"name",
+                                 "type":"string",
+                                 "value":"KaizoGlass"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":32,
+                         "x":192.446128857607,
+                         "y":288.096733441617
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -1032,7 +1050,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":75,
+ "nextobjectid":76,
  "orientation":"orthogonal",
  "properties":[
         {

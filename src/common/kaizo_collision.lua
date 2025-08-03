@@ -13,6 +13,7 @@ Collision types
 3 = player should kill it
 4 = player call entity OnInteract() if it can do it
 5 = DIE 100%
+6 = entity call OnInteract if can do it
 
 Slope rotation
 

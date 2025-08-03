@@ -25,6 +25,7 @@ function KaizoChicken:new(x, y)
     o.col.right = 2
 
     o.can_collide_square = false
+    o.has_qb64_collision = true
 
     o.image_id = 8 -- Default image ID for the square
     o.image = nil
