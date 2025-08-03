@@ -201,7 +201,7 @@ function KaizoEGG:do_collision()
         temp_tiles[4].h = 32
 
         if self.is_edge_careful then
-            if not (TileToCollision(temp_tiles[2]).up == 1) ~= not (TileToCollision(temp_tiles[4]).up == 1) then
+            if not (TileToCollision(temp_tiles[2].id).up == 1) ~= not (TileToCollision(temp_tiles[4].id).up == 1) then
                 self.dir = self.dir * -1
             end
         end
