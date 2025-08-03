@@ -200,6 +200,12 @@ function KaizoEGG:do_collision()
         temp_tiles[4].w = 32
         temp_tiles[4].h = 32
 
+        if self.is_edge_careful then
+            if not (TileToCollision(temp_tiles[2]).up == 1) ~= not (TileToCollision(temp_tiles[4]).up == 1) then
+                self.dir = self.dir * -1
+            end
+        end
+
         for num, tile in ipairs(temp_tiles) do
 
             tile.x = tile.x - (tile.x % 32)
