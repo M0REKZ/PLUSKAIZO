@@ -1,3 +1,6 @@
+-- PLUSKAIZO (c) Copyright Benjamín Gajardo All rights reserved
+-- See license.txt at the root of the PLUSKAIZO directory for license
+
 require("common.kaizo_globals")
 local nativefs = require("external.nativefs")
 
