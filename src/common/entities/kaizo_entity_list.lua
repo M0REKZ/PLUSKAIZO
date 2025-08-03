@@ -11,6 +11,7 @@ require("common.entities.squares.kaizo_chicken")
 require("common.entities.squares.kaizo_falling_egg")
 require("common.entities.squares.kaizo_nest")
 require("common.entities.objects.kaizo_menu_item")
+require("common.entities.squares.kaizo_dirt_monster")
 
 
 KaizoEntitiesCreator = {} --to register entities
@@ -25,3 +26,4 @@ KaizoEntitiesCreator[KaizoChicken.name] = KaizoChicken
 KaizoEntitiesCreator[KaizoFallingEGG.name] = KaizoFallingEGG
 KaizoEntitiesCreator[KaizoNest.name] = KaizoNest
 KaizoEntitiesCreator[KaizoMenuItem.name] = KaizoMenuItem
+KaizoEntitiesCreator[KaizoDirtMonster.name] = KaizoDirtMonster

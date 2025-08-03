@@ -50,24 +50,6 @@
                  "name":"Capa de Objetos 1",
                  "objects":[
                         {
-                         "gid":19,
-                         "height":25,
-                         "id":8,
-                         "name":"",
-                         "properties":[
-                                {
-                                 "name":"name",
-                                 "type":"string",
-                                 "value":"KaizoEGG"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":22,
-                         "x":676.703296703297,
-                         "y":357.824175824176
-                        }, 
-                        {
                          "gid":18,
                          "height":32,
                          "id":9,
@@ -1017,6 +999,24 @@
                          "width":22,
                          "x":7158.28352282981,
                          "y":419.330084822234
+                        }, 
+                        {
+                         "gid":30,
+                         "height":18,
+                         "id":74,
+                         "name":"",
+                         "properties":[
+                                {
+                                 "name":"name",
+                                 "type":"string",
+                                 "value":"KaizoDirtMonster"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":23,
+                         "x":766.837935390724,
+                         "y":364.578776394153
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -1032,7 +1032,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":74,
+ "nextobjectid":75,
  "orientation":"orthogonal",
  "properties":[
         {

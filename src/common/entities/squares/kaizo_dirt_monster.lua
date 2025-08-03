@@ -12,18 +12,18 @@ KaizoDirtMonster.name = "KaizoDirtMonster"
 KaizoDirtMonster.__index = KaizoDirtMonster
 
 function KaizoDirtMonster:new(x,y)
-    local o = KaizoEGG:new(x-64,y-64)
+    local o = KaizoEGG:new(x,y)
     o = setmetatable(o,KaizoDirtMonster)
 
     o.col.up = 4
-    o.col.down = 4
-    o.col.left = 4
-    o.col.right = 4
+    o.col.down = 0
+    o.col.left = 0
+    o.col.right = 0
 
-    o.size.x = 128
-    o.size.y = 128
+    o.size.x = 23
+    o.size.y = 18
 
-    o.image_id = 5 -- Default image ID for KaizoTomate
+    o.image_id = 12 -- Default image ID for KaizoDirtMonster
     o.image = nil
     o.can_collide_square = true
     o.has_collision_square = true
@@ -42,9 +42,11 @@ function KaizoDirtMonster:new(x,y)
     o.is_edge_careful = false
     o.hidden = true
 
-    o.can_load_level_properties = true
+    o.can_load_level_properties = false
 
     o.death_sound = GameContext.CurrentLevel:get_sound(5)
+    o.unhidingframe = 0
+    o.unhidingframetime = 0
 
     if not o.death_sound then
         local sound = KaizoSound:new()
@@ -54,6 +56,64 @@ function KaizoDirtMonster:new(x,y)
     end
 
     return o
+end
+
+function KaizoDirtMonster:update()
+
+    if self.hidden then
+
+        self.sec = GameContext.CurrentLevel:get_current_section()
+        local player
+        player = nil
+        local player_layer
+        player_layer = nil
+
+        for _, layer in ipairs(self.sec.Layers) do
+            for _, ent in ipairs(layer.Entities) do
+                if ent == self then
+                    goto continue
+                end
+
+                if ent.marked_for_deletion then
+                    goto continue
+                end
+
+                if ent.is_player then
+                    player = ent
+                    player_layer = layer
+                    break
+                end
+
+
+                :: continue ::
+            end
+            if player then
+                break
+            end
+        end
+
+        if player then
+            if IsPointInsideSquare(player.pos.x + player.size.x/2,player.pos.y + player.size.y/2,self.pos.x - 128,self.pos.y - 128,self.pos.x + self.size.x + 128,self.pos.y + self.size.y + 128) then
+                self.hidden = false
+                self.col.left = 2
+                self.col.right = 2
+                self.col.down = 2
+            end
+        end
+    else
+        if self.unhidingframe < 5 then
+            self.unhidingframetime = self.unhidingframetime + 1
+
+            if self.unhidingframetime > 2 then
+                self.unhidingframe = self.unhidingframe + 1
+                self.unhidingframetime = 0
+            end
+        else
+            KaizoEGG.update(self) -- call base class
+        end
+        
+    end
+    
 end
 
 function KaizoDirtMonster:render()
@@ -72,19 +132,46 @@ function KaizoDirtMonster:render()
 
     if(self.image) then
 
-        self.frametime = self.frametime + 1
-		
-		if(self.frametime > 4) then
-		
-			self.frame = self.frame + 1
-			self.frametime = 0
+        if self.unhidingframe >= 5 then
+            self.frametime = self.frametime + 1
+
+            if (self.frametime > 4) then
+                self.frame = self.frame + 1
+                self.frametime = 0
+            end
+
+            if (self.frame > 2) then
+                self.frame = 1
+            end
         end
 		
-		if(self.frame > 7) then
-			self.frame = 0
+        if self.unhidingframe < 5 then
+            if self.unhidingframe <=1 then
+                self.image:render_incamera_scaled_from_to(0,0,32,15,self.pos.x,self.pos.y + self.size.y,32,15)
+            elseif self.unhidingframe == 2 then
+                self.image:render_incamera_scaled_from_to(0,15,32,21,self.pos.x,self.pos.y + self.size.y - 6,32,21)
+            elseif self.unhidingframe == 3 then
+                self.image:render_incamera_scaled_from_to(0,36,32,27,self.pos.x,self.pos.y + self.size.y - 12,32,27)
+            elseif self.unhidingframe == 4 then
+                self.image:render_incamera_scaled_from_to(0,63,32,23,self.pos.x,self.pos.y,32,23)
+            end
+        else
+            if self.frame == 1 then
+                if self.dir == 1 then
+                    self.image:render_incamera_scaled_from_to(0,86,23,18,self.pos.x + self.size.x,self.pos.y,self.size.x * -1,self.size.y)
+                else
+                    self.image:render_incamera_scaled_from_to(0,86,23,18,self.pos.x,self.pos.y,self.size.x,self.size.y)
+                end
+            else
+                if self.dir == 1 then
+                    self.image:render_incamera_scaled_from_to(0,104,23,18,self.pos.x + self.size.x,self.pos.y,self.size.x * -1,self.size.y)
+                else
+                    self.image:render_incamera_scaled_from_to(0,104,23,18,self.pos.x,self.pos.y,self.size.x,self.size.y)
+                end
+            end
+            
         end
 		
-		self.image:render_incamera_scaled_from_to()
 
     else
         error("Image not loaded for KaizoDirtMonster with ID: " .. tostring(self.image_id))
@@ -93,13 +180,7 @@ end
 
 
 function KaizoDirtMonster:HandleProperty(prop)
-    if prop.name == "is_edge_careful" then
-        self.is_edge_careful = prop.value
-    end
-
-    if self.is_edge_careful then
-        self.image_id = 6
-    end
+    --overriden to do nothing
 end
 
 function KaizoDirtMonster:HandlePlayerCollision(player, collide)
@@ -107,4 +188,67 @@ function KaizoDirtMonster:HandlePlayerCollision(player, collide)
         player.vel.y = -7
         self.die = true
     end
+end
+
+function KaizoDirtMonster:SaveState()
+
+    return {
+        name = self.name,
+        marked_for_deletion = self.marked_for_deletion,
+        pos = {x = self.pos.x, y = self.pos.y},
+        size = {x = self.size.x, y = self.size.y},
+        vel = {x = self.vel.x, y = self.vel.y},
+        col = {up = self.col.up, down = self.col.down, left = self.col.left, right = self.col.right},
+        image_id = self.image_id,
+        can_collide_square = self.can_collide_square,
+        has_collision_square = self.has_collision_square,
+        is_player = self.is_player,
+        going_left = self.going_left,
+        going_right = self.going_right,
+        jumped = self.jumped,
+        die = self.die,
+        grounded = self.grounded,
+        can_die = self.can_die,
+        dir = self.dir,
+        frame = self.frame,
+        frametime = self.frametime,
+        is_npc = self.is_npc,
+        active = self.active,
+        is_edge_careful = self.is_edge_careful,
+        is_coward = self.is_coward,
+        unhidingframe = self.unhidingframe,
+        unhidingframetime = self.unhidingframetime,
+        hidden = self.hidden,
+    }
+end
+
+function KaizoDirtMonster:LoadState(state)
+    self.name = state.name
+    self.marked_for_deletion = state.marked_for_deletion
+    self.pos = state.pos
+    self.size = state.size
+    self.vel = state.vel
+    self.col = state.col
+    self.image_id = state.image_id
+    self.can_collide_square = state.can_collide_square
+    self.has_collision_square = state.has_collision_square
+
+    self.is_player = state.is_player
+    self.is_npc = state.is_npc
+    self.going_left = state.going_left
+    self.going_right = state.going_right
+    self.jumped = state.jumped
+    self.die = state.die
+    self.grounded = state.grounded
+    self.can_die = state.can_die
+
+    self.dir = state.dir
+    self.frame = state.frame
+    self.frametime = state.frametime
+    self.active = state.active
+    self.is_edge_careful = state.is_edge_careful
+    
+    self.unhidingframe = state.unhidingframe
+    self.unhidingframetime = state.unhidingframetime
+    self.hidden = state.hidden
 end
