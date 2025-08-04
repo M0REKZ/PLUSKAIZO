@@ -76,7 +76,7 @@ function KaizoConfigHandler:render()
         return
     end
 
-    self.background:render_scaled_to(0,0,256,256)
+    self.background:render_scaled_to(0,0,256,32)
     RenderHandler:Print("Handling key: " .. KaizoConfigNames[self.config_key] .. " which now is " .. KaizoConfig[self.config_key], 10 , 10)
 end
 

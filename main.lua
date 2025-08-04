@@ -6,6 +6,7 @@ require("common/kaizo_globals")
 require("kaizo_context")
 require("common/kaizo_level")
 require("handler.file_handler")
+require("handler.render_handler")
 push = require("external.push") --required for pixel perfect scaling 
 
 local FrameTiming = 0
@@ -46,6 +47,8 @@ function love.load()
     love.window.setIcon(icon)
     love.filesystem.setIdentity("PLUSKAIZO")
     love.audio.setVolume(0.5)
+
+    RenderHandler:InitFont()
 
     if IS_MOBILE then
         InputHandler:InitLOVEMobileGamepad()

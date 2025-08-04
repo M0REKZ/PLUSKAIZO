@@ -29,3 +29,6 @@ Files on the Public Domain or CC0 License:
 /data/sounds/sound_7.mp3
 /data/sounds/sound_8.mp3
 
+Files with Free License:
+
+/data/images/Snowstorm.otf by Denis Sherbak (https://www.behance.net/gallery/28192387/Snowstorm-(free-font))
