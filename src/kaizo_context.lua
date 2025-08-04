@@ -1,5 +1,20 @@
--- PLUSKAIZO (c) Copyright Benjamín Gajardo All rights reserved
--- See license.txt at the root of the PLUSKAIZO directory for license
+--[[
+    PLUSKAIZO
+    Copyright (c) Benjamín Gajardo All rights reserved
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--]]
 
 require("common/kaizo_level")
 require("common/entities/kaizo_square")
@@ -82,7 +97,7 @@ function KaizoContext:update()
 
     if self.QueuedLevelName then
         KaizoLevelHandler:LoadLevelFromName(self.QueuedLevelName)
-        self.QueuedLevelName = nil
+        KaizoContext.QueuedLevelName = nil -- dont use self, for some reason it does not remove the value with self, need investigation
     end
 end
 

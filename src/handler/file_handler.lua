@@ -1,5 +1,20 @@
--- PLUSKAIZO (c) Copyright Benjamín Gajardo All rights reserved
--- See license.txt at the root of the PLUSKAIZO directory for license
+--[[
+    PLUSKAIZO
+    Copyright (c) Benjamín Gajardo All rights reserved
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--]]
 
 require("common.kaizo_globals")
 local nativefs = require("external.nativefs")
@@ -67,10 +82,8 @@ function KaizoFileHandler:WriteFileTo(filepath, content)
 end
 
 function KaizoFileHandler:FileExists(filepath)
-    if KaizoFileHandler.PLUSKAIZO_USER_PATH == KaizoFileHandler.PLUSKAIZO_LOVE_PATH then
+    if KaizoFileHandler.PLUSKAIZO_USER_PATH == KaizoFileHandler.PLUSKAIZO_LOVE_PATH or KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_CUSTOM_PATH then
         return love.filesystem.getInfo(filepath)
-    elseif KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_CUSTOM_PATH then
-        return nativefs.getInfo(filepath)
     else
         error("PLUSKAIZO_USER_PATH has wrong path")
     end
@@ -81,6 +94,14 @@ function KaizoFileHandler:CreateDirectory(filepath)
         return love.filesystem.createDirectory(filepath)
     elseif KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_CUSTOM_PATH then
         return nativefs.createDirectory(filepath)
+    else
+        error("PLUSKAIZO_USER_PATH has wrong path")
+    end
+end
+
+function KaizoFileHandler:GetItemsInDirectory(dirpath)
+    if KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_LOVE_PATH or KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_CUSTOM_PATH then
+        return love.filesystem.getDirectoryItems(dirpath)
     else
         error("PLUSKAIZO_USER_PATH has wrong path")
     end
