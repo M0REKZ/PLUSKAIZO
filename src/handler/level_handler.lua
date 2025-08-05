@@ -166,8 +166,11 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
 
             --both offsets used to calculate tiles and entities positions and the section they belong to
             --since PLUSKAIZO does not have sections in a same "world", unlike SMBX engine
-            tempsectiondata[num].x = tonumber(lvlxsection["L"]) --x offset
-            tempsectiondata[num].y = tonumber(lvlxsection["T"]) --y offset
+            tempsectiondata[num].x = tonumber(lvlxsection["L"]) --x pos
+            tempsectiondata[num].y = tonumber(lvlxsection["T"]) --y pos
+            tempsectiondata[num].xoffset = tonumber(lvlxsection["L"]) % 32 --x offset
+            tempsectiondata[num].yoffset = tonumber(lvlxsection["T"]) % 32 --y offset
+
             tempsectiondata[num].w = tonumber(lvlxsection["R"]) - tonumber(lvlxsection["L"]) --get section size this way...
             tempsectiondata[num].h = tonumber(lvlxsection["B"]) - tonumber(lvlxsection["T"]) --get section size this way...
 
@@ -258,9 +261,9 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                     elseif id == 274 then
                         id = 7
                     elseif id == 275 then
-                        id = 8
-                    elseif id == 276 then
                         id = 9
+                    elseif id == 276 then
+                        id = 8
                     elseif id == 110 then
                         id = 10
                     elseif id == 601 then
@@ -297,21 +300,21 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                             if layer.name == lvlxlayername then
                                 if not entityname then
                                     if not multiid then
-                                        temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                        temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = id
                                     else
                                         if gamename == "\"TheXTech\"" then
                                             if id == 604 then
-                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 20
-                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 21
+                                                temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = 20
+                                                temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 2] = 21
                                             elseif id == 605 then
-                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 18
-                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 19
+                                                temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = 18
+                                                temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 2] = 19
                                             elseif id == 21 then
-                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 22
-                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 23
+                                                temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = 22
+                                                temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 2] = 23
                                             elseif id == 22 then
-                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 24
-                                                temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 25
+                                                temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = 24
+                                                temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 2] = 25
                                             end
                                         end
                                     end
@@ -320,10 +323,10 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                                 else
                                     local ent = nil
                                     if entityname == "KaizoSquare" or entityname == "KaizoSquareResize" then
-                                        ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y, squaresize.x, squaresize.y)
+                                        ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x + tempsectiondata[num2].xoffset, blockposinsection.y + tempsectiondata[num2].yoffset, squaresize.x, squaresize.y)
                                         ent.is_on_background = isonbackground
                                     else
-                                        ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y)
+                                        ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x + tempsectiondata[num2].xoffset, blockposinsection.y + tempsectiondata[num2].yoffset)
                                         ent.is_on_background = isonbackground
                                     end
                                     layer:add_entity(ent)
@@ -338,21 +341,21 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                                 if layer.name == "\"Default\"" then
                                     if not entityname then
                                         if not multiid then
-                                            temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = id
+                                            temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = id
                                         else
                                             if gamename == "\"TheXTech\"" then
                                                 if id == 604 then
-                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 20
-                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 21
+                                                    temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = 20
+                                                    temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 2] = 21
                                                 elseif id == 605 then
-                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 18
-                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 19
+                                                    temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = 18
+                                                    temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 2] = 19
                                                 elseif id == 21 then
-                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 22
-                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 23
+                                                    temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = 22
+                                                    temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 2] = 23
                                                 elseif id == 22 then
-                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 1] = 24
-                                                    temptilelayers[num2][num3][((math.floor(blockposinsection.y / 32) * section.Size.x + math.floor(blockposinsection.x / 32))) + 2] = 25
+                                                    temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 1] = 24
+                                                    temptilelayers[num2][num3][((math.ceil(blockposinsection.y / 32) * section.Size.x + math.ceil(blockposinsection.x / 32))) + 2] = 25
                                                 end
                                             end
                                         end
@@ -361,10 +364,10 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                                     else
                                         local ent = nil
                                         if entityname == "KaizoSquare" or entityname == "KaizoSquareResize" then
-                                            ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y, squaresize.x, squaresize.y)
+                                            ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x + tempsectiondata[num2].xoffset, blockposinsection.y + tempsectiondata[num2].yoffset, squaresize.x, squaresize.y)
                                             ent.is_on_background = isonbackground
                                         else
-                                            ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y)
+                                            ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x + tempsectiondata[num2].xoffset, blockposinsection.y + tempsectiondata[num2].yoffset)
                                             ent.is_on_background = isonbackground
                                         end
                                         layer:add_entity(ent)
@@ -433,11 +436,11 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
 
                 for num2, section in ipairs(templevel.Sections) do
                     npcposinsection = {x = npcpos.x - tempsectiondata[num2].x, y = npcpos.y - tempsectiondata[num2].y}
-                    if IsPointInsideSquare(npcposinsection.x,npcposinsection.y,0,0,section.Size.x*32,section.Size.y*32) then
+                    if IsPointInsideSquare(npcposinsection.x - tempsectiondata[num2].xoffset,npcposinsection.y - tempsectiondata[num2].yoffset,0,0,section.Size.x*32,section.Size.y*32) then
                         local layerfound = false
                         for num3, layer in ipairs(section.Layers) do
                             if layer.name == lvlxlayername then
-                                local ent = KaizoEntitiesCreator[name]:new(npcposinsection.x, npcposinsection.y)
+                                local ent = KaizoEntitiesCreator[name]:new(npcposinsection.x + tempsectiondata[num2].xoffset, npcposinsection.y + tempsectiondata[num2].yoffset)
                                 layer:add_entity(ent)
                                 layerfound = true
                                 break
@@ -446,7 +449,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         if not layerfound then
                             for num3, layer in ipairs(section.Layers) do
                                 if layer.name == "\"Default\"" then
-                                    local ent = KaizoEntitiesCreator[name]:new(npcposinsection.x, npcposinsection.y)
+                                    local ent = KaizoEntitiesCreator[name]:new(npcposinsection.x + tempsectiondata[num2].xoffset, npcposinsection.y + tempsectiondata[num2].yoffset)
                                     layer:add_entity(ent)
                                     layerfound = true
                                     break
