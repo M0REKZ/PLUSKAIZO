@@ -36,6 +36,7 @@ function KaizoSquareResize:new(x, y, width, height)
 
     o.image_id = 17 -- Default image ID for the square
     o.image = nil
+    o.active_out_of_camera = true
     
     o.tile_size = {x = 0, y = 0}
 

@@ -39,6 +39,7 @@ function KaizoGlass:new(x, y)
     o.image = nil
 
     o.death_sound = GameContext.CurrentLevel:get_sound(8)
+    o.active_out_of_camera = true
 
     if not o.death_sound then
         local sound = KaizoSound:new()
