@@ -37,6 +37,7 @@ function KaizoSquare:new(x, y, width, height, velx, vely)
     o.image = nil
     o.can_collide_square = true
     o.has_collision_square = true
+    o.is_on_background = false
 
     o.ref_layer = nil
 

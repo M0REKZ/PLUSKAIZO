@@ -54,6 +54,19 @@ function KaizoLayer:update()
 
 end
 
+function KaizoLayer:render_back()
+    -- Render logic for the layer
+    for _, entity in ipairs(self.Entities) do
+        if not entity.is_on_background then
+            goto continue
+        end
+        if IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) then
+            entity:render()
+        end
+        ::continue::
+    end
+end
+
 function KaizoLayer:render()
     -- Render logic for the layer
     for num, tile in ipairs(self.Tiles) do
@@ -65,9 +78,13 @@ function KaizoLayer:render()
         end
     end
     for _, entity in ipairs(self.Entities) do
+        if entity.is_on_background then
+            goto continue
+        end
         if IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) then
             entity:render()
         end
+        ::continue::
     end
 end
 

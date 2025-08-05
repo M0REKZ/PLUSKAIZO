@@ -149,7 +149,7 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
     local temptilelayers = {} --temptilelayers[section][layer][tile]
     local layerhastiles = {}
 
-    local gamename = "PLUSKAIZO"
+    local gamename = "\"TheXTech\""
     if lvlxdata.Head then
         for num, head_element in ipairs(lvlxdata.Head) do
             if head_element["CPID"] then
@@ -226,9 +226,19 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
             local id = 0
             local entityname = nil
             local multiid = false --for big blocks with size divisible by 32
+            local squaresize = {x = 32, y = 32} -- for blocks that are not divisible by 32
+            local isonbackground = false
             for num, block in ipairs(lvlxdata.Blocks) do
                 blockpos = {x = tonumber(block["X"]),y = tonumber(block["Y"])}
                 lvlxlayername = block["LR"]
+
+                squaresize.x = tonumber(block["W"])
+                squaresize.y = tonumber(block["H"])
+
+                if squaresize.x % 32 > 0 or squaresize.x % 32 > 0 then
+                    entityname = "KaizoSquare"
+                end
+
 
                 id = tonumber(block["ID"])
 
@@ -268,6 +278,10 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                     elseif id == 4 then
                         id = 0
                         entityname = "KaizoGlass"
+                    elseif id == 25 or id == 26 or id == 27 or id == 28 then --resizable thextech blocks
+                        id = 0
+                        entityname = "KaizoSquareResize"
+                        isonbackground = true
                     elseif id == 604 or id == 605 or id == 21 or id == 22 then --big blocks divisible by 32
                         multiid = true
                     else
@@ -304,7 +318,14 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                                     layerhastiles[num2][num3] = true
                                     layerfound = true
                                 else
-                                    local ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y)
+                                    local ent = nil
+                                    if entityname == "KaizoSquare" or entityname == "KaizoSquareResize" then
+                                        ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y, squaresize.x, squaresize.y)
+                                        ent.is_on_background = isonbackground
+                                    else
+                                        ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y)
+                                        ent.is_on_background = isonbackground
+                                    end
                                     layer:add_entity(ent)
                                     layerfound = true
                                     entityname = nil
@@ -338,7 +359,14 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                                         layerhastiles[num2][num3] = true
                                         layerfound = true
                                     else
-                                        local ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y)
+                                        local ent = nil
+                                        if entityname == "KaizoSquare" or entityname == "KaizoSquareResize" then
+                                            ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y, squaresize.x, squaresize.y)
+                                            ent.is_on_background = isonbackground
+                                        else
+                                            ent = KaizoEntitiesCreator[entityname]:new(blockposinsection.x, blockposinsection.y)
+                                            ent.is_on_background = isonbackground
+                                        end
                                         layer:add_entity(ent)
                                         layerfound = true
                                         entityname = nil
@@ -351,7 +379,9 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         break
                     end
                 end
+                squaresize = {x = 32, y = 32}
                 multiid = false
+                isonbackground = false
             end
 
             --set tiles on each layer

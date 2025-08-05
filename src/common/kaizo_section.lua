@@ -50,6 +50,7 @@ function KaizoSection:render()
         self.Background:render_scaled_to(0,0,WindowSize.x,WindowSize.y)
     end
     for _, layer in ipairs(self.Layers) do
+        layer:render_back()
         layer:render()
     end
 end
