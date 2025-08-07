@@ -421,6 +421,8 @@ function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
                         name = "KaizoTomate"
                     elseif id == 47 then
                         name = "KaizoChicken"
+                    elseif id == 11 then
+                        name = "KaizoFinish"
                     else
                         name = "KaizoSquare" -- unidentified npc
                     end
