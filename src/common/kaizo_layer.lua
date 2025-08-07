@@ -60,7 +60,7 @@ function KaizoLayer:render_back()
         if not entity.is_on_background then
             goto continue
         end
-        if IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) then
+        if IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) or entity.always_render then
             entity:render()
         end
         ::continue::
@@ -73,7 +73,7 @@ function KaizoLayer:render()
         if tile > 0 then
             local pos = {x = ((num - 1) % (self.Width)) * 32 + self.Offset.x, y = math.floor((num - 1)/(self.Width)) * 32 + self.Offset.y}
             if IsInCamera(pos.x, pos.y, 32, 32) then
-                GameContext.CurrentLevel:get_tile_image(tile):render_incamera_scaled_to(pos.x, pos.y, 32, 32)
+                KaizoContext.CurrentLevel:get_tile_image(tile):render_incamera_scaled_to(pos.x, pos.y, 32, 32)
             end
         end
     end
@@ -81,7 +81,7 @@ function KaizoLayer:render()
         if entity.is_on_background then
             goto continue
         end
-        if IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) then
+        if IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) or entity.always_render then
             entity:render()
         end
         ::continue::
@@ -91,10 +91,10 @@ end
 function KaizoLayer:add_entity(entity)
     self.Entities[#self.Entities + 1] = entity
     entity.ref_layer = self
-    if entity.image_id > 0 and not GameContext.CurrentLevel:get_entity_image(entity.image_id) then
+    if entity.image_id > 0 and not KaizoContext.CurrentLevel:get_entity_image(entity.image_id) then
         local image = KaizoImage:new()
         image:load_entity_image_by_id(entity.image_id)
-        GameContext.CurrentLevel:add_entity_image(image)
+        KaizoContext.CurrentLevel:add_entity_image(image)
     end
 end
 
@@ -108,17 +108,17 @@ function KaizoLayer:set_tiles(tiles, width, height)
     self.Height = height
 
     for _, tile in ipairs(self.Tiles) do
-        if tile > 0 and not GameContext.CurrentLevel:get_tile_image(tile) then
+        if tile > 0 and not KaizoContext.CurrentLevel:get_tile_image(tile) then
             local image = KaizoImage:new()
             image:load_tile_image_by_id(tile)
-            GameContext.CurrentLevel:add_tile_image(image)
+            KaizoContext.CurrentLevel:add_tile_image(image)
         end
     end
 end
 
 function KaizoLayer:get_tile_id(x,y)
     
-    local sec = GameContext.CurrentLevel:get_current_section()
+    local sec = KaizoContext.CurrentLevel:get_current_section()
 
     if (y > sec.Size.y * 32) then
         return -2

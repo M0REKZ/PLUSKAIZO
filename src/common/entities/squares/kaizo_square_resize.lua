@@ -45,11 +45,11 @@ end
 
 function KaizoSquareResize:render()
     if not self.image then
-        self.image = GameContext.CurrentLevel:get_entity_image(self.image_id)
+        self.image = KaizoContext.CurrentLevel:get_entity_image(self.image_id)
         if not self.image then
             local image = KaizoImage:new()
             image:load_entity_image_by_id(o.image_id)
-            GameContext.CurrentLevel:add_entity_image(image)
+            KaizoContext.CurrentLevel:add_entity_image(image)
             self.image = image
         end
         if self.image then

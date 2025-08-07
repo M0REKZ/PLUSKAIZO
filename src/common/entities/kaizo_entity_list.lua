@@ -29,6 +29,8 @@ require("common.entities.objects.kaizo_menu_item")
 require("common.entities.squares.kaizo_dirt_monster")
 require("common.entities.squares.kaizo_glass")
 require("common.entities.squares.kaizo_square_resize")
+require("common.entities.squares.kaizo_finish")
+require("common.entities.objects.kaizo_camera_follow")
 
 
 KaizoEntitiesCreator = {} --to register entities
@@ -46,3 +48,5 @@ KaizoEntitiesCreator[KaizoMenuItem.name] = KaizoMenuItem
 KaizoEntitiesCreator[KaizoDirtMonster.name] = KaizoDirtMonster
 KaizoEntitiesCreator[KaizoGlass.name] = KaizoGlass
 KaizoEntitiesCreator[KaizoSquareResize.name] = KaizoSquareResize
+KaizoEntitiesCreator[KaizoFinish.name] = KaizoFinish
+KaizoEntitiesCreator[KaizoCameraFollow.name] = KaizoCameraFollow

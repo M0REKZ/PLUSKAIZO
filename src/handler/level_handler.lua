@@ -100,16 +100,16 @@ end
 
 function KaizoLevelHandler:LoadLevelFromName(name)
     love.audio.stop()
-    GameContext.CurrentLevel = nil
+    KaizoContext.CurrentLevel = nil
 
     local str = "data/levels/" .. name .. ".lvlx"
 
     if KaizoFileHandler:FileExists(str) then
         local lvlxdata = KaizoLVLXReader:ReadLVLX(str)
-        GameContext.CurrentLevel = KaizoLevel:new()
+        KaizoContext.CurrentLevel = KaizoLevel:new()
         self:LoadLVLXLevelFromTable(lvlxdata) --Load entire level from lvlx
     else
-        GameContext.CurrentLevel = KaizoLevel:new() --Create level by myself, we will add sections from tmj
+        KaizoContext.CurrentLevel = KaizoLevel:new() --Create level by myself, we will add sections from tmj
         for num = 1, 100, 1 do --max 100 sections
             local str = KaizoFileHandler:GetFileAsString("data/levels/" .. name .. "/section_" .. num .. ".json")
             if not str then
@@ -120,30 +120,30 @@ function KaizoLevelHandler:LoadLevelFromName(name)
                 end
             end
             local newsection = self:LoadTMJSectionFromString(str)
-            GameContext.CurrentLevel:add_section(newsection)
+            KaizoContext.CurrentLevel:add_section(newsection)
             if newsection.is_initial_section then
-                GameContext.CurrentLevel:set_current_section(num)
+                KaizoContext.CurrentLevel:set_current_section(num)
             end
         end
     end
 
-    if GameContext.CurrentLevel.CurrentSection == 0 then
+    if KaizoContext.CurrentLevel.CurrentSection == 0 then
         print("No current section set, fallback to section 1")
-        GameContext.CurrentLevel:set_current_section(1)
+        KaizoContext.CurrentLevel:set_current_section(1)
     end
 
-    local sec = GameContext.CurrentLevel:get_current_section()
+    local sec = KaizoContext.CurrentLevel:get_current_section()
 
     if sec.Music then
         sec.Music:Loop()
         sec.Music:Play()
     end
 
-    GameContext.CurrentLevel.Name = name
+    KaizoContext.CurrentLevel.Name = name
 end
 
 function KaizoLevelHandler:LoadLVLXLevelFromTable(lvlxdata)
-    local templevel = GameContext.CurrentLevel
+    local templevel = KaizoContext.CurrentLevel
 
     local tempsectiondata = {}
     local temptilelayers = {} --temptilelayers[section][layer][tile]

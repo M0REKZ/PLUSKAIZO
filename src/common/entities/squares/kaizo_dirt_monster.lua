@@ -59,14 +59,14 @@ function KaizoDirtMonster:new(x,y)
 
     o.can_load_level_properties = false
 
-    o.death_sound = GameContext.CurrentLevel:get_sound(5)
+    o.death_sound = KaizoContext.CurrentLevel:get_sound(5)
     o.unhidingframe = 0
     o.unhidingframetime = 0
 
     if not o.death_sound then
         local sound = KaizoSound:new()
         sound:LoadByID(5)
-        GameContext.CurrentLevel:add_sound(sound)
+        KaizoContext.CurrentLevel:add_sound(sound)
         o.death_sound = sound
     end
 
@@ -77,7 +77,7 @@ function KaizoDirtMonster:update()
 
     if self.hidden then
 
-        self.sec = GameContext.CurrentLevel:get_current_section()
+        self.sec = KaizoContext.CurrentLevel:get_current_section()
         local player
         player = nil
         local player_layer
@@ -134,12 +134,12 @@ end
 function KaizoDirtMonster:render()
 
     if not self.image then
-        self.image = GameContext.CurrentLevel:get_entity_image(self.image_id)
+        self.image = KaizoContext.CurrentLevel:get_entity_image(self.image_id)
         if not self.image then
             if not self.image then
                 local image = KaizoImage:new()
                 image:load_entity_image_by_id(self.image_id)
-                GameContext.CurrentLevel:add_entity_image(image)
+                KaizoContext.CurrentLevel:add_entity_image(image)
                 self.image = image
             end
         end

@@ -24,18 +24,18 @@ SaveStateHandler = {}
 
 function SaveStateHandler:SaveState()
     KaizoFileHandler:CreateDirectory("saves")
-    local str = KaizoJSONHandler:ToJSON(GameContext.CurrentLevel:SaveState())
+    local str = KaizoJSONHandler:ToJSON(KaizoContext.CurrentLevel:SaveState())
     KaizoFileHandler:WriteFileTo("saves/save.kzstate", str)
 end
 
 function SaveStateHandler:LoadState()
     love.audio.stop()
-    GameContext.CurrentLevel = nil
+    KaizoContext.CurrentLevel = nil
     local jsonstr = KaizoFileHandler:GetFileAsString("saves/save.kzstate")
     local state = KaizoJSONHandler:FromJSON(jsonstr)
-    GameContext.CurrentLevel = KaizoLevel:new()
-    GameContext.CurrentLevel:LoadState(state)
-    local sec = GameContext.CurrentLevel:get_current_section()
+    KaizoContext.CurrentLevel = KaizoLevel:new()
+    KaizoContext.CurrentLevel:LoadState(state)
+    local sec = KaizoContext.CurrentLevel:get_current_section()
 
     if sec.Music then
         sec.Music:Loop()

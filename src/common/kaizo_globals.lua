@@ -21,7 +21,6 @@ require("common.kaizo_collision")
 IS_MOBILE = false
 
 Lives = 0
-GameContext = 0
 
 Camera = {x = 0, y = 0}
 WindowSize = {x = 768, y = 512}

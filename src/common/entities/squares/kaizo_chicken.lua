@@ -55,21 +55,21 @@ function KaizoChicken:new(x, y)
     o.egg_timer = 180
 
     o.did_spawn_sound = false
-    o.spawn_sound = GameContext.CurrentLevel:get_sound(6)
+    o.spawn_sound = KaizoContext.CurrentLevel:get_sound(6)
 
     if not o.spawn_sound then
         local sound = KaizoSound:new()
         sound:LoadByID(6)
-        GameContext.CurrentLevel:add_sound(sound)
+        KaizoContext.CurrentLevel:add_sound(sound)
         o.spawn_sound = sound
     end
 
-    o.death_sound = GameContext.CurrentLevel:get_sound(7)
+    o.death_sound = KaizoContext.CurrentLevel:get_sound(7)
 
     if not o.death_sound then
         local sound = KaizoSound:new()
         sound:LoadByID(7)
-        GameContext.CurrentLevel:add_sound(sound)
+        KaizoContext.CurrentLevel:add_sound(sound)
         o.death_sound = sound
     end
 
@@ -95,7 +95,7 @@ function KaizoChicken:update()
         return
     end
 
-    self.sec = GameContext.CurrentLevel:get_current_section()
+    self.sec = KaizoContext.CurrentLevel:get_current_section()
 
     local player
     player = nil
@@ -171,12 +171,12 @@ end
 function KaizoChicken:render()
 
     if not self.image then
-        self.image = GameContext.CurrentLevel:get_entity_image(self.image_id)
+        self.image = KaizoContext.CurrentLevel:get_entity_image(self.image_id)
         if not self.image then
             if not self.image then
                 local image = KaizoImage:new()
                 image:load_entity_image_by_id(self.image_id)
-                GameContext.CurrentLevel:add_entity_image(image)
+                KaizoContext.CurrentLevel:add_entity_image(image)
                 self.image = image
             end
         end

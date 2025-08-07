@@ -39,6 +39,8 @@ function KaizoLevelList:new(x, y)
     o.image = nil
     o.level_selected = 1
     o.can_load_level_properties = true
+    o.active_out_of_camera = true
+    o.always_render = true
     o.levels = KaizoFileHandler:GetItemsInDirectory("data/levels/")
 
     --check valid levels
@@ -99,7 +101,7 @@ function KaizoLevelList:render()
     if not self.image then
         self.image = KaizoImage:new()
         self.image:load(self.image_path)
-        GameContext.CurrentLevel:add_entity_image(self.image)
+        KaizoContext.CurrentLevel:add_entity_image(self.image)
     end
 
     if self.image then

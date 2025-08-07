@@ -36,6 +36,8 @@ function KaizoLogo:new(x, y)
     o.image = nil
     o.framestowait = 60
     o.nextsection = 1
+    o.active_out_of_camera = true
+    o.always_render = true
 
     return o
 end
@@ -44,14 +46,14 @@ function KaizoLogo:update()
     if not self.image then
         self.image = KaizoImage:new()
         self.image:load(self.image_path)
-        GameContext.CurrentLevel:add_entity_image(self.image)
+        KaizoContext.CurrentLevel:add_entity_image(self.image)
     end
 
     self.framestowait = self.framestowait - 1
 
     if self.framestowait <= 0 then
         self:destroy()
-        GameContext.CurrentLevel.QueuedSection = self.nextsection
+        KaizoContext.CurrentLevel.QueuedSection = self.nextsection
     end
 end
 

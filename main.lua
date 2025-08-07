@@ -73,18 +73,16 @@ function love.load()
         dofile("kaizo_mod.lua")
     end
 
-    GameContext = KaizoContext:new()
-    GameContext.CurrentLevel = KaizoLevel:new()
-    GameContext:init()
+    KaizoContext:init()
 end
 
 function love.update(dt)
 
     FrameTiming = FrameTiming + dt --update timing
     if FrameTiming > 1/50 then -- update each 1/50 of a second
-        GameContext:update()
+        KaizoContext:update()
 
-        if GameContext.Quit then
+        if KaizoContext.Quit then
             love.event.quit()
             return
         end
@@ -103,7 +101,7 @@ function love.draw()
         love.graphics.setCanvas(FrameRenderer) --keep last drawn frame in memory
         love.graphics.clear()
         push.start()
-        GameContext:render()
+        KaizoContext:render()
         push.finish()
         love.graphics.origin() -- push bug: push does not reset offset, so i must do it by myself
 

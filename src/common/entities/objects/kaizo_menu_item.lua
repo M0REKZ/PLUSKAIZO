@@ -38,6 +38,8 @@ function KaizoMenuItem:new(x, y)
     o.image = nil
     o.item = 0
     o.can_load_level_properties = true
+    o.active_out_of_camera = true
+    o.always_render = true
 
     o.level_list_open = false
     o.level_list = nil
@@ -65,7 +67,7 @@ function KaizoMenuItem:update()
             self.level_list_open = true
             return
         else
-            GameContext.Quit = true
+            KaizoContext.Quit = true
             return
         end
 
@@ -81,7 +83,7 @@ function KaizoMenuItem:render()
     if not self.image then
         self.image = KaizoImage:new()
         self.image:load(self.image_path)
-        GameContext.CurrentLevel:add_entity_image(self.image)
+        KaizoContext.CurrentLevel:add_entity_image(self.image)
     end
 
     if self.image then

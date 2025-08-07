@@ -30,19 +30,14 @@ require("handler.config_handler")
 
 KaizoContext = {}
 
-function KaizoContext:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    o.CurrentLevel = nil
-    o.QueuedLevelName = nil
-    o.Quit = false
-    o.DeathLoadState = -1
-    o.SavedOnCurrentLevel = false
-    return o
-end
-
 function KaizoContext:init()
+
+    self.CurrentLevel = nil
+    self.QueuedLevelName = nil
+    self.Quit = false
+    self.DeathLoadState = -1
+    self.SavedOnCurrentLevel = false
+    self.MainWorldLevel = "init" -- default "world"
 
     KaizoConfigHandler:init()
 
@@ -97,7 +92,7 @@ function KaizoContext:update()
 
     if self.QueuedLevelName then
         KaizoLevelHandler:LoadLevelFromName(self.QueuedLevelName)
-        KaizoContext.QueuedLevelName = nil -- dont use self, for some reason it does not remove the value with self, need investigation
+        KaizoContext.QueuedLevelName = nil
     end
 end
 

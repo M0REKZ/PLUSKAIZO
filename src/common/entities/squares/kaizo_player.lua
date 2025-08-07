@@ -40,7 +40,7 @@ function KaizoPlayer:new(x,y)
     o.size.y = 31
 
     o.image_id = 2 -- Default image ID for player
-    o.image = GameContext.CurrentLevel:get_entity_image(o.image_id)
+    o.image = KaizoContext.CurrentLevel:get_entity_image(o.image_id)
     o.can_collide_square = true
     o.has_collision_square = false
     o.is_player = true
@@ -59,35 +59,35 @@ function KaizoPlayer:new(x,y)
 
     o.active_out_of_camera = true
 
-    o.jump_sound = GameContext.CurrentLevel:get_sound(2)
-    o.hurt_sound = GameContext.CurrentLevel:get_sound(3)
-    o.spin_jump_sound = GameContext.CurrentLevel:get_sound(4)
+    o.jump_sound = KaizoContext.CurrentLevel:get_sound(2)
+    o.hurt_sound = KaizoContext.CurrentLevel:get_sound(3)
+    o.spin_jump_sound = KaizoContext.CurrentLevel:get_sound(4)
 
     if not o.image then
         local image = KaizoImage:new()
         image:load_entity_image_by_id(o.image_id)
-        GameContext.CurrentLevel:add_entity_image(image)
+        KaizoContext.CurrentLevel:add_entity_image(image)
         o.image = image
     end
 
     if not o.jump_sound then
         local sound = KaizoSound:new()
         sound:LoadByID(2)
-        GameContext.CurrentLevel:add_sound(sound)
+        KaizoContext.CurrentLevel:add_sound(sound)
         o.jump_sound = sound
     end
 
     if not o.hurt_sound then
         local sound = KaizoSound:new()
         sound:LoadByID(3)
-        GameContext.CurrentLevel:add_sound(sound)
+        KaizoContext.CurrentLevel:add_sound(sound)
         o.hurt_sound = sound
     end
 
     if not o.spin_jump_sound then
         local sound = KaizoSound:new()
         sound:LoadByID(4)
-        GameContext.CurrentLevel:add_sound(sound)
+        KaizoContext.CurrentLevel:add_sound(sound)
         o.spin_jump_sound = sound
     end
 
@@ -96,7 +96,7 @@ end
 
 function KaizoPlayer:update()
 
-    self.sec = GameContext.CurrentLevel:get_current_section()
+    self.sec = KaizoContext.CurrentLevel:get_current_section()
 
     if self.vel.y < 15 then --max fall vel
         self.vel.y = self.vel.y + 1
@@ -176,12 +176,12 @@ function KaizoPlayer:update()
     Camera.x = (self.pos.x + self.size.x/2) - WindowSize.x/2
     Camera.y = (self.pos.y + self.size.y/2) - WindowSize.y/2
 
-    FitCameraToSize(GameContext.CurrentLevel:get_current_section().Size)
+    FitCameraToSize(KaizoContext.CurrentLevel:get_current_section().Size)
 
     if self.die then
         self:destroy()
         self.hurt_sound:Play()
-        GameContext.DeathLoadState = 50
+        KaizoContext.DeathLoadState = 50
     end
 end
 

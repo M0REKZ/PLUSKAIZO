@@ -38,13 +38,13 @@ function KaizoGlass:new(x, y)
     o.image_id = 13 -- Default image ID for the square
     o.image = nil
 
-    o.death_sound = GameContext.CurrentLevel:get_sound(8)
+    o.death_sound = KaizoContext.CurrentLevel:get_sound(8)
     o.active_out_of_camera = true
 
     if not o.death_sound then
         local sound = KaizoSound:new()
         sound:LoadByID(8)
-        GameContext.CurrentLevel:add_sound(sound)
+        KaizoContext.CurrentLevel:add_sound(sound)
         o.death_sound = sound
     end
 

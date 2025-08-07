@@ -44,12 +44,12 @@ function KaizoNest:new(x, y)
     o.image_id = 9 -- Default image ID for the square
     o.image = nil
 
-    o.death_sound = GameContext.CurrentLevel:get_sound(1)
+    o.death_sound = KaizoContext.CurrentLevel:get_sound(1)
 
     if not o.death_sound then
         local sound = KaizoSound:new()
         sound:LoadByID(1)
-        GameContext.CurrentLevel:add_sound(sound)
+        KaizoContext.CurrentLevel:add_sound(sound)
         o.death_sound = sound
     end
 
@@ -79,7 +79,7 @@ function KaizoNest:HandlePlayerCollision(player, collide)
     local player_layer
     player_layer = nil
 
-    self.sec = GameContext.CurrentLevel:get_current_section()
+    self.sec = KaizoContext.CurrentLevel:get_current_section()
 
     for _, layer in ipairs(self.sec.Layers) do
         for _, ent in ipairs(layer.Entities) do
