@@ -1,3 +1,4 @@
 PLUSKAIZO.love
 build/*
 love-bin/bin/*
+.vscode/*
