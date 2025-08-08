@@ -400,7 +400,7 @@ function ManipulateTileSizeForSlopes(alt1, alt2, rotation, x, y, w, h, x2, y2, w
 				temph = temph - ((xpoint - x2) * mult)
 			end
 		else
-			xpoint = x + w
+			xpoint = x + w + 1 -- +1 since otherwise we never get alt2 on slope calculation and slope is lower than it should
 			altdifference = alt2 - alt1
 			mult = altdifference / 32
 			altoffset = h2 - alt2
