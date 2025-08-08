@@ -58,6 +58,8 @@ function KaizoEGG:new(x,y)
     o.is_edge_careful = false
     o.is_coward = false
 
+    o.edge_careful_corners = {left = true,right = true}
+
     o.can_load_level_properties = true
     o.has_qb64_collision = true
 
@@ -137,6 +139,14 @@ function KaizoEGG:update()
 
     self:do_collision()
 
+    if self.is_edge_careful then
+        if ((not self.edge_careful_corners.left) and self.vel.x < 0) then
+            self.dir = math.abs(self.dir)
+        elseif ((not self.edge_careful_corners.right) and self.vel.x > 0) then
+            self.dir = math.abs(self.dir) * -1
+        end
+    end
+
     self.pos.x = self.pos.x + self.vel.x
     self.pos.y = self.pos.y + self.vel.y
 end
@@ -190,6 +200,8 @@ function KaizoEGG:do_collision()
     local collidepoint = nil
     local verticalmovement = 0
     self.grounded = false
+    self.edge_careful_corners.left = false
+    self.edge_careful_corners.right = false
     
     for _, layer in ipairs(self.sec.Layers) do
         local temp_tiles = {}
@@ -215,12 +227,6 @@ function KaizoEGG:do_collision()
 
         temp_tiles[4].w = 32
         temp_tiles[4].h = 32
-
-        if self.is_edge_careful then
-            if not (TileToCollision(temp_tiles[2].id).up == 1) ~= not (TileToCollision(temp_tiles[4].id).up == 1) then
-                self.dir = self.dir * -1
-            end
-        end
 
         for num, tile in ipairs(temp_tiles) do
 
@@ -290,6 +296,15 @@ function KaizoEGG:handle_collision(collide, pos2, size2, ent)
         end
     end
 
+    if (collide.down == 1 or collide.down == 2) and self.is_edge_careful then
+        if pos2.x < self.pos.x + self.size.x/2 then
+            self.edge_careful_corners.left = true
+        end
+        if pos2.x + size2.x > self.pos.x + self.size.x/2 then
+            self.edge_careful_corners.right = true
+        end
+    end
+
     if (collide.down == 1 or (collide.down == 2)) and self.vel.y > 0 then
         self.vel.y = 0
         self.pos.y = pos2.y - self.size.y
@@ -350,6 +365,7 @@ function KaizoEGG:SaveState()
         active = self.active,
         is_edge_careful = self.is_edge_careful,
         is_coward = self.is_coward,
+        edge_careful_corners = self.edge_careful_corners,
     }
 end
 
@@ -379,6 +395,8 @@ function KaizoEGG:LoadState(state)
     self.active = state.active
     self.is_edge_careful = state.is_edge_careful
     self.is_coward = state.is_coward
+
+    self.edge_careful_corners = state.edge_careful_corners
 end
 
 function KaizoEGG:HandleProperty(prop)
