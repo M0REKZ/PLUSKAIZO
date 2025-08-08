@@ -4,15 +4,6 @@ Files on the Public Domain or CC0 License:
 
 /data/images/bg/forest.png
 /data/images/bg/landscape.png
-/data/images/tiles/tile_1.png
-/data/images/tiles/tile_2.png
-/data/images/tiles/tile_3.png
-/data/images/tiles/tile_4.png
-/data/images/tiles/tile_5.png
-/data/images/tiles/tile_6.png
-/data/images/tiles/tile_7.png
-/data/images/tiles/tile_8.png
-/data/images/tiles/tile_9.png
 /data/images/tiles/tile_12.png (edited)
 /data/images/tiles/tile_13.png (edited)
 /data/images/tiles/tile_18.png (edited)
