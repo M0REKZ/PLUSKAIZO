@@ -350,6 +350,13 @@ function KaizoPlayer:do_collision()
         temp_tiles[4].w = 32
         temp_tiles[4].h = 32
 
+        if GetSlopeInfo(temp_tiles[4].id) then --handle slope first
+            local temp = nil
+            temp = temp_tiles[4]
+            temp_tiles[4] = temp_tiles[2]
+            temp_tiles[2] = temp
+        end
+
         for num, tile in ipairs(temp_tiles) do
 
             tile.x = tile.x - (tile.x % 32)
