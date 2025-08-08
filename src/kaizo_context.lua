@@ -82,6 +82,7 @@ function KaizoContext:update()
             SaveStateHandler:LoadState()
         end
     elseif InputHandler.reset then
+        self.DeathLoadState = -1
         local name = self.CurrentLevel.Name
         KaizoLevelHandler:LoadLevelFromName(name)
         self.SavedOnCurrentLevel = false
