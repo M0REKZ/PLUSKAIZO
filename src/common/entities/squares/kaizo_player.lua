@@ -117,7 +117,11 @@ function KaizoPlayer:update()
             self.looking = -1
         else
             if self.vel.x < -1 then
-                self.vel.x = self.vel.x + 0.5
+                if self.grounded then
+                    self.vel.x = self.vel.x + 1
+                else
+                    self.vel.x = self.vel.x + 0.5
+                end
             elseif self.vel.x < 0 then
                 self.vel.x = 0
             end
@@ -134,7 +138,11 @@ function KaizoPlayer:update()
             self.looking = 1
         else
             if self.vel.x > 1 then
-                self.vel.x = self.vel.x - 0.5
+                if self.grounded then
+                    self.vel.x = self.vel.x - 1
+                else
+                    self.vel.x = self.vel.x - 0.5
+                end
             elseif self.vel.x > 0 then
                 self.vel.x = 0
             end
