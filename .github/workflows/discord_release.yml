@@ -15,5 +15,6 @@ jobs:
           color: "2105893"
           username: "PLUSKAIZO Release"
           content: "<@&1402483243693117653>"
+          custom_html_url: "https://m0rekz.github.io/PLUSKAIZO/"
           footer_title: "Changelog"
           reduce_headings: true
