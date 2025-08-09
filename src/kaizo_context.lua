@@ -27,6 +27,7 @@ require("handler.input_handler")
 require("handler.savestate_handler")
 require("handler.level_handler")
 require("handler.config_handler")
+require("handler.editor_handler")
 
 KaizoContext = {}
 
@@ -38,8 +39,11 @@ function KaizoContext:init()
     self.DeathLoadState = -1
     self.SavedOnCurrentLevel = false
     self.MainWorldLevel = "init" -- default "world"
+    self.LevelEditor = false
+    self.GoToLevelEditor = false
 
     KaizoConfigHandler:init()
+    KaizoLevelEditor:init()
 
     if not KaizoConfigHandler:LoadConfig() then
         KaizoConfigHandler:SaveConfig()
@@ -51,6 +55,15 @@ end
 function KaizoContext:update()
     InputHandler:UpdateInput()
 
+    if self.LevelEditor then
+        self:update_editor()
+    else
+        self:update_level()
+    end
+    
+end
+
+function KaizoContext:update_level()
     if not KaizoConfigHandler.active and InputHandler.pause then
         KaizoConfigHandler.activate = true
     end
@@ -95,11 +108,32 @@ function KaizoContext:update()
         KaizoLevelHandler:LoadLevelFromName(self.QueuedLevelName)
         KaizoContext.QueuedLevelName = nil
     end
+
+    if self.GoToLevelEditor then
+        self.LevelEditor = true
+        KaizoLevelEditor:new_level()
+        self.GoToLevelEditor = false
+        love.audio.stop() --this should be under a handler
+    end
+end
+
+function KaizoContext:update_editor()
+    if not self.CurrentLevel then
+        self.CurrentLevel = KaizoLevel:new()
+    end
+
+    if self.CurrentLevel then
+        KaizoLevelEditor:update()
+    end
 end
 
 function KaizoContext:render()
     if(self.CurrentLevel) then
         self.CurrentLevel:render()
+    end
+
+    if self.LevelEditor then
+        KaizoLevelEditor:render()
     end
 
     KaizoConfigHandler:render()

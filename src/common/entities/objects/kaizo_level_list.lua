@@ -54,6 +54,11 @@ function KaizoLevelList:new(x, y)
             table.remove(o.levels, index)
         end
 
+        --check for kzlvl
+        if KaizoFileHandler:FileExists("data/levels/" .. levelname) and levelname:match("^.+(%..+)$") == ".kzlvl" then
+            goto continue
+        end
+
         --check for lvlx
         if KaizoFileHandler:FileExists("data/levels/" .. levelname) and levelname:match("^.+(%..+)$") == ".lvlx" then
             goto continue
@@ -76,7 +81,9 @@ function KaizoLevelList:update()
     if not self.waiting_for_key_release then
         if InputHandler.jump then
             self.waiting_for_key_release = true
-            KaizoContext.QueuedLevelName = string.gsub(self.levels[self.level_selected],".lvlx","")
+            local name = string.gsub(self.levels[self.level_selected],".lvlx","")
+            name = string.gsub(name,".kzlvl","")
+            KaizoContext.QueuedLevelName = name
             self:destroy()
             return
         elseif InputHandler.up and self.level_selected > 1 then
@@ -107,7 +114,9 @@ function KaizoLevelList:render()
     if self.image then
         self.image:render_scaled_to(self.pos.x, self.pos.y, self.size.x, self.size.y)
         RenderHandler:Print("^", self.pos.x, self.pos.y)
-        RenderHandler:Print(string.gsub(self.levels[self.level_selected],".lvlx",""), self.pos.x, self.pos.y + 15)
+        local name = string.gsub(self.levels[self.level_selected],".lvlx","")
+        name = string.gsub(name,".kzlvl","")
+        RenderHandler:Print(name, self.pos.x, self.pos.y + 15)
         RenderHandler:Print("v", self.pos.x, self.pos.y + 30)
     end
 end
