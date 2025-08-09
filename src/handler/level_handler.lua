@@ -102,27 +102,35 @@ function KaizoLevelHandler:LoadLevelFromName(name)
     love.audio.stop()
     KaizoContext.CurrentLevel = nil
 
-    local str = "data/levels/" .. name .. ".lvlx"
+    local str = "data/levels/" .. name .. ".kzlvl"
+    
+    if KaizoFileHandler:FileExists(str) then --TRY KZLVL FORMAT (savestate)
+        SaveStateHandler:LoadStateFrom(str)
+        KaizoContext.CurrentLevel.Name = name
+        return --SaveStateHandler did everything for us
+    else --TRY LVLX FORMAT
+        str = "data/levels/" .. name .. ".lvlx"
 
-    if KaizoFileHandler:FileExists(str) then
-        local lvlxdata = KaizoLVLXReader:ReadLVLX(str)
-        KaizoContext.CurrentLevel = KaizoLevel:new()
-        self:LoadLVLXLevelFromTable(lvlxdata) --Load entire level from lvlx
-    else
-        KaizoContext.CurrentLevel = KaizoLevel:new() --Create level by myself, we will add sections from tmj
-        for num = 1, 100, 1 do --max 100 sections
-            local str = KaizoFileHandler:GetFileAsString("data/levels/" .. name .. "/section_" .. num .. ".json")
-            if not str then
-                --try tmj
-                str = KaizoFileHandler:GetFileAsString("data/levels/" .. name .. "/section_" .. num .. ".tmj")
+        if KaizoFileHandler:FileExists(str) then
+            local lvlxdata = KaizoLVLXReader:ReadLVLX(str)
+            KaizoContext.CurrentLevel = KaizoLevel:new()
+            self:LoadLVLXLevelFromTable(lvlxdata)    --Load entire level from lvlx
+        else --TRY TILED FORMAT
+            KaizoContext.CurrentLevel = KaizoLevel:new() --Create level by myself, we will add sections from tmj
+            for num = 1, 100, 1 do                   --max 100 sections
+                str = KaizoFileHandler:GetFileAsString("data/levels/" .. name .. "/section_" .. num .. ".json")
                 if not str then
-                    break
+                    --try tmj
+                    str = KaizoFileHandler:GetFileAsString("data/levels/" .. name .. "/section_" .. num .. ".tmj")
+                    if not str then
+                        break
+                    end
                 end
-            end
-            local newsection = self:LoadTMJSectionFromString(str)
-            KaizoContext.CurrentLevel:add_section(newsection)
-            if newsection.is_initial_section then
-                KaizoContext.CurrentLevel:set_current_section(num)
+                local newsection = self:LoadTMJSectionFromString(str)
+                KaizoContext.CurrentLevel:add_section(newsection)
+                if newsection.is_initial_section then
+                    KaizoContext.CurrentLevel:set_current_section(num)
+                end
             end
         end
     end

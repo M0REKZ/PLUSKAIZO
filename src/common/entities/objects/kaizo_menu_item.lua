@@ -61,10 +61,13 @@ function KaizoMenuItem:update()
 
     if self.item > 0 and InputHandler.mouse_click and InputHandler.mouse_x > self.pos.x and InputHandler.mouse_x < self.pos.x + self.size.x and InputHandler.mouse_y > self.pos.y and InputHandler.mouse_y < self.pos.y + self.size.y then
         
-        if InputHandler.mouse_y < self.pos.y + self.size.y/2 then
+        if InputHandler.mouse_y < self.pos.y + self.size.y/3 then
             self.level_list = KaizoLevelList:new(self.pos.x,self.pos.y)
             --self.ref_layer:add_entity(self.level_list)
             self.level_list_open = true
+            return
+        elseif InputHandler.mouse_y < self.pos.y + (self.size.y/3)*2 then
+            KaizoContext.GoToLevelEditor = true
             return
         else
             KaizoContext.Quit = true
@@ -87,11 +90,9 @@ function KaizoMenuItem:render()
     end
 
     if self.image then
-        if self.item == 0 then
-            self.image:render_scaled_to(self.pos.x, self.pos.y, self.size.x, self.size.y)
-        elseif self.item == 1 or self.item == 2 then --evil way to merge both menu options
-            self.image:render_scaled_from_to(0,0,188,83,self.pos.x, self.pos.y, self.size.x, self.size.y)
-        end
+        
+        self.image:render_scaled_to(self.pos.x, self.pos.y, self.size.x, self.size.y)
+        
     end
 end
 

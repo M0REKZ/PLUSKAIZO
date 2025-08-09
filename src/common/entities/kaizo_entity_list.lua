@@ -34,19 +34,44 @@ require("common.entities.objects.kaizo_camera_follow")
 
 
 KaizoEntitiesCreator = {} --to register entities
+KaizoEntitiesNames = {} --to register entities in editor
+
+--[[
+
+KaizoEntitiesCreator[ENTITY.name] = ENTITY --for load
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = ENTITY.name --to use in level editor
+
+Commented values are not intended for use in editor
+
+]]
 
 KaizoEntitiesCreator[KaizoSquare.name] = KaizoSquare
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoSquare.name
 KaizoEntitiesCreator[KaizoPlayer.name] = KaizoPlayer
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoPlayer.name
 KaizoEntitiesCreator[KaizoEGG.name] = KaizoEGG
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoEGG.name
 KaizoEntitiesCreator[KaizoLogo.name] = KaizoLogo
+--KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoLogo.name
 KaizoEntitiesCreator[KaizoTomate.name] = KaizoTomate
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoTomate.name
 KaizoEntitiesCreator[KaizoMushroom.name] = KaizoMushroom
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoMushroom.name
 KaizoEntitiesCreator[KaizoChicken.name] = KaizoChicken
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoChicken.name
 KaizoEntitiesCreator[KaizoFallingEGG.name] = KaizoFallingEGG
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoFallingEGG.name
 KaizoEntitiesCreator[KaizoNest.name] = KaizoNest
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoNest.name
 KaizoEntitiesCreator[KaizoMenuItem.name] = KaizoMenuItem
+--KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoMenuItem.name
 KaizoEntitiesCreator[KaizoDirtMonster.name] = KaizoDirtMonster
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoDirtMonster.name
 KaizoEntitiesCreator[KaizoGlass.name] = KaizoGlass
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoGlass.name
 KaizoEntitiesCreator[KaizoSquareResize.name] = KaizoSquareResize
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoSquareResize.name
 KaizoEntitiesCreator[KaizoFinish.name] = KaizoFinish
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoFinish.name
 KaizoEntitiesCreator[KaizoCameraFollow.name] = KaizoCameraFollow
+--KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoCameraFollow.name

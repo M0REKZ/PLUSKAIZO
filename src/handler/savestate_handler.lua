@@ -24,14 +24,27 @@ SaveStateHandler = {}
 
 function SaveStateHandler:SaveState()
     KaizoFileHandler:CreateDirectory("saves")
-    local str = KaizoJSONHandler:ToJSON(KaizoContext.CurrentLevel:SaveState())
-    KaizoFileHandler:WriteFileTo("saves/save.kzstate", str)
+    SaveStateHandler:SaveStateToFolder("saves","save","kzstate")
+end
+
+function SaveStateHandler:SaveStateToFolder(path,name,extension)
+    if KaizoFileHandler:FileExists(path) then
+        local str = KaizoJSONHandler:ToJSON(KaizoContext.CurrentLevel:SaveState())
+        KaizoFileHandler:WriteFileTo(path.."/"..name.."."..extension, str)
+    end
 end
 
 function SaveStateHandler:LoadState()
+    SaveStateHandler:LoadStateFrom("saves/save.kzstate")
+end
+
+function SaveStateHandler:LoadStateFrom(statepath)
     love.audio.stop()
     KaizoContext.CurrentLevel = nil
-    local jsonstr = KaizoFileHandler:GetFileAsString("saves/save.kzstate")
+    local jsonstr = KaizoFileHandler:GetFileAsString(statepath)
+    if not jsonstr then
+        error("File not found: "..statepath)
+    end
     local state = KaizoJSONHandler:FromJSON(jsonstr)
     KaizoContext.CurrentLevel = KaizoLevel:new()
     KaizoContext.CurrentLevel:LoadState(state)
