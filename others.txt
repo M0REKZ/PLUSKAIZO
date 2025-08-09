@@ -4,12 +4,6 @@ Files on the Public Domain or CC0 License:
 
 /data/images/bg/forest.png
 /data/images/bg/landscape.png
-/data/images/tiles/tile_12.png (edited)
-/data/images/tiles/tile_13.png (edited)
-/data/images/tiles/tile_18.png (edited)
-/data/images/tiles/tile_19.png (edited)
-/data/images/tiles/tile_20.png (edited)
-/data/images/tiles/tile_21.png (edited)
 /data/music/metal.wav
 /data/sounds/sound_1.mp3
 /data/sounds/sound_2.mp3
