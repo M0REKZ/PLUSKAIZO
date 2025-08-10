@@ -44,6 +44,9 @@ function KaizoFinish:new(x, y)
 
     o.background_image = nil
 
+    o.active_out_of_camera = true
+    o.always_render = true
+
     return o
 end
 
@@ -90,5 +93,41 @@ end
 function KaizoFinish:HandlePlayerCollision(player, collide)
     if self.seconds_for_go_back < 0 then
         self.seconds_for_go_back = 150
+        self.active_out_of_camera = true
+        self.always_render = true
     end
+end
+
+function KaizoFinish:SaveState()
+    return {
+        name = self.name,
+        marked_for_deletion = self.marked_for_deletion,
+        pos = {x = self.pos.x, y = self.pos.y},
+        size = {x = self.size.x, y = self.size.y},
+        vel = {x = self.vel.x, y = self.vel.y},
+        col = {up = self.col.up, down = self.col.down, left = self.col.left, right = self.col.right},
+        image_id = self.image_id,
+        can_collide_square = self.can_collide_square,
+        has_collision_square = self.has_collision_square,
+        active = self.active,
+        seconds_for_go_back = self.seconds_for_go_back,
+        active_out_of_camera = self.active_out_of_camera,
+        always_render = self.always_render,
+    }
+end
+
+function KaizoFinish:LoadState(state)
+    self.name = state.name
+    self.marked_for_deletion = state.marked_for_deletion
+    self.pos = state.pos
+    self.size = state.size
+    self.vel = state.vel
+    self.col = state.col
+    self.image_id = state.image_id
+    self.can_collide_square = state.can_collide_square
+    self.has_collision_square = state.has_collision_square
+    self.active = state.active
+    self.seconds_for_go_back = state.seconds_for_go_back or self.seconds_for_go_back --dont crash when loading DEMO V9 levels
+    self.active_out_of_camera = state.active_out_of_camera
+    self.always_render = state.always_render
 end
