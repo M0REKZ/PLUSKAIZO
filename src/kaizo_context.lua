@@ -112,6 +112,8 @@ function KaizoContext:update_level()
     if self.GoToLevelEditor then
         self.LevelEditor = true
         KaizoLevelEditor:new_level()
+        Camera.x = 0
+        Camera.y = 0
         self.GoToLevelEditor = false
         love.audio.stop() --this should be under a handler
     end
