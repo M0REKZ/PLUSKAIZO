@@ -101,7 +101,7 @@ end
 function KaizoLayer:set_tiles(tiles, width, height)
     local temp = width * height
     if #tiles ~= temp then
-        error("Tiles array size does not match specified width and height: " .. tostring(#tiles) .. " vs " .. tostring(temp))
+        error("Tiles array size does not match specified width and height: tiles: " .. tostring(#tiles) .. " vs " .. tostring(temp).."\nwidht: "..width.."\nheight: "..height)
     end
     self.Tiles = tiles
     self.Width = width

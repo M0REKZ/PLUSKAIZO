@@ -10,6 +10,7 @@ function KaizoLevelEditor:init()
 
     self.setting_section_size = false
     self.setting_section_height = false
+    self.original_section_size = nil
 
     self.update_layers_size = false
 
@@ -17,30 +18,32 @@ function KaizoLevelEditor:init()
 
     self.warning_time = 500
 
-    for i = 1, 10, 1 do
+    for i = 1, 11, 1 do
         self.menu_options[i] = {}
     end
 
-    self.menu_options[1].text = "New Level"
-    self.menu_options[1].func = KaizoLevelEditor.new_level
-    self.menu_options[2].text = "Select Entity"
-    self.menu_options[2].func = KaizoLevelEditor.select_entity
-    self.menu_options[3].text = "Select Tile"
-    self.menu_options[3].func = KaizoLevelEditor.select_tile
-    self.menu_options[4].text = "Edit Entity Properties"
-    self.menu_options[4].func = KaizoLevelEditor.edit_entity_properties
-    self.menu_options[5].text = "Add Section"
-    self.menu_options[5].func = KaizoLevelEditor.add_section
-    self.menu_options[6].text = "Add Layer to Section"
-    self.menu_options[6].func = KaizoLevelEditor.add_layer
-    self.menu_options[7].text = "Set Current Section"
-    self.menu_options[7].func = KaizoLevelEditor.set_current_section
-    self.menu_options[8].text = "Set Current Layer"
-    self.menu_options[8].func = KaizoLevelEditor.set_current_layer
-    self.menu_options[9].text = "Set Section Size"
-    self.menu_options[9].func = KaizoLevelEditor.set_current_section_size
-    self.menu_options[10].text = "Close Level Editor"
-    self.menu_options[10].func = KaizoLevelEditor.close_editor
+    self.menu_options[1].text = "Reset Camera"
+    self.menu_options[1].func = KaizoLevelEditor.reset_camera
+    self.menu_options[2].text = "New Level"
+    self.menu_options[2].func = KaizoLevelEditor.new_level
+    self.menu_options[3].text = "Select Entity"
+    self.menu_options[3].func = KaizoLevelEditor.select_entity
+    self.menu_options[4].text = "Select Tile"
+    self.menu_options[4].func = KaizoLevelEditor.select_tile
+    self.menu_options[5].text = "Edit Entity Properties"
+    self.menu_options[5].func = KaizoLevelEditor.edit_entity_properties
+    self.menu_options[6].text = "Add Section"
+    self.menu_options[6].func = KaizoLevelEditor.add_section
+    self.menu_options[7].text = "Add Layer to Section"
+    self.menu_options[7].func = KaizoLevelEditor.add_layer
+    self.menu_options[8].text = "Set Current Section"
+    self.menu_options[8].func = KaizoLevelEditor.set_current_section
+    self.menu_options[9].text = "Set Current Layer"
+    self.menu_options[9].func = KaizoLevelEditor.set_current_layer
+    self.menu_options[10].text = "Set Section Size"
+    self.menu_options[10].func = KaizoLevelEditor.set_current_section_size
+    self.menu_options[11].text = "Close Level Editor"
+    self.menu_options[11].func = KaizoLevelEditor.close_editor
 
     self.waiting_for_key_release = false
     self.option_selected = false
@@ -87,6 +90,12 @@ function KaizoLevelEditor:update()
                 elseif InputHandler.up then
                     KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x + 1
                     self.waiting_for_key_release = true
+                elseif InputHandler.left and KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x > 10 then
+                    KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x - 10
+                    self.waiting_for_key_release = true
+                elseif InputHandler.right then
+                    KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x + 10
+                    self.waiting_for_key_release = true
                 end
             else
                 if InputHandler.jump then
@@ -100,6 +109,12 @@ function KaizoLevelEditor:update()
                     self.waiting_for_key_release = true
                 elseif InputHandler.up then
                     KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y + 1
+                    self.waiting_for_key_release = true
+                elseif InputHandler.left and KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y > 10 then
+                    KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y - 10
+                    self.waiting_for_key_release = true
+                elseif InputHandler.right then
+                    KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y + 10
                     self.waiting_for_key_release = true
                 end
             end
@@ -158,10 +173,11 @@ function KaizoLevelEditor:update()
                     localx = localx - math.floor(KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Offset.x/32)
                     localy = localy - math.floor(KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Offset.y/32)
 
-                    local val = ((KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Width) * localy + localx) + 1
-                    print(self.current_layer)
-                    if val > 0 and val <= #KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Tiles then
-                        KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Tiles[val] = self.current_tile
+                    if not (localx < 0 or localx >= KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Width or localy < 0 or localy >= KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Height) then
+                        local val = ((KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Width) * localy + localx) + 1
+                        if val > 0 and val <= #KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Tiles then
+                            KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Tiles[val] = self.current_tile
+                        end
                     end
                 end
                 
@@ -186,13 +202,22 @@ function KaizoLevelEditor:update()
     end
 
     if self.update_layers_size then
-        local tiles = {}
+        local tiles = nil
         for num, layer in ipairs(KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers) do
-            for i = 1, KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x * KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y, 1 do
-                tiles[i] = 0
+            tiles = {}
+
+            for y = 0, KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y - 1, 1 do
+                for x = 1, KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x, 1 do
+                    if layer.Tiles[self.original_section_size.x * y + x] and x < self.original_section_size.x and y < self.original_section_size.y then
+                        tiles[KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x * y + x] = layer.Tiles[self.original_section_size.x * y + x]
+                    else
+                        tiles[KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x * y + x] = 0
+                    end
+                end
             end
 
             layer:set_tiles(tiles,KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x,KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y)
+            tiles = nil
         end
         self.update_layers_size = false
     end
@@ -257,13 +282,13 @@ function KaizoLevelEditor:render()
     elseif self.setting_section_size then
         self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
             (WindowSize.y / 4) * 3)
-        RenderHandler:Print("+", WindowSize.x / 4, WindowSize.y / 4)
+        RenderHandler:Print("           +1\n            ^", WindowSize.x / 4, WindowSize.y / 4)
         if self.setting_section_height then
-            RenderHandler:Print("Height: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y, WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print("-10 <- Height: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y.." -> +10", WindowSize.x / 4, WindowSize.y / 4 + 30)
         else
-            RenderHandler:Print("Width: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x, WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print("-10 <- Width: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x.." -> +10", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
-        RenderHandler:Print("-", WindowSize.x / 4, WindowSize.y / 4 + 30)
+        RenderHandler:Print("           v\n             -1", WindowSize.x / 4, WindowSize.y / 4 + 45)
     end
 end
 
@@ -309,6 +334,9 @@ end
 
 function KaizoLevelEditor:set_current_section_size()
     self.setting_section_size = true
+    self.original_section_size = {}
+    self.original_section_size.x = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x
+    self.original_section_size.y = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y
 end
 
 function KaizoLevelEditor:select_entity()
@@ -327,4 +355,9 @@ end
 function KaizoLevelEditor:close_editor()
     KaizoContext.LevelEditor = false
     KaizoLevelHandler:LoadLevelFromName("init")
+end
+
+function KaizoLevelEditor:reset_camera()
+    Camera.x = 0
+    Camera.y = 0
 end
