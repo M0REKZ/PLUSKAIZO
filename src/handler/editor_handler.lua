@@ -12,13 +12,19 @@ function KaizoLevelEditor:init()
     self.setting_section_height = false
     self.original_section_size = nil
 
+    self.setting_level_background = false
+    self.setting_level_music = false
+
+    self.background_selected = false
+    self.music_selected = false
+
     self.update_layers_size = false
 
     self.number_input = 0
 
     self.warning_time = 500
 
-    for i = 1, 11, 1 do
+    for i = 1, 13, 1 do
         self.menu_options[i] = {}
     end
 
@@ -42,8 +48,12 @@ function KaizoLevelEditor:init()
     self.menu_options[9].func = KaizoLevelEditor.set_current_layer
     self.menu_options[10].text = "Set Section Size"
     self.menu_options[10].func = KaizoLevelEditor.set_current_section_size
-    self.menu_options[11].text = "Close Level Editor"
-    self.menu_options[11].func = KaizoLevelEditor.close_editor
+    self.menu_options[11].text = "Set Background"
+    self.menu_options[11].func = KaizoLevelEditor.set_background
+    self.menu_options[12].text = "Set Music"
+    self.menu_options[12].func = KaizoLevelEditor.set_music
+    self.menu_options[13].text = "Close Level Editor"
+    self.menu_options[13].func = KaizoLevelEditor.close_editor
 
     self.waiting_for_key_release = false
     self.option_selected = false
@@ -57,6 +67,9 @@ function KaizoLevelEditor:init()
 
     self.current_tile = nil
     self.current_entity = nil
+
+    self.level_background_list = {}
+    self.level_music_list = {}
 end
 
 function KaizoLevelEditor:update()
@@ -146,6 +159,40 @@ function KaizoLevelEditor:update()
                 self.waiting_for_key_release = true
             elseif InputHandler.up then
                 self.current_tile = self.current_tile + 1
+                self.waiting_for_key_release = true
+            end
+        elseif self.setting_level_background then
+            if InputHandler.jump then
+                self.waiting_for_key_release = true
+                self.background_selected = true
+                self.setting_level_background = false
+                return
+            elseif InputHandler.up and self.menu_selected > 1 then
+                self.menu_selected = self.menu_selected - 1
+                self.waiting_for_key_release = true
+            elseif InputHandler.down and self.menu_selected < #self.level_background_list then
+                self.menu_selected = self.menu_selected + 1
+                self.waiting_for_key_release = true
+            elseif InputHandler.pause then
+                self.setting_level_background = false
+                self.menu_selected = 1
+                self.waiting_for_key_release = true
+            end
+        elseif self.setting_level_music then
+            if InputHandler.jump then
+                self.waiting_for_key_release = true
+                self.music_selected = true
+                self.setting_level_music = false
+                return
+            elseif InputHandler.up and self.menu_selected > 1 then
+                self.menu_selected = self.menu_selected - 1
+                self.waiting_for_key_release = true
+            elseif InputHandler.down and self.menu_selected < #self.level_music_list then
+                self.menu_selected = self.menu_selected + 1
+                self.waiting_for_key_release = true
+            elseif InputHandler.pause then
+                self.setting_level_music = false
+                self.menu_selected = 1
                 self.waiting_for_key_release = true
             end
         else
@@ -241,6 +288,25 @@ function KaizoLevelEditor:update()
         self.entity_selected = false
         self.current_tile = nil
         return
+    elseif self.background_selected then
+        local img = KaizoImage:new()
+        img:load("data/images/bg/"..self.level_background_list[self.menu_selected])
+        KaizoContext.CurrentLevel:get_current_section().Background = nil
+        KaizoContext.CurrentLevel:get_current_section().Background = img
+        self.background_selected = false
+    elseif self.music_selected then
+
+        if KaizoContext.CurrentLevel:get_current_section().Music then
+            KaizoContext.CurrentLevel:get_current_section().Music:Stop()
+        end
+
+        local snd = KaizoSound:new()
+        snd:Load("data/music/"..self.level_music_list[self.menu_selected],true)
+        KaizoContext.CurrentLevel:get_current_section().Music = nil
+        KaizoContext.CurrentLevel:get_current_section().Music = snd
+        self.music_selected = false
+        KaizoContext.CurrentLevel:get_current_section().Music:Loop()
+        KaizoContext.CurrentLevel:get_current_section().Music:Play()
     end
 end
 
@@ -289,6 +355,24 @@ function KaizoLevelEditor:render()
             RenderHandler:Print("-10 <- Width: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x.." -> +10", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
         RenderHandler:Print("           v\n             -1", WindowSize.x / 4, WindowSize.y / 4 + 45)
+    elseif self.setting_level_background then
+        if self.background then
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
+                (WindowSize.y / 4) * 3)
+
+            RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print(""..self.level_background_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+        end
+    elseif self.setting_level_music then
+        if self.background then
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
+                (WindowSize.y / 4) * 3)
+
+            RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print(""..self.level_music_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+        end
     end
 end
 
@@ -360,4 +444,18 @@ end
 function KaizoLevelEditor:reset_camera()
     Camera.x = 0
     Camera.y = 0
+end
+
+function KaizoLevelEditor:set_background()
+    self.setting_level_background = true
+    self.menu_selected = 1
+
+    self.level_background_list = KaizoFileHandler:GetItemsInDirectory("data/images/bg/")
+end
+
+function KaizoLevelEditor:set_music()
+    self.setting_level_music = true
+    self.menu_selected = 1
+
+    self.level_music_list = KaizoFileHandler:GetItemsInDirectory("data/music/")
 end

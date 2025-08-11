@@ -102,7 +102,14 @@ end
 
 function KaizoLevel:set_current_section(index)
     if index > 0 and index <= #self.Sections then
+        if self:get_current_section() and self:get_current_section().Music then
+            self:get_current_section().Music:Stop()
+        end
         self.CurrentSection = index
+        if self:get_current_section() and self:get_current_section().Music then
+            self:get_current_section().Music:Loop()
+            self:get_current_section().Music:Play()
+        end
     else
         error("Invalid section index: " .. tostring(index))
     end
