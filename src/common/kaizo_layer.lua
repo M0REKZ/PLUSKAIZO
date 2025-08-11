@@ -46,12 +46,15 @@ function KaizoLayer:update()
     end
 
     --post update, check to delete entities
+    self:check_deleted_entities()
+end
+
+function KaizoLayer:check_deleted_entities()
     for num = #self.Entities, 1, -1 do
         if self.Entities[num].marked_for_deletion then
             table.remove(self.Entities,num)
         end
     end
-
 end
 
 function KaizoLayer:render_back()

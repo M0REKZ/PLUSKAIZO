@@ -32,6 +32,7 @@ InputHandler = {
     mouse_x = -1,
     mouse_y = -1,
     mouse_click = false,
+    mouse_right_click = false,
     pause = false,
     wait_before_pause = 0,
 }
@@ -114,6 +115,13 @@ function InputHandler:UpdateInput()
         else
             self.mouse_click = false
         end
+
+        if love.mouse.isDown(2) then
+            self.mouse_right_click = true
+        else
+            self.mouse_right_click = false
+        end
+
 
         local x, y = push.toGame(love.mouse.getX(),love.mouse.getY())
 

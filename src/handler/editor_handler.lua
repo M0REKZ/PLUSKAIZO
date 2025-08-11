@@ -227,7 +227,19 @@ function KaizoLevelEditor:update()
                         end
                     end
                 end
-                
+            elseif InputHandler.mouse_right_click then
+                local pos, size
+                for num, entity in ipairs(KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Entities) do
+                    pos = entity.pos
+                    size = entity.size or {x = 1, y = 1}
+
+                    if IsPointInsideSquare(Camera.x + InputHandler.mouse_x, Camera.y + InputHandler.mouse_y, pos.x, pos.y, size.x, size.y) then
+                        entity:destroy()
+                        break
+                    end
+                end
+                KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer]:check_deleted_entities()
+                self.waiting_for_key_release = true
             elseif InputHandler.savestate then
                 SaveStateHandler:SaveStateToFolder("data/levels", "MyOwnLevel", "kzlvl")
             elseif InputHandler.loadstate then
@@ -269,7 +281,7 @@ function KaizoLevelEditor:update()
         self.update_layers_size = false
     end
 
-    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not InputHandler.pause and not InputHandler.mouse_click and not InputHandler.savestate and not InputHandler.loadstate and not InputHandler.left and not InputHandler.right then
+    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not InputHandler.pause and not InputHandler.mouse_click and not InputHandler.savestate and not InputHandler.loadstate and not InputHandler.left and not InputHandler.right and not InputHandler.mouse_right_click then
         self.waiting_for_key_release = false
     end
 
