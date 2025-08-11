@@ -79,7 +79,7 @@ end
 
 function KaizoLevelList:update()
     if not self.waiting_for_key_release then
-        if InputHandler.jump then
+        if InputHandler.jump or LoveKeysPressed["return"] then
             self.waiting_for_key_release = true
             local name = string.gsub(self.levels[self.level_selected],".lvlx","")
             name = string.gsub(name,".kzlvl","")
@@ -95,7 +95,7 @@ function KaizoLevelList:update()
         end
     end
 
-    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not LoveKeysPressed["escape"] then
+    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not LoveKeysPressed["escape"] and not LoveKeysPressed["return"] then
         self.waiting_for_key_release = false
     end
 

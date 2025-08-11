@@ -35,11 +35,18 @@ function KaizoMenuItem:new(x, y)
 
     o.image_id = 0
     o.image_path = "data/images/pluskzlogo.png"
+    o.cursor_path = "data/images/cursor.png"
+    o.cursor = nil
     o.image = nil
     o.item = 0
     o.can_load_level_properties = true
     o.active_out_of_camera = true
     o.always_render = true
+
+    o.option = 1
+    o.option_selected = false
+
+    o.waiting_for_key_release = false
 
     o.level_list_open = false
     o.level_list = nil
@@ -48,6 +55,8 @@ function KaizoMenuItem:new(x, y)
 end
 
 function KaizoMenuItem:update()
+
+    self.option_selected = false
 
     if self.level_list then
         self.level_list:update()
@@ -62,18 +71,51 @@ function KaizoMenuItem:update()
     if self.item > 0 and InputHandler.mouse_click and InputHandler.mouse_x > self.pos.x and InputHandler.mouse_x < self.pos.x + self.size.x and InputHandler.mouse_y > self.pos.y and InputHandler.mouse_y < self.pos.y + self.size.y then
         
         if InputHandler.mouse_y < self.pos.y + self.size.y/3 then
-            self.level_list = KaizoLevelList:new(self.pos.x,self.pos.y)
-            --self.ref_layer:add_entity(self.level_list)
-            self.level_list_open = true
-            return
+            self.option = 1
+            self.option_selected = true
         elseif InputHandler.mouse_y < self.pos.y + (self.size.y/3)*2 then
-            KaizoContext.GoToLevelEditor = true
-            return
+            self.option = 2
+            self.option_selected = true
         else
-            KaizoContext.Quit = true
-            return
+            self.option = 3
+            self.option_selected = true
         end
 
+    end
+
+    if self.item > 0 then
+        if not self.waiting_for_key_release then
+            if InputHandler.jump or LoveKeysPressed["return"] then
+                self.waiting_for_key_release = true
+                self.option_selected = true
+            elseif InputHandler.up and self.option > 1 then
+                self.option = self.option - 1
+                self.waiting_for_key_release = true
+            elseif InputHandler.down and self.option < 3 then
+                self.option = self.option + 1
+                self.waiting_for_key_release = true
+            end
+        end
+
+        if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not LoveKeysPressed["return"] then
+            self.waiting_for_key_release = false
+        end
+
+        if self.option_selected then
+            if self.option == 1 then
+                self.level_list = KaizoLevelList:new(self.pos.x,self.pos.y)
+                --self.ref_layer:add_entity(self.level_list)
+                self.level_list.waiting_for_key_release = true
+                self.level_list_open = true
+                return
+            elseif self.option == 2 then
+                KaizoContext.GoToLevelEditor = true
+                return
+            else
+                KaizoContext.Quit = true
+                return
+            end
+        end
     end
 end
 
@@ -89,10 +131,20 @@ function KaizoMenuItem:render()
         KaizoContext.CurrentLevel:add_entity_image(self.image)
     end
 
+    if not self.cursor and self.item > 0 then
+        self.cursor = KaizoImage:new()
+        self.cursor:load(self.cursor_path)
+        KaizoContext.CurrentLevel:add_entity_image(self.cursor)
+    end
+
     if self.image then
         
         self.image:render_scaled_to(self.pos.x, self.pos.y, self.size.x, self.size.y)
         
+    end
+
+    if self.cursor then
+        self.cursor:render_scaled_to(self.pos.x - 32, self.pos.y + (self.size.y/3) * (self.option - 1), 32, 32)
     end
 end
 
