@@ -45,6 +45,12 @@ end
 
 function KaizoSection:render()
 
+    -- Always load TEST tile
+    if not KaizoContext.CurrentLevel:get_tile_image(11) then
+        local image = KaizoImage:new()
+        image:load_tile_image_by_id(11)
+        KaizoContext.CurrentLevel:add_tile_image(image)
+    end
     -- Render logic for the section
     if self.Background then
         self.Background:render_scaled_to(0,0,WindowSize.x,WindowSize.y)
@@ -53,6 +59,40 @@ function KaizoSection:render()
         layer:render_back()
         layer:render()
     end
+
+    -- Render Limits
+    local pos = {y = -1 * 32}
+    for x = -1, self.Size.x, 1 do
+        pos.x = x * 32
+        if IsInCamera(pos.x, pos.y, 32, 32) then
+            KaizoContext.CurrentLevel:get_tile_image(11):render_incamera_scaled_to(pos.x, pos.y, 32, 32)
+        end
+    end
+
+    pos.y = (self.Size.y) * 32
+    for x = -1, self.Size.x, 1 do
+        pos.x = x * 32
+        if IsInCamera(pos.x, pos.y, 32, 32) then
+            KaizoContext.CurrentLevel:get_tile_image(11):render_incamera_scaled_to(pos.x, pos.y, 32, 32)
+        end
+    end
+
+    pos.x = -1 * 32
+    for y = 0, self.Size.y-1, 1 do
+        pos.y = y * 32
+        if IsInCamera(pos.x, pos.y, 32, 32) then
+            KaizoContext.CurrentLevel:get_tile_image(11):render_incamera_scaled_to(pos.x, pos.y, 32, 32)
+        end
+    end
+
+    pos.x = (self.Size.x) * 32
+    for y = 0, self.Size.y-1, 1 do
+        pos.y = y * 32
+        if IsInCamera(pos.x, pos.y, 32, 32) then
+            KaizoContext.CurrentLevel:get_tile_image(11):render_incamera_scaled_to(pos.x, pos.y, 32, 32)
+        end
+    end
+    
 end
 
 function KaizoSection:SaveState()
