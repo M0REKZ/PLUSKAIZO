@@ -31,6 +31,7 @@ require("common.entities.squares.kaizo_glass")
 require("common.entities.squares.kaizo_square_resize")
 require("common.entities.squares.kaizo_finish")
 require("common.entities.objects.kaizo_camera_follow")
+require("common.entities.squares.kaizo_death_effect")
 
 
 KaizoEntitiesCreator = {} --to register entities
@@ -75,3 +76,5 @@ KaizoEntitiesCreator[KaizoFinish.name] = KaizoFinish
 KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoFinish.name
 KaizoEntitiesCreator[KaizoCameraFollow.name] = KaizoCameraFollow
 --KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoCameraFollow.name
+KaizoEntitiesCreator[KaizoDeathEffect.name] = KaizoDeathEffect
+--KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoDeathEffect.name

@@ -26,6 +26,9 @@ KaizoDirtMonster.name = "KaizoDirtMonster"
 
 KaizoDirtMonster.__index = KaizoDirtMonster
 
+KaizoDirtMonster.editor_properties = {}
+KaizoDirtMonster.editor_properties[1] = "dir"
+
 function KaizoDirtMonster:new(x,y)
     local o = KaizoEGG:new(x,y)
     o = setmetatable(o,KaizoDirtMonster)
@@ -195,7 +198,9 @@ end
 
 
 function KaizoDirtMonster:HandleProperty(prop)
-    --overriden to do nothing
+    if prop.name == "dir" then
+        self.dir = prop.value
+    end
 end
 
 function KaizoDirtMonster:HandlePlayerCollision(player, collide)

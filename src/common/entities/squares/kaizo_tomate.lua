@@ -26,6 +26,10 @@ KaizoTomate.name = "KaizoTomate"
 
 KaizoTomate.__index = KaizoTomate
 
+KaizoTomate.editor_properties = {}
+KaizoTomate.editor_properties[1] = "is_edge_careful"
+KaizoTomate.editor_properties[2] = "dir"
+
 function KaizoTomate:new(x,y)
     local o = KaizoEGG:new(x,y)
     o = setmetatable(o,KaizoTomate)
@@ -115,6 +119,10 @@ end
 function KaizoTomate:HandleProperty(prop)
     if prop.name == "is_edge_careful" then
         self.is_edge_careful = prop.value
+    end
+
+    if prop.name == "dir" then
+        self.dir = prop.value
     end
 
     if self.is_edge_careful then

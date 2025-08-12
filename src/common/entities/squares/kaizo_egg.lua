@@ -27,6 +27,12 @@ KaizoEGG.name = "KaizoEGG"
 
 KaizoEGG.__index = KaizoEGG
 
+KaizoEGG.editor_properties = {}
+KaizoEGG.editor_properties[1] = "is_edge_careful"
+KaizoEGG.editor_properties[2] = "is_coward"
+KaizoEGG.editor_properties[3] = "dir"
+
+
 function KaizoEGG:new(x,y)
     local o = KaizoSquare:new(x,y,32,32)
     o = setmetatable(o,KaizoEGG)
@@ -413,6 +419,10 @@ function KaizoEGG:HandleProperty(prop)
 
     if prop.name == "is_coward" then
         self.is_coward = prop.value
+    end
+
+    if prop.name == "dir" then
+        self.dir = prop.value
     end
 
     if self.is_coward then

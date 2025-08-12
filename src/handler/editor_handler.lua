@@ -15,6 +15,8 @@ function KaizoLevelEditor:init()
     self.setting_level_background = false
     self.setting_level_music = false
 
+    self.editing_entity_properties = false
+
     self.background_selected = false
     self.music_selected = false
 
@@ -70,6 +72,8 @@ function KaizoLevelEditor:init()
 
     self.level_background_list = {}
     self.level_music_list = {}
+
+    self.entity_properties_values = nil
 end
 
 function KaizoLevelEditor:update()
@@ -136,6 +140,7 @@ function KaizoLevelEditor:update()
                 self.waiting_for_key_release = true
                 self.entity_selected = true
                 self.selecting_entity = false
+                self.entity_properties_values = nil
                 return
             elseif InputHandler.up and self.menu_selected > 1 then
                 self.menu_selected = self.menu_selected - 1
@@ -195,6 +200,40 @@ function KaizoLevelEditor:update()
                 self.menu_selected = 1
                 self.waiting_for_key_release = true
             end
+        elseif self.editing_entity_properties then
+            if InputHandler.up and self.menu_selected > 1 then
+                self.menu_selected = self.menu_selected - 1
+                self.waiting_for_key_release = true
+            elseif InputHandler.down and self.menu_selected < #KaizoEntitiesCreator[self.current_entity].editor_properties then
+                self.menu_selected = self.menu_selected + 1
+                self.waiting_for_key_release = true
+            elseif InputHandler.left then
+                if type(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]) == "boolean" then
+                    if self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] then
+                        self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] = false
+                    else
+                        self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] = true
+                    end
+                elseif type(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]) == "number" then
+                    self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] = self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] - 1
+                end
+                self.waiting_for_key_release = true
+            elseif InputHandler.right then
+                if type(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]) == "boolean" then
+                    if self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] then
+                        self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] = false
+                    else
+                        self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] = true
+                    end
+                elseif type(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]) == "number" then
+                    self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] = self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] + 1
+                end
+                self.waiting_for_key_release = true
+            elseif InputHandler.pause then
+                self.editing_entity_properties = false
+                self.menu_selected = 1
+                self.waiting_for_key_release = true
+            end
         else
             if InputHandler.pause then
                 self.menu_active = true
@@ -203,8 +242,15 @@ function KaizoLevelEditor:update()
                 return
             elseif InputHandler.mouse_click then
                 if self.current_entity then
-                    KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer]:add_entity(KaizoEntitiesCreator[self.current_entity]:new(
-                    Camera.x + InputHandler.mouse_x, Camera.y + InputHandler.mouse_y))
+                    local ent = KaizoEntitiesCreator[self.current_entity]:new(Camera.x + InputHandler.mouse_x, Camera.y + InputHandler.mouse_y)
+                    
+                    if ent.can_load_level_properties and self.entity_properties_values then
+                        for i = 1, #ent.editor_properties, 1 do
+                            ent:HandleProperty({name = ent.editor_properties[i],value = self.entity_properties_values[ent.editor_properties[i]]})
+                        end
+                    end
+
+                    KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer]:add_entity(ent)
                     self.waiting_for_key_release = true
                 elseif self.current_tile then
 
@@ -385,6 +431,15 @@ function KaizoLevelEditor:render()
             RenderHandler:Print(""..self.level_music_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
             RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
+    elseif self.editing_entity_properties then
+        if self.background then
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
+                (WindowSize.y / 4) * 3)
+
+            RenderHandler:Print("               ^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print("Property: "..KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected].." Value: < "..tostring(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]).." >", WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print("               v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+        end
     end
 end
 
@@ -445,7 +500,21 @@ function KaizoLevelEditor:select_tile()
 end
 
 function KaizoLevelEditor:edit_entity_properties()
-    
+    if not self.current_entity then
+        return
+    end
+
+    self.editing_entity_properties = true
+    self.menu_selected = 1
+
+    if not self.entity_properties_values then
+        self.entity_properties_values = {}
+
+        local tempent = KaizoEntitiesCreator[self.current_entity]:new() -- to generate default values
+        for index, name in ipairs(KaizoEntitiesCreator[self.current_entity].editor_properties) do
+            self.entity_properties_values[name] = tempent[name]
+        end
+    end
 end
 
 function KaizoLevelEditor:close_editor()
