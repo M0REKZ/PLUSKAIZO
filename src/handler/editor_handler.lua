@@ -79,7 +79,7 @@ end
 function KaizoLevelEditor:update()
     if not self.waiting_for_key_release then
         if self.menu_active then
-            if InputHandler.jump then
+            if InputHandler.jump or LoveKeysPressed["return"] then
                 self.waiting_for_key_release = true
                 self.option_selected = true
                 self.menu_active = false
@@ -97,7 +97,7 @@ function KaizoLevelEditor:update()
             end
         elseif self.setting_section_size then
             if not self.setting_section_height then
-                if InputHandler.jump then
+                if InputHandler.jump or LoveKeysPressed["return"] then
                     self.waiting_for_key_release = true
                     self.setting_section_height = true
                     return
@@ -115,7 +115,7 @@ function KaizoLevelEditor:update()
                     self.waiting_for_key_release = true
                 end
             else
-                if InputHandler.jump then
+                if InputHandler.jump or LoveKeysPressed["return"] then
                     self.waiting_for_key_release = true
                     self.setting_section_height = false
                     self.setting_section_size = false
@@ -136,7 +136,7 @@ function KaizoLevelEditor:update()
                 end
             end
         elseif self.selecting_entity then
-            if InputHandler.jump then
+            if InputHandler.jump or LoveKeysPressed["return"] then
                 self.waiting_for_key_release = true
                 self.entity_selected = true
                 self.selecting_entity = false
@@ -154,7 +154,7 @@ function KaizoLevelEditor:update()
                 self.waiting_for_key_release = true
             end
         elseif self.selecting_tile then
-            if InputHandler.jump then
+            if InputHandler.jump or LoveKeysPressed["return"] then
                 self.waiting_for_key_release = true
                 self.selecting_tile = false
                 self.current_entity = nil
@@ -167,7 +167,7 @@ function KaizoLevelEditor:update()
                 self.waiting_for_key_release = true
             end
         elseif self.setting_level_background then
-            if InputHandler.jump then
+            if InputHandler.jump or LoveKeysPressed["return"] then
                 self.waiting_for_key_release = true
                 self.background_selected = true
                 self.setting_level_background = false
@@ -184,7 +184,7 @@ function KaizoLevelEditor:update()
                 self.waiting_for_key_release = true
             end
         elseif self.setting_level_music then
-            if InputHandler.jump then
+            if InputHandler.jump or LoveKeysPressed["return"] then
                 self.waiting_for_key_release = true
                 self.music_selected = true
                 self.setting_level_music = false
@@ -229,7 +229,7 @@ function KaizoLevelEditor:update()
                     self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] = self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] + 1
                 end
                 self.waiting_for_key_release = true
-            elseif InputHandler.pause then
+            elseif InputHandler.pause or LoveKeysPressed["return"] then
                 self.editing_entity_properties = false
                 self.menu_selected = 1
                 self.waiting_for_key_release = true
@@ -327,7 +327,7 @@ function KaizoLevelEditor:update()
         self.update_layers_size = false
     end
 
-    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not InputHandler.pause and not InputHandler.mouse_click and not InputHandler.savestate and not InputHandler.loadstate and not InputHandler.left and not InputHandler.right and not InputHandler.mouse_right_click then
+    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not InputHandler.pause and not InputHandler.mouse_click and not InputHandler.savestate and not InputHandler.loadstate and not InputHandler.left and not InputHandler.right and not InputHandler.mouse_right_click and not LoveKeysPressed["return"] then
         self.waiting_for_key_release = false
     end
 
