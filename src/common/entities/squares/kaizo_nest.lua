@@ -76,6 +76,10 @@ end
 
 function KaizoNest:HandlePlayerCollision(player, collide)
     
+    if self.die then
+        return
+    end
+
     local player_layer
     player_layer = nil
 
