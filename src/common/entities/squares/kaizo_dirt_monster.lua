@@ -60,7 +60,7 @@ function KaizoDirtMonster:new(x,y)
     o.is_edge_careful = false
     o.hidden = true
 
-    o.can_load_level_properties = false
+    o.can_load_level_properties = true
 
     o.death_sound = KaizoContext.CurrentLevel:get_sound(5)
     o.unhidingframe = 0
