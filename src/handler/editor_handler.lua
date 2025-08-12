@@ -302,8 +302,10 @@ function KaizoLevelEditor:update()
                     end
                 end
             elseif InputHandler.savestate then
+                KaizoFileHandler:CreateDirectory("data/levels/")
                 SaveStateHandler:SaveStateToFolder("data/levels", "MyOwnLevel", "kzlvl")
             elseif InputHandler.loadstate then
+                KaizoFileHandler:CreateDirectory("data/levels/")
                 SaveStateHandler:LoadStateFrom("data/levels/" .. "MyOwnLevel" .. ".kzlvl")
             elseif InputHandler.up then
                 Camera.y = Camera.y - 32 * 5
