@@ -281,11 +281,26 @@ function KaizoLevelEditor:update()
 
                     if IsPointInsideSquare(Camera.x + InputHandler.mouse_x, Camera.y + InputHandler.mouse_y, pos.x, pos.y, size.x, size.y) then
                         entity:destroy()
-                        break
                     end
                 end
                 KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer]:check_deleted_entities()
-                self.waiting_for_key_release = true
+
+                local localx = math.floor((Camera.x + InputHandler.mouse_x) / 32)
+                local localy = math.floor((Camera.y + InputHandler.mouse_y) / 32)
+
+                localx = localx -
+                math.floor(KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers
+                [self.current_layer].Offset.x / 32)
+                localy = localy -
+                math.floor(KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers
+                [self.current_layer].Offset.y / 32)
+
+                if not (localx < 0 or localx >= KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Width or localy < 0 or localy >= KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Height) then
+                    local val = ((KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Width) * localy + localx) + 1
+                    if val > 0 and val <= #KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Tiles then
+                        KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Tiles[val] = 0
+                    end
+                end
             elseif InputHandler.savestate then
                 SaveStateHandler:SaveStateToFolder("data/levels", "MyOwnLevel", "kzlvl")
             elseif InputHandler.loadstate then
