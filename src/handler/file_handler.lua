@@ -25,15 +25,20 @@ KaizoFileHandler.PLUSKAIZO_USER_PATH = nil
 
 KaizoFileHandler.PLUSKAIZO_LOVE_PATH = nil
 KaizoFileHandler.PLUSKAIZO_CUSTOM_PATH = nil
+KaizoFileHandler.PLUSKAIZO_PLATFORM_PATH = ""
 
 function KaizoFileHandler:InitUserPath()
     local platform = love.system.getOS()
 
+    if platform == "Linux" then
+        self.PLUSKAIZO_PLATFORM_PATH = ".local/share/"
+    end
+
     self.PLUSKAIZO_LOVE_PATH = love.filesystem.getSaveDirectory()
-    self.PLUSKAIZO_CUSTOM_PATH = (love.filesystem.getUserDirectory().."PLUSKAIZO")
+    self.PLUSKAIZO_CUSTOM_PATH = (love.filesystem.getUserDirectory()..self.PLUSKAIZO_PLATFORM_PATH.."PLUSKAIZO")
 
     if platform == "Windows" or platform == "OS X" or platform == "Linux" then -- this does not work in mobile
-        nativefs.setWorkingDirectory(love.filesystem.getUserDirectory())
+        nativefs.setWorkingDirectory(love.filesystem.getUserDirectory()..self.PLUSKAIZO_PLATFORM_PATH)
         local success = nativefs.createDirectory("PLUSKAIZO")
         if not success then
             error("could not create PLUSKAIZO directory")
