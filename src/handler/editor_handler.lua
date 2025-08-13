@@ -27,6 +27,9 @@ function KaizoLevelEditor:init()
 
     self.warning_time = 500
 
+    self.mouse_move_pos = nil
+    self.camera_move_pos = nil
+
     for i = 1, 14, 1 do
         self.menu_options[i] = {}
     end
@@ -312,6 +315,14 @@ function KaizoLevelEditor:update()
                         KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Layers[self.current_layer].Tiles[val] = 0
                     end
                 end
+            elseif InputHandler.mouse_middle_click then
+                if not self.mouse_move_pos or not self.camera_move_pos then
+                    self.mouse_move_pos = {x = InputHandler.mouse_x, y = InputHandler.mouse_y}
+                    self.camera_move_pos = {x = Camera.x, y = Camera.y}
+                end
+
+                Camera.x = self.camera_move_pos.x + (self.mouse_move_pos.x - InputHandler.mouse_x)
+                Camera.y = self.camera_move_pos.y + (self.mouse_move_pos.y - InputHandler.mouse_y)
             elseif InputHandler.savestate then
                 KaizoFileHandler:CreateDirectory("data/levels/")
                 SaveStateHandler:SaveStateToFolder("data/levels", KaizoContext.CurrentLevel.Name, "kzlvl")
@@ -358,8 +369,13 @@ function KaizoLevelEditor:update()
         self.update_layers_size = false
     end
 
-    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not InputHandler.pause and not InputHandler.mouse_click and not InputHandler.savestate and not InputHandler.loadstate and not InputHandler.left and not InputHandler.right and not InputHandler.mouse_right_click and not LoveKeysPressed["return"] then
+    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not InputHandler.pause and not InputHandler.mouse_click and not InputHandler.savestate and not InputHandler.loadstate and not InputHandler.left and not InputHandler.right and not InputHandler.mouse_right_click and not LoveKeysPressed["return"] and not InputHandler.mouse_middle_click then
         self.waiting_for_key_release = false
+    end
+
+    if not InputHandler.mouse_middle_click then
+        self.mouse_move_pos = nil
+        self.camera_move_pos = nil
     end
 
     if (not self.waiting_for_key_release) and InputHandler.pause then
