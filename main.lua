@@ -22,7 +22,8 @@ require("kaizo_context")
 require("common/kaizo_level")
 require("handler.file_handler")
 require("handler.render_handler")
-push = require("external.push") --required for pixel perfect scaling 
+push = require("external.push") --required for pixel perfect scaling
+local utf8 = require("utf8")
 
 local FrameTiming = 0
 local FrameRender = false
@@ -123,7 +124,21 @@ end
 function love.keypressed(a, b)
     LoveKeysPressed[a]= true
     LoveLastKeyPressed = a
+
+    if a == "backspace" then
+        -- get the byte offset to the last UTF-8 character in the string.
+        local byteoffset = utf8.offset(LoveTextInput, -1)
+
+        if byteoffset then
+            -- remove the last UTF-8 character.
+            -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
+            LoveTextInput = string.sub(LoveTextInput, 1, byteoffset - 1)
+        end
+    end
 end
 function love.keyreleased(a)
     LoveKeysPressed[a] = false
+end
+function love.textinput(text)
+    LoveTextInput = LoveTextInput .. text
 end

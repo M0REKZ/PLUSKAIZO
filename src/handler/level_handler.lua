@@ -102,6 +102,10 @@ function KaizoLevelHandler:LoadLevelFromName(name)
     love.audio.stop()
     KaizoContext.CurrentLevel = nil
 
+    --always reset camera
+    Camera.x = 0
+    Camera.y = 0
+
     local str = "data/levels/" .. name .. ".kzlvl"
     
     if KaizoFileHandler:FileExists(str) then --TRY KZLVL FORMAT (savestate)

@@ -121,7 +121,7 @@ end
 
 function KaizoContext:update_editor()
     if not self.CurrentLevel then
-        self.CurrentLevel = KaizoLevel:new()
+        KaizoLevelEditor:new_level()
     end
 
     if self.CurrentLevel then

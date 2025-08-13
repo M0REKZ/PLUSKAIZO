@@ -14,6 +14,7 @@ function KaizoLevelEditor:init()
 
     self.setting_level_background = false
     self.setting_level_music = false
+    self.setting_level_name = false
 
     self.editing_entity_properties = false
 
@@ -26,14 +27,14 @@ function KaizoLevelEditor:init()
 
     self.warning_time = 500
 
-    for i = 1, 13, 1 do
+    for i = 1, 14, 1 do
         self.menu_options[i] = {}
     end
 
     self.menu_options[1].text = "Reset Camera"
     self.menu_options[1].func = KaizoLevelEditor.reset_camera
-    self.menu_options[2].text = "New Level"
-    self.menu_options[2].func = KaizoLevelEditor.new_level
+    self.menu_options[2].text = "Set Level Name"
+    self.menu_options[2].func = KaizoLevelEditor.set_level_name
     self.menu_options[3].text = "Select Entity"
     self.menu_options[3].func = KaizoLevelEditor.select_entity
     self.menu_options[4].text = "Select Tile"
@@ -54,8 +55,10 @@ function KaizoLevelEditor:init()
     self.menu_options[11].func = KaizoLevelEditor.set_background
     self.menu_options[12].text = "Set Music"
     self.menu_options[12].func = KaizoLevelEditor.set_music
-    self.menu_options[13].text = "Close Level Editor"
-    self.menu_options[13].func = KaizoLevelEditor.close_editor
+    self.menu_options[13].text = "New Level"
+    self.menu_options[13].func = KaizoLevelEditor.new_level
+    self.menu_options[14].text = "Close Level Editor"
+    self.menu_options[14].func = KaizoLevelEditor.close_editor
 
     self.waiting_for_key_release = false
     self.option_selected = false
@@ -200,6 +203,14 @@ function KaizoLevelEditor:update()
                 self.menu_selected = 1
                 self.waiting_for_key_release = true
             end
+        elseif self.setting_level_name then
+            if LoveKeysPressed["return"] and not (KaizoContext.CurrentLevel.Name == "init") and not (KaizoContext.CurrentLevel.Name == "") then
+                self.waiting_for_key_release = true
+                self.setting_level_name = false
+                return
+            else
+                KaizoContext.CurrentLevel.Name = LoveTextInput
+            end
         elseif self.editing_entity_properties then
             if InputHandler.up and self.menu_selected > 1 then
                 self.menu_selected = self.menu_selected - 1
@@ -303,10 +314,13 @@ function KaizoLevelEditor:update()
                 end
             elseif InputHandler.savestate then
                 KaizoFileHandler:CreateDirectory("data/levels/")
-                SaveStateHandler:SaveStateToFolder("data/levels", "MyOwnLevel", "kzlvl")
-            elseif InputHandler.loadstate then
+                SaveStateHandler:SaveStateToFolder("data/levels", KaizoContext.CurrentLevel.Name, "kzlvl")
+            elseif InputHandler.loadstate and KaizoFileHandler:FileExists("data/levels/" .. KaizoContext.CurrentLevel.Name .. ".kzlvl") then
                 KaizoFileHandler:CreateDirectory("data/levels/")
-                SaveStateHandler:LoadStateFrom("data/levels/" .. "MyOwnLevel" .. ".kzlvl")
+                SaveStateHandler:LoadStateFrom("data/levels/" .. KaizoContext.CurrentLevel.Name .. ".kzlvl")
+                if not KaizoContext.CurrentLevel.Name then
+                    KaizoContext.CurrentLevel.Name = "NoNameLevel"
+                end
             elseif InputHandler.up then
                 Camera.y = Camera.y - 32 * 5
                 self.waiting_for_key_release = true
@@ -395,8 +409,8 @@ function KaizoLevelEditor:render()
 
     if self.menu_active then
         if self.background then
-            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
-                (WindowSize.y / 4) * 3)
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
+                (WindowSize.y / 4) * 2)
 
             RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
             RenderHandler:Print(self.menu_options[self.menu_selected].text, WindowSize.x / 4, WindowSize.y / 4 + 15)
@@ -404,8 +418,8 @@ function KaizoLevelEditor:render()
         end
     elseif self.selecting_entity then
         if self.background then
-            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
-                (WindowSize.y / 4) * 3)
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
+                (WindowSize.y / 4) * 2)
 
             RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
             RenderHandler:Print(KaizoEntitiesNames[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
@@ -413,16 +427,16 @@ function KaizoLevelEditor:render()
         end
     elseif self.selecting_tile then
         if self.background then
-            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
-                (WindowSize.y / 4) * 3)
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
+                (WindowSize.y / 4) * 2)
 
             RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
             RenderHandler:Print("Tile ID: "..self.current_tile, WindowSize.x / 4, WindowSize.y / 4 + 15)
             RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
     elseif self.setting_section_size then
-        self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
-            (WindowSize.y / 4) * 3)
+        self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
+            (WindowSize.y / 4) * 2)
         RenderHandler:Print("           +1\n            ^", WindowSize.x / 4, WindowSize.y / 4)
         if self.setting_section_height then
             RenderHandler:Print("-10 <- Height: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y.." -> +10", WindowSize.x / 4, WindowSize.y / 4 + 30)
@@ -432,8 +446,8 @@ function KaizoLevelEditor:render()
         RenderHandler:Print("           v\n             -1", WindowSize.x / 4, WindowSize.y / 4 + 45)
     elseif self.setting_level_background then
         if self.background then
-            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
-                (WindowSize.y / 4) * 3)
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
+                (WindowSize.y / 4) * 2)
 
             RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
             RenderHandler:Print(""..self.level_background_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
@@ -441,8 +455,8 @@ function KaizoLevelEditor:render()
         end
     elseif self.setting_level_music then
         if self.background then
-            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
-                (WindowSize.y / 4) * 3)
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
+                (WindowSize.y / 4) * 2)
 
             RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
             RenderHandler:Print(""..self.level_music_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
@@ -450,12 +464,22 @@ function KaizoLevelEditor:render()
         end
     elseif self.editing_entity_properties then
         if self.background then
-            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 3,
-                (WindowSize.y / 4) * 3)
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
+                (WindowSize.y / 4) * 2)
 
             RenderHandler:Print("               ^", WindowSize.x / 4, WindowSize.y / 4)
             RenderHandler:Print("Property: "..KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected].." Value: < "..tostring(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]).." >", WindowSize.x / 4, WindowSize.y / 4 + 15)
             RenderHandler:Print("               v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+        end
+    elseif self.setting_level_name then
+        if self.background then
+            self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
+                (WindowSize.y / 4) * 2)
+
+            if KaizoContext.CurrentLevel.Name == "init" then
+                RenderHandler:Print("Name \"init\" is not allowed", WindowSize.x / 4, WindowSize.y / 4)
+            end
+                RenderHandler:Print("Level Name: ".. KaizoContext.CurrentLevel.Name, WindowSize.x / 4, WindowSize.y / 4 + 15)
         end
     end
 end
@@ -466,6 +490,7 @@ end
 function KaizoLevelEditor:new_level()
     KaizoContext.CurrentLevel = nil
     KaizoContext.CurrentLevel = KaizoLevel:new()
+    KaizoContext.CurrentLevel.Name = "MyOwnLevel"
     local sec = KaizoSection:new()
     sec:add_layer(KaizoLayer:new())
     KaizoContext.CurrentLevel:add_section(sec)
@@ -556,4 +581,9 @@ function KaizoLevelEditor:set_music()
     self.menu_selected = 1
 
     self.level_music_list = KaizoFileHandler:GetItemsInDirectory("data/music/")
+end
+
+function KaizoLevelEditor:set_level_name()
+    self.setting_level_name = true
+    LoveTextInput = KaizoContext.CurrentLevel.Name
 end

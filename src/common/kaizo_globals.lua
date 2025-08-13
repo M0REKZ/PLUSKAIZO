@@ -54,6 +54,7 @@ KaizoConfigNames = {
 
 LoveKeysPressed = {}
 LoveLastKeyPressed = nil --for key config
+LoveTextInput = ""
 
 function FitCameraToSize(size)
     if Camera.x < 0 then
