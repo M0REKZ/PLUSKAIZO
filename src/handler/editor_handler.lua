@@ -341,16 +341,16 @@ function KaizoLevelEditor:update()
                     KaizoContext.CurrentLevel.Name = "NoNameLevel"
                 end
             elseif InputHandler.up then
-                Camera.y = Camera.y - 32 * 5
+                Camera.y = Camera.y - 32 * 16
                 self.waiting_for_key_release = true
             elseif InputHandler.down then
-                Camera.y = Camera.y + 32 * 5
+                Camera.y = Camera.y + 32 * 16
                 self.waiting_for_key_release = true
             elseif InputHandler.left then
-                Camera.x = Camera.x - 32 * 5
+                Camera.x = Camera.x - 32 * 16
                 self.waiting_for_key_release = true
             elseif InputHandler.right then
-                Camera.x = Camera.x + 32 * 5
+                Camera.x = Camera.x + 32 * 16
                 self.waiting_for_key_release = true
             end
         end
