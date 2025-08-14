@@ -112,7 +112,7 @@ function love.draw()
 
         if CopyrightRender > 0 then --draw copyright
             CopyrightRender = CopyrightRender -1
-            love.graphics.print("(c) Copyright Benjamín Gajardo All rights reserved", 10, 10)
+            love.graphics.print("(c) Copyright Benjamín Gajardo All rights reserved\nVisit m0rekz.github.io for other projects", 10, 10)
         end
 
         FrameRender = false
