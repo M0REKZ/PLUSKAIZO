@@ -429,6 +429,17 @@ function KaizoLevelEditor:render()
         "WARNING: Editor is still in development, expect crashes and bugs\nUse ESC to select a option\nPress K (Save State Key) to save level\nPress L (Load State Key) to load",
             5, 5)
         self.warning_time = self.warning_time - 1
+    else
+        RenderHandler:Print(
+        "Current Section: "..KaizoContext.CurrentLevel.CurrentSection.."\nCurrent Layer: "..self.current_layer,
+            5, 5)
+        if self.current_entity then
+            RenderHandler:Print("\n\nEntity: "..self.current_entity,
+            5, 5)
+        elseif self.current_tile then
+            RenderHandler:Print("\n\nTile: "..self.current_tile,
+            5, 5)
+        end
     end
 
     if self.menu_active then
@@ -536,6 +547,8 @@ function KaizoLevelEditor:add_layer()
 end
 
 function KaizoLevelEditor:set_current_section()
+
+    self.current_layer = 1
     if #KaizoContext.CurrentLevel.Sections > 0 then
         -- this way for now
         if KaizoContext.CurrentLevel.CurrentSection + 1 > #KaizoContext.CurrentLevel.Sections then
@@ -548,7 +561,10 @@ function KaizoLevelEditor:set_current_section()
 end
 
 function KaizoLevelEditor:set_current_layer()
-    
+    self.current_layer = self.current_layer + 1
+    if self.current_layer > #KaizoContext.CurrentLevel:get_current_section().Layers then
+        self.current_layer = 1
+    end
 end
 
 function KaizoLevelEditor:set_current_section_size()
