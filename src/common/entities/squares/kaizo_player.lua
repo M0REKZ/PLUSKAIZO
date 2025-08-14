@@ -56,6 +56,7 @@ function KaizoPlayer:new(x,y)
     o.looking = 1
     o.is_spin_jump = false
     o.pressing_jump = false
+    o.pressing_up = false
 
     o.active_out_of_camera = true
 
@@ -106,6 +107,12 @@ function KaizoPlayer:update()
         self.pressing_jump = true
     else
         self.pressing_jump = false
+    end
+
+    if InputHandler.up then
+        self.pressing_up = true
+    else
+        self.pressing_up = false
     end
 
     if not self.going_right then
@@ -439,6 +446,7 @@ function KaizoPlayer:SaveState()
         looking = self.looking,
         active = self.active,
         pressing_jump = self.pressing_jump,
+        pressing_up = self.pressing_up,
     }
 end
 
@@ -466,5 +474,6 @@ function KaizoPlayer:LoadState(state)
     self.looking = state.looking
     self.active = state.active
     self.pressing_jump = state.pressing_jump
+    self.pressing_up = state.pressing_up
     
 end

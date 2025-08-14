@@ -205,7 +205,11 @@ end
 
 function KaizoDirtMonster:HandlePlayerCollision(player, collide)
     if collide.down == 4 then
-        player.vel.y = -7
+        if player.pressing_jump then
+            player.vel.y = -15
+        else
+            player.vel.y = -7
+        end
         self.die = true
     end
 end

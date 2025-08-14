@@ -218,9 +218,15 @@ function KaizoLevelEditor:update()
             if InputHandler.up and self.menu_selected > 1 then
                 self.menu_selected = self.menu_selected - 1
                 self.waiting_for_key_release = true
+                if type(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]) == "string" then
+                    LoveTextInput = self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]
+                end
             elseif InputHandler.down and self.menu_selected < #KaizoEntitiesCreator[self.current_entity].editor_properties then
                 self.menu_selected = self.menu_selected + 1
                 self.waiting_for_key_release = true
+                if type(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]) == "string" then
+                    LoveTextInput = self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]
+                end
             elseif InputHandler.left then
                 if type(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]) == "boolean" then
                     if self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] then
@@ -247,6 +253,8 @@ function KaizoLevelEditor:update()
                 self.editing_entity_properties = false
                 self.menu_selected = 1
                 self.waiting_for_key_release = true
+            elseif type(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]) == "string" then
+                self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]] = LoveTextInput
             end
         else
             if InputHandler.pause then
@@ -515,7 +523,9 @@ function KaizoLevelEditor:new_level()
 end
 
 function KaizoLevelEditor:add_section()
-    KaizoContext.CurrentLevel:add_section(KaizoSection:new())
+    local sec = KaizoSection:new()
+    sec:add_layer(KaizoLayer:new())
+    KaizoContext.CurrentLevel:add_section(sec)
 end
 
 function KaizoLevelEditor:add_layer()

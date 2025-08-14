@@ -101,6 +101,16 @@ function KaizoLayer:add_entity(entity)
     end
 end
 
+function KaizoLayer:remove_entity(entity)
+    for num = #self.Entities, 1, -1 do
+        if self.Entities[num] == entity then
+            self.Entities[num].ref_layer = nil
+            table.remove(self.Entities,num)
+            break
+        end
+    end
+end
+
 function KaizoLayer:set_tiles(tiles, width, height)
     local temp = width * height
     if #tiles ~= temp then
