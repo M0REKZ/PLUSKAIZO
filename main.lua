@@ -62,7 +62,7 @@ function love.load()
     local icon = love.image.newImageData("data/images/icon.png")
     love.window.setIcon(icon)
     love.filesystem.setIdentity("PLUSKAIZO")
-    love.audio.setVolume(0.4)
+    love.audio.setVolume(0.1)
 
     RenderHandler:InitFont()
 
