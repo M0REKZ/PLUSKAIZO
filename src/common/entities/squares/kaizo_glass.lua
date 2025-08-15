@@ -38,20 +38,24 @@ function KaizoGlass:new(x, y)
     o.image_id = 13 -- Default image ID for the square
     o.image = nil
 
-    o.death_sound = KaizoContext.CurrentLevel:get_sound(8)
+    o.death_sound = nil
     o.active_out_of_camera = true
 
-    if not o.death_sound then
-        local sound = KaizoSound:new()
-        sound:LoadByID(8)
-        KaizoContext.CurrentLevel:add_sound(sound)
-        o.death_sound = sound
-    end
 
     return o
 end
 
 function KaizoGlass:update()
+
+    if not self.death_sound then
+        self.death_sound = KaizoContext.CurrentLevel:get_sound(8)
+        if not self.death_sound then
+            local sound = KaizoSound:new()
+            sound:LoadByID(8)
+            KaizoContext.CurrentLevel:add_sound(sound)
+            self.death_sound = sound
+        end
+    end
 
     if self.die then
         self:destroy()

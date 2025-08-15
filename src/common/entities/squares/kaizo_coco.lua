@@ -66,6 +66,7 @@ function KaizoCoco:new(x,y)
     o.sec = 0
     o.is_edge_careful = false
     o.is_side_grabable = false
+    o.has_on_throw = true
 
     o.is_projectile = false
     o.is_dead = false
@@ -73,24 +74,31 @@ function KaizoCoco:new(x,y)
 
     o.can_load_level_properties = true
 
-    o.death_sound = KaizoContext.CurrentLevel:get_sound(7)
-
-    if not o.death_sound then
-        local sound = KaizoSound:new()
-        sound:LoadByID(5)
-        KaizoContext.CurrentLevel:add_sound(sound)
-        o.death_sound = sound
-    end
+    o.death_sound = nil
 
     return o
 end
 
 function KaizoCoco:update()
+    if not self.death_sound then
+        self.death_sound = KaizoContext.CurrentLevel:get_sound(7)
+        if not self.death_sound then
+            local sound = KaizoSound:new()
+            sound:LoadByID(7)
+            KaizoContext.CurrentLevel:add_sound(sound)
+            self.death_sound = sound
+        end
+    end
     if self.player_damage_timeout > 0 then
         self.player_damage_timeout = self.player_damage_timeout - 1
     end
 
     KaizoEGG.update(self)
+
+    if self.is_dead and self.dir == 0 and self.vel.x == 0 and self.vel.y == 0 and self.grounded then
+        self.is_projectile = false
+        self.is_side_grabable = true
+    end
 end
 
 function KaizoCoco:render()
@@ -197,7 +205,7 @@ function KaizoCoco:HandlePlayerCollision(player, collide)
             self.die = true
         end
         self.col.up = 4
-        self.col.down = 0
+        self.col.down = 6
         self.col.left = 6
         self.col.right = 6
         self.is_edge_careful = false
@@ -244,7 +252,7 @@ function KaizoCoco:HandleEntityCollision(entity, collide)
                 self.col.right = 2
             end
         else
-            collide.left = 2
+            collide.right = 2
         end
     end
 end
@@ -312,6 +320,10 @@ function KaizoCoco:handle_collision(collide, pos2, size2, ent)
         self.pos.x = pos2.x + size2.x
         if self.is_dead or (self.dir < 2 and self.dir > -2) then
             self.dir = self.dir * -1
+            if self.is_dead and self.death_sound then
+                self.death_sound:Stop()
+                self.death_sound:Play()
+            end
         end
     end
 
@@ -320,10 +332,41 @@ function KaizoCoco:handle_collision(collide, pos2, size2, ent)
         self.pos.x = pos2.x - self.size.x
         if self.is_dead or (self.dir < 2 and self.dir > -2) then
             self.dir = self.dir * -1
+            if self.is_dead and self.death_sound then
+                self.death_sound:Stop()
+                self.death_sound:Play()
+            end
         end
     end
 
     if collide.up == 5 or collide.down == 5 or collide.left == 5 or collide.right == 5 then
         self.die = true
     end
+end
+
+function KaizoCoco:OnThrow(ent, dir, vdir)
+    if dir == 0 and vdir == 0 then
+        return
+    end
+
+    if self.death_sound then
+        self.death_sound:Stop()
+        self.death_sound:Play()
+    end
+
+    if dir then
+        self.dir = dir * 7
+    elseif ent.vel and ent.vel.x then
+        self.dir = ent.vel.x
+    end
+
+    if vdir then
+        self.vel.y = vdir * 7
+    elseif ent.vel and ent.vel.y then
+        self.vel.y = ent.vel.y
+    end
+
+    self.is_projectile = true
+    self.player_damage_timeout = 10
+    self.is_side_grabable = true
 end

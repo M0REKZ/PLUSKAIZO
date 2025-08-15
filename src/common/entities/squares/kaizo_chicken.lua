@@ -55,28 +55,34 @@ function KaizoChicken:new(x, y)
     o.egg_timer = 180
 
     o.did_spawn_sound = false
-    o.spawn_sound = KaizoContext.CurrentLevel:get_sound(6)
+    o.spawn_sound = nil
 
-    if not o.spawn_sound then
-        local sound = KaizoSound:new()
-        sound:LoadByID(6)
-        KaizoContext.CurrentLevel:add_sound(sound)
-        o.spawn_sound = sound
-    end
-
-    o.death_sound = KaizoContext.CurrentLevel:get_sound(7)
-
-    if not o.death_sound then
-        local sound = KaizoSound:new()
-        sound:LoadByID(7)
-        KaizoContext.CurrentLevel:add_sound(sound)
-        o.death_sound = sound
-    end
+    o.death_sound = nil
 
     return o
 end
 
 function KaizoChicken:update()
+
+    if not self.spawn_sound then
+        self.spawn_sound = KaizoContext.CurrentLevel:get_sound(6)
+        if not self.spawn_sound then
+            local sound = KaizoSound:new()
+            sound:LoadByID(6)
+            KaizoContext.CurrentLevel:add_sound(sound)
+            self.spawn_sound = sound
+        end
+    end
+
+    if not self.death_sound then
+        self.death_sound = KaizoContext.CurrentLevel:get_sound(7)
+        if not self.death_sound then
+            local sound = KaizoSound:new()
+            sound:LoadByID(7)
+            KaizoContext.CurrentLevel:add_sound(sound)
+            self.death_sound = sound
+        end
+    end
 
     if not self.did_spawn_sound then
         self.spawn_sound:Stop()

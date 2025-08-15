@@ -44,19 +44,22 @@ function KaizoNest:new(x, y)
     o.image_id = 9 -- Default image ID for the square
     o.image = nil
 
-    o.death_sound = KaizoContext.CurrentLevel:get_sound(1)
-
-    if not o.death_sound then
-        local sound = KaizoSound:new()
-        sound:LoadByID(1)
-        KaizoContext.CurrentLevel:add_sound(sound)
-        o.death_sound = sound
-    end
+    o.death_sound = nil
 
     return o
 end
 
 function KaizoNest:update()
+
+    if not self.death_sound then
+        self.death_sound = KaizoContext.CurrentLevel:get_sound(1)
+        if not self.death_sound then
+            local sound = KaizoSound:new()
+            sound:LoadByID(1)
+            KaizoContext.CurrentLevel:add_sound(sound)
+            self.death_sound = sound
+        end
+    end
 
     if self.die then
         local effect = KaizoDeathEffect:new(self.pos.x,self.pos.y)

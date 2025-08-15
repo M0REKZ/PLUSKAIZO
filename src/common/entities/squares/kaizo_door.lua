@@ -55,10 +55,22 @@ function KaizoDoor:new(x, y)
     o.to_door_name = ""
     o.my_door_name = ""
 
+    o.door_sound = nil
+
     return o
 end
 
 function KaizoDoor:update()
+
+    if not self.door_sound then
+        self.door_sound = KaizoContext.CurrentLevel:get_sound(9)
+        if not self.door_sound then
+            local sound = KaizoSound:new()
+            sound:LoadByID(9)
+            KaizoContext.CurrentLevel:add_sound(sound)
+            self.door_sound = sound
+        end
+    end
 
     if self.entering_player and self.entering_player.ref_layer then
         self.entering_player = nil --dont handle player multiple times
@@ -83,6 +95,10 @@ function KaizoDoor:update()
 
     if self.entering_player then
         if self.frames_to_teleport > 0 then
+            if self.door_sound and self.frames_to_teleport == 50 then
+                self.door_sound:Stop()
+                self.door_sound:Play()
+            end
             self.frames_to_teleport = self.frames_to_teleport - 1
         else
             -- teleport player

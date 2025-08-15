@@ -62,21 +62,25 @@ function KaizoDirtMonster:new(x,y)
 
     o.can_load_level_properties = true
 
-    o.death_sound = KaizoContext.CurrentLevel:get_sound(5)
+    o.death_sound = nil
     o.unhidingframe = 0
     o.unhidingframetime = 0
 
-    if not o.death_sound then
-        local sound = KaizoSound:new()
-        sound:LoadByID(5)
-        KaizoContext.CurrentLevel:add_sound(sound)
-        o.death_sound = sound
-    end
 
     return o
 end
 
 function KaizoDirtMonster:update()
+
+    if not self.death_sound then
+        self.death_sound = KaizoContext.CurrentLevel:get_sound(5)
+        if not self.death_sound then
+            local sound = KaizoSound:new()
+            sound:LoadByID(5)
+            KaizoContext.CurrentLevel:add_sound(sound)
+            self.death_sound = sound
+        end
+    end
 
     if self.hidden then
 

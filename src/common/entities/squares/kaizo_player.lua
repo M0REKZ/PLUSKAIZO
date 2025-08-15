@@ -138,6 +138,24 @@ function KaizoPlayer:update()
     end
 
     if self.grabbed_entity and not self.pressing_run then
+        if self.grabbed_entity.has_on_throw then
+
+            local val = self.vel.x
+            local vval = 0
+
+            if (val > 0 and self.looking < 0) or (val < 0 and self.looking > 0) then
+                val = 0
+            elseif val ~= 0 then
+                val = math.abs(val)
+            end
+
+            if self.pressing_up then
+                vval = -2
+                val = -7
+            end
+
+            self.grabbed_entity:OnThrow(self, (self.looking * (val + 7)/7), vval)
+        end
         self.ref_layer:add_entity(self.grabbed_entity)
         self.grabbed_entity = nil
     end

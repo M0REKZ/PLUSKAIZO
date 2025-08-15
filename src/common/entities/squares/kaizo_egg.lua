@@ -69,19 +69,23 @@ function KaizoEGG:new(x,y)
     o.can_load_level_properties = true
     o.has_qb64_collision = true
 
-    o.death_sound = KaizoContext.CurrentLevel:get_sound(1)
-
-    if not o.death_sound then
-        local sound = KaizoSound:new()
-        sound:LoadByID(1)
-        KaizoContext.CurrentLevel:add_sound(sound)
-        o.death_sound = sound
-    end
+    o.death_sound = nil
 
     return o
 end
 
 function KaizoEGG:update()
+
+    if not self.death_sound then
+        self.death_sound = KaizoContext.CurrentLevel:get_sound(1)
+        if not self.death_sound then
+            local sound = KaizoSound:new()
+            sound:LoadByID(1)
+            KaizoContext.CurrentLevel:add_sound(sound)
+            self.death_sound = sound
+        end
+    end
+
     if self.die then
         self:destroy()
         if self.death_sound then
