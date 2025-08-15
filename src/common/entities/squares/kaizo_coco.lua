@@ -126,7 +126,9 @@ function KaizoCoco:render()
 
     if(self.image) then
 
-        self.frametime = self.frametime + 1
+        if not (self.is_dead and self.dir == 0) then
+            self.frametime = self.frametime + 1
+        end
 		
 		if(self.frametime > 4) then
 		
@@ -171,7 +173,7 @@ function KaizoCoco:HandleProperty(prop)
 end
 
 function KaizoCoco:HandlePlayerCollision(player, collide)
-    if collide.down == 4 then
+    if collide.down == 4 and self.player_damage_timeout == 0 then
         if player.pressing_jump then
             player.vel.y = -15
         else
@@ -194,41 +196,52 @@ function KaizoCoco:HandlePlayerCollision(player, collide)
         end
         self.col.up = 4
         self.col.down = 0
-        self.col.left = 4
-        self.col.right = 4
+        self.col.left = 6
+        self.col.right = 6
         self.is_edge_careful = false
         self.is_coward = false
         self.is_dead = true
-    elseif collide.left == 4 then
-        if self.dir == 0 then
-            if self.death_sound then
-                self.death_sound:Stop()
-                self.death_sound:Play()
-            end
-            self.dir = -7
-            self.is_projectile = true
-            self.player_damage_timeout = 50
-        elseif self.player_damage_timeout == 0 then
-            self.col.left = 2
-            self.col.right = 2
-        end
-    
-    elseif collide.right == 4 then
-        if self.dir == 0 then
-            if self.death_sound then
-                self.death_sound:Stop()
-                self.death_sound:Play()
-            end
+    end
+end
 
-            self.dir = 7
-            self.is_projectile = true
-            self.player_damage_timeout = 50
-            
-        elseif self.player_damage_timeout == 0 then
-            self.col.left = 2
-            self.col.right = 2
+function KaizoCoco:HandleEntityCollision(entity, collide)
+    if collide.left == 6 then
+        if entity.is_player then
+            if self.dir == 0 and self.player_damage_timeout == 0 then
+                if self.death_sound then
+                    self.death_sound:Stop()
+                    self.death_sound:Play()
+                end
+                self.dir = -7
+                self.is_projectile = true
+                self.player_damage_timeout = 10
+            elseif self.player_damage_timeout == 0 then
+                self.col.left = 2
+                self.col.right = 2
+            end
+        else
+            collide.left = 2
         end
     
+    elseif collide.right == 6 then
+        if entity.is_player then
+            if self.dir == 0 and self.player_damage_timeout == 0 then
+                if self.death_sound then
+                    self.death_sound:Stop()
+                    self.death_sound:Play()
+                end
+
+                self.dir = 7
+                self.is_projectile = true
+                self.player_damage_timeout = 10
+                
+            elseif self.player_damage_timeout == 0 then
+                self.col.left = 2
+                self.col.right = 2
+            end
+        else
+            collide.left = 2
+        end
     end
 end
 
