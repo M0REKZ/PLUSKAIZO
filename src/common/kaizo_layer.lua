@@ -182,9 +182,9 @@ function KaizoLayer:LoadState(state)
     self.Height = state.Height
 
     for ind, ent in ipairs(state.Entities) do
-        self.Entities[ind] = KaizoEntitiesCreator[ent.name]:new()
+        self.Entities[ind] = KaizoEntitiesCreator[ent.name].new(self.Entities[ind])
         self.Entities[ind].ref_layer = self
-        self.Entities[ind]:LoadState(ent)
+        self.Entities[ind].LoadState(self.Entities[ind],ent)
     end
     
 end

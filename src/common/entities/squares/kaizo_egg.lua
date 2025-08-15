@@ -146,10 +146,12 @@ function KaizoEGG:update()
     self:do_collision()
 
     if self.is_edge_careful then
-        if ((not self.edge_careful_corners.left) and self.vel.x < 0) then
-            self.dir = math.abs(self.dir)
-        elseif ((not self.edge_careful_corners.right) and self.vel.x > 0) then
-            self.dir = math.abs(self.dir) * -1
+        if not (not self.edge_careful_corners.left and not self.edge_careful_corners.right) then
+            if ((not self.edge_careful_corners.left) and self.vel.x < 0) then
+                self.dir = math.abs(self.dir)
+            elseif ((not self.edge_careful_corners.right) and self.vel.x > 0) then
+                self.dir = math.abs(self.dir) * -1
+            end
         end
     end
 
@@ -300,6 +302,10 @@ function KaizoEGG:do_collision()
 end
 
 function KaizoEGG:handle_collision(collide, pos2, size2, ent)
+
+    if ent and ent.is_projectile and (collide.up ~= 0 or collide.down ~= 0 or collide.left ~= 0 or collide.right ~= 0) then
+        self.die = true
+    end
 
     if collide.up == 6 or collide.down == 6 or collide.left == 6 or collide.right == 6 then
         local temp = nil

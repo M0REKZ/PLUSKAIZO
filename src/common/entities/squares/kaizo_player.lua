@@ -97,6 +97,19 @@ end
 
 function KaizoPlayer:update()
 
+    if self.is_spin_jump then
+        if self.frametime < 2 then
+                self.looking = -1
+            else
+                self.looking = 1
+            end
+            if self.frametime > 4 then
+                self.frametime = 3
+            end
+        self.frame = 0
+        self.frametime = self.frametime - 1
+    end
+
     self.sec = KaizoContext.CurrentLevel:get_current_section()
 
     if self.vel.y < 15 then --max fall vel
@@ -121,7 +134,9 @@ function KaizoPlayer:update()
                 self.vel.x = self.vel.x - 0.5
             end
             self.going_left = true
-            self.looking = -1
+            if not self.is_spin_jump then
+                self.looking = -1
+            end
         else
             if self.vel.x < -1 then
                 if self.grounded then
@@ -142,7 +157,9 @@ function KaizoPlayer:update()
                 self.vel.x = self.vel.x + 0.5
             end
             self.going_right = true
-            self.looking = 1
+            if not self.is_spin_jump then
+                self.looking = 1
+            end
         else
             if self.vel.x > 1 then
                 if self.grounded then
@@ -205,16 +222,7 @@ function KaizoPlayer:render()
 
         --Handle frames
         if self.is_spin_jump then
-            if self.frametime < 2 then
-                self.looking = -1
-            else
-                self.looking = 1
-            end
-            if self.frametime > 4 then
-                self.frametime = 3
-            end
-            self.frame = 0
-            self.frametime = self.frametime - 1
+            --moved code to update... yeah
         elseif self.vel.y < 0 and not self.grounded then
             self.frame = 4
         elseif self.vel.y > 0 and not self.grounded then

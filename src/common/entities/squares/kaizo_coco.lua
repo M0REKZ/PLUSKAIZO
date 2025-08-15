@@ -28,7 +28,8 @@ KaizoCoco.__index = KaizoCoco
 
 KaizoCoco.editor_properties = {}
 KaizoCoco.editor_properties[1] = "is_edge_careful"
-KaizoCoco.editor_properties[2] = "dir"
+KaizoCoco.editor_properties[2] = "is_dead"
+KaizoCoco.editor_properties[3] = "dir"
 
 function KaizoCoco:new(x,y)
     local o = KaizoEGG:new(x,y)
@@ -45,7 +46,10 @@ function KaizoCoco:new(x,y)
     o.minusoffsety = 7
 
     o.image_id = 21 -- Default image ID for KaizoCoco
+    o.image_dead_id = 23
     o.image = nil
+    o.image_alive = nil
+    o.image_dead = nil
     o.can_collide_square = true
     o.has_collision_square = true
     o.is_player = false
@@ -62,6 +66,10 @@ function KaizoCoco:new(x,y)
     o.sec = 0
     o.is_edge_careful = false
 
+    o.is_projectile = false
+    o.is_dead = false
+    o.player_damage_timeout = 0
+
     o.can_load_level_properties = true
 
     o.death_sound = KaizoContext.CurrentLevel:get_sound(7)
@@ -76,18 +84,44 @@ function KaizoCoco:new(x,y)
     return o
 end
 
+function KaizoCoco:update()
+    if self.player_damage_timeout > 0 then
+        self.player_damage_timeout = self.player_damage_timeout - 1
+    end
+
+    KaizoEGG.update(self)
+end
+
 function KaizoCoco:render()
 
-    if not self.image then
-        self.image = KaizoContext.CurrentLevel:get_entity_image(self.image_id)
-        if not self.image then
-            if not self.image then
+    if not self.image_alive then
+        self.image_alive = KaizoContext.CurrentLevel:get_entity_image(self.image_id)
+        if not self.image_alive then
+            if not self.image_alive then
                 local image = KaizoImage:new()
                 image:load_entity_image_by_id(self.image_id)
                 KaizoContext.CurrentLevel:add_entity_image(image)
-                self.image = image
+                self.image_alive = image
             end
         end
+    end
+
+    if not self.image_dead then
+        self.image_dead = KaizoContext.CurrentLevel:get_entity_image(self.image_dead_id)
+        if not self.image_dead then
+            if not self.image_dead then
+                local image = KaizoImage:new()
+                image:load_entity_image_by_id(self.image_dead_id)
+                KaizoContext.CurrentLevel:add_entity_image(image)
+                self.image_dead = image
+            end
+        end
+    end
+
+    if self.is_dead then
+        self.image = self.image_dead
+    else
+        self.image = self.image_alive
     end
 
     if(self.image) then
@@ -125,8 +159,14 @@ function KaizoCoco:HandleProperty(prop)
         self.dir = prop.value
     end
 
+    if prop.name == "is_dead" then
+        self.is_dead = prop.value
+    end
+
+
     if self.is_edge_careful then
         self.image_id = 20
+        self.image_dead_id = 22
     end
 end
 
@@ -137,6 +177,136 @@ function KaizoCoco:HandlePlayerCollision(player, collide)
         else
             player.vel.y = -7
         end
+        if self.dir == 0 then
+            self.dir = player.looking * 7
+            self.is_projectile = true
+            
+        else
+            self.dir = 0
+            self.is_projectile = false
+        end
+        if (not player.is_spin_jump) and self.death_sound then
+            self.death_sound:Stop()
+            self.death_sound:Play()
+        end
+        if player.is_spin_jump then --die for real with spin jump
+            self.die = true
+        end
+        self.col.up = 4
+        self.col.down = 0
+        self.col.left = 4
+        self.col.right = 4
+        self.is_edge_careful = false
+        self.is_coward = false
+        self.is_dead = true
+    elseif collide.left == 4 then
+        if self.dir == 0 then
+            if self.death_sound then
+                self.death_sound:Stop()
+                self.death_sound:Play()
+            end
+            self.dir = -7
+            self.is_projectile = true
+            self.player_damage_timeout = 50
+        elseif self.player_damage_timeout == 0 then
+            self.col.left = 2
+            self.col.right = 2
+        end
+    
+    elseif collide.right == 4 then
+        if self.dir == 0 then
+            if self.death_sound then
+                self.death_sound:Stop()
+                self.death_sound:Play()
+            end
+
+            self.dir = 7
+            self.is_projectile = true
+            self.player_damage_timeout = 50
+            
+        elseif self.player_damage_timeout == 0 then
+            self.col.left = 2
+            self.col.right = 2
+        end
+    
+    end
+end
+
+function KaizoCoco:SaveState()
+    local state = KaizoEGG.SaveState(self)
+
+    state.is_projectile = self.is_projectile
+    state.is_dead = self.is_dead
+    state.image_dead_id = self.image_dead_id
+    state.player_damage_timeout = self.player_damage_timeout
+
+    return state
+end
+
+function KaizoCoco:LoadState(state)
+    KaizoEGG.LoadState(self,state)
+
+    self.is_projectile = state.is_projectile
+    self.is_dead = state.is_dead
+    self.image_dead_id = state.image_dead_id or self.image_dead_id
+    self.player_damage_timeout = state.player_damage_timeout or self.player_damage_timeout
+    
+end
+
+function KaizoCoco:handle_collision(collide, pos2, size2, ent)
+
+    if ent and ent.is_projectile and (collide.up ~= 0 or collide.down ~= 0 or collide.left ~= 0 or collide.right ~= 0) then
+        self.die = true
+    end
+
+    if collide.up == 6 or collide.down == 6 or collide.left == 6 or collide.right == 6 then
+        local temp = nil
+        temp = ent:HandleEntityCollision(self, collide)
+        if temp then
+            collide = temp
+        end
+    end
+
+    if (collide.down == 1 or collide.down == 2) and self.is_edge_careful then
+        if pos2.x < self.pos.x + self.size.x/2 then
+            self.edge_careful_corners.left = true
+        end
+        if pos2.x + size2.x > self.pos.x + self.size.x/2 then
+            self.edge_careful_corners.right = true
+        end
+    end
+
+    if (collide.down == 1 or ((not self.is_dead) and collide.down == 2)) and self.vel.y > 0 then
+        self.vel.y = 0
+        self.pos.y = pos2.y - self.size.y
+        self.jumped = false         --i can jump now
+        self.grounded = true
+    elseif not (collide.down == 1 or (collide.down == 2)) and not self.grounded then
+        self.grounded = false
+    end
+
+    if (collide.up == 1 or ((not self.is_dead) and collide.up == 2)) and self.vel.y < 0 then
+        self.vel.y = 0
+        self.pos.y = pos2.y + size2.y
+    end
+
+    if (collide.left == 1 or ((not self.is_dead) and collide.left == 2)) and self.vel.x < 0 then
+        self.vel.x = 0
+        self.pos.x = pos2.x + size2.x
+        if self.is_dead or (self.dir < 2 and self.dir > -2) then
+            self.dir = self.dir * -1
+        end
+    end
+
+    if (collide.right == 1 or ((not self.is_dead) and collide.right == 2)) and self.vel.x > 0 then
+        self.vel.x = 0
+        self.pos.x = pos2.x - self.size.x
+        if self.is_dead or (self.dir < 2 and self.dir > -2) then
+            self.dir = self.dir * -1
+        end
+    end
+
+    if collide.up == 5 or collide.down == 5 or collide.left == 5 or collide.right == 5 then
         self.die = true
     end
 end
