@@ -57,8 +57,11 @@ function KaizoPlayer:new(x,y)
     o.is_spin_jump = false
     o.pressing_jump = false
     o.pressing_up = false
+    o.pressing_run = false
 
     o.active_out_of_camera = true
+
+    o.grabbed_entity = nil
 
     o.jump_sound = KaizoContext.CurrentLevel:get_sound(2)
     o.hurt_sound = KaizoContext.CurrentLevel:get_sound(3)
@@ -122,15 +125,26 @@ function KaizoPlayer:update()
         self.pressing_jump = false
     end
 
+    if InputHandler.run then
+        self.pressing_run = true
+    else
+        self.pressing_run = false
+    end
+
     if InputHandler.up then
         self.pressing_up = true
     else
         self.pressing_up = false
     end
 
+    if self.grabbed_entity and not self.pressing_run then
+        self.ref_layer:add_entity(self.grabbed_entity)
+        self.grabbed_entity = nil
+    end
+
     if not self.going_right then
         if InputHandler.left then
-            if self.vel.x > -5 or (InputHandler.run and self.vel.x > -10) then
+            if self.vel.x > -5 or (self.pressing_run and self.vel.x > -10) then
                 self.vel.x = self.vel.x - 0.5
             end
             self.going_left = true
@@ -153,7 +167,7 @@ function KaizoPlayer:update()
 
     if not self.going_left then
         if InputHandler.right then
-            if self.vel.x < 5 or (InputHandler.run and self.vel.x < 10) then
+            if self.vel.x < 5 or (self.pressing_run and self.vel.x < 10) then
                 self.vel.x = self.vel.x + 0.5
             end
             self.going_right = true
@@ -210,7 +224,20 @@ function KaizoPlayer:update()
 
     FitCameraToSize(KaizoContext.CurrentLevel:get_current_section().Size)
 
+    if self.grabbed_entity then
+        if self.looking > 0 then
+            self.grabbed_entity.pos.x = self.pos.x + (self.size.x/4)*3
+        else
+            self.grabbed_entity.pos.x = self.pos.x + (self.size.x/4) - self.grabbed_entity.size.x
+        end
+
+        self.grabbed_entity.pos.y = self.pos.y + (self.size.y/4)*3 - self.grabbed_entity.size.y
+    end
     if self.die then
+        if self.grabbed_entity then
+            self.ref_layer:add_entity(self.grabbed_entity)
+            self.grabbed_entity = nil
+        end
         self:destroy()
         self.hurt_sound:Play()
         KaizoContext.DeathLoadState = 50
@@ -268,6 +295,10 @@ function KaizoPlayer:render()
         else
             self.image:render_incamera_scaled_from_to(0,32 * self.frame, 25, 32,self.pos.x + 25, self.pos.y - 1,-25, 32)
         end
+
+        if self.grabbed_entity then
+            self.grabbed_entity:render()
+        end
     else
         error("Image not loaded for KaizoSquare with ID: " .. tostring(self.image_id))
     end
@@ -278,6 +309,20 @@ function KaizoPlayer:destroy()
 end
 
 function KaizoPlayer:handle_collision(collide, pos2, size2, ent)
+
+    if not self.grabbed_entity and ent and ent.is_side_grabable and self.pressing_run and (collide.right > 0 or collide.left > 0) then
+        self.grabbed_entity = ent
+        ent.ref_layer:remove_entity(ent)
+        if self.looking > 0 then
+            self.grabbed_entity.pos.x = self.pos.x + (self.size.x/4)*3
+        else
+            self.grabbed_entity.pos.x = self.pos.x + (self.size.x/4) - self.grabbed_entity.size.x
+        end
+
+        self.grabbed_entity.pos.y = self.pos.y + (self.size.y/4)*3 - self.grabbed_entity.size.y
+
+        return
+    end
 
     if collide.up == 4 or collide.down == 4 or collide.left == 4 or collide.right == 4 then
         local temp = nil
@@ -431,7 +476,7 @@ function KaizoPlayer:do_collision()
 end
 
 function KaizoPlayer:SaveState()
-    return {
+     local state = {
         name = self.name,
         marked_for_deletion = self.marked_for_deletion,
         pos = {x = self.pos.x, y = self.pos.y},
@@ -455,7 +500,15 @@ function KaizoPlayer:SaveState()
         active = self.active,
         pressing_jump = self.pressing_jump,
         pressing_up = self.pressing_up,
+        pressing_run = self.pressing_run,
     }
+
+    if self.grabbed_entity then
+        state.grabbed_entity = self.grabbed_entity:SaveState()
+        state.grabbed_entity_name = self.grabbed_entity.name
+    end
+
+    return state
 end
 
 function KaizoPlayer:LoadState(state)
@@ -483,5 +536,11 @@ function KaizoPlayer:LoadState(state)
     self.active = state.active
     self.pressing_jump = state.pressing_jump
     self.pressing_up = state.pressing_up
+    self.pressing_run = state.pressing_run
+
+    if state.grabbed_entity and state.grabbed_entity_name then
+        self.grabbed_entity = KaizoEntitiesCreator[state.grabbed_entity_name]:new(0,0)
+        self.grabbed_entity:LoadState(state.grabbed_entity)
+    end
     
 end

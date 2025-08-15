@@ -65,6 +65,7 @@ function KaizoCoco:new(x,y)
     o.frametime = 0
     o.sec = 0
     o.is_edge_careful = false
+    o.is_side_grabable = false
 
     o.is_projectile = false
     o.is_dead = false
@@ -182,10 +183,11 @@ function KaizoCoco:HandlePlayerCollision(player, collide)
         if self.dir == 0 then
             self.dir = player.looking * 7
             self.is_projectile = true
-            
+            self.is_side_grabable = false
         else
             self.dir = 0
             self.is_projectile = false
+            self.is_side_grabable = true
         end
         if (not player.is_spin_jump) and self.death_sound then
             self.death_sound:Stop()
@@ -215,6 +217,7 @@ function KaizoCoco:HandleEntityCollision(entity, collide)
                 self.dir = -7
                 self.is_projectile = true
                 self.player_damage_timeout = 10
+                self.is_side_grabable = false
             elseif self.player_damage_timeout == 0 then
                 self.col.left = 2
                 self.col.right = 2
@@ -234,6 +237,7 @@ function KaizoCoco:HandleEntityCollision(entity, collide)
                 self.dir = 7
                 self.is_projectile = true
                 self.player_damage_timeout = 10
+                self.is_side_grabable = false
                 
             elseif self.player_damage_timeout == 0 then
                 self.col.left = 2
