@@ -99,6 +99,10 @@ function KaizoCoco:update()
         self.is_projectile = false
         self.is_side_grabable = true
     end
+
+    if self.is_dead and self.dir ~= 0 then
+        self.is_side_grabable = false
+    end
 end
 
 function KaizoCoco:render()
