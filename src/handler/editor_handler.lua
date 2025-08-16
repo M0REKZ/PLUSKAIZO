@@ -76,6 +76,9 @@ function KaizoLevelEditor:init()
     self.current_tile = nil
     self.current_entity = nil
 
+    self.prev_current_tile = self.current_tile
+    self.current_tile_image = KaizoImage:new()
+
     self.level_background_list = {}
     self.level_music_list = {}
 
@@ -468,6 +471,17 @@ function KaizoLevelEditor:render()
             RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
             RenderHandler:Print("Tile ID: "..self.current_tile, WindowSize.x / 4, WindowSize.y / 4 + 15)
             RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+
+            if self.prev_current_tile ~= self.current_tile then
+                self.prev_current_tile = self.current_tile
+                if self.current_tile > 0 and KaizoFileHandler:FileExists("data/images/entities/entity_" .. tostring(self.current_tile) .. ".png") then
+                    self.current_tile_image:load_tile_image_by_id(self.current_tile)
+                end
+            end
+
+            if self.current_tile > 0 and self.current_tile_image.image and KaizoFileHandler:FileExists("data/images/entities/entity_" .. tostring(self.current_tile) .. ".png") then
+                self.current_tile_image:render_to(WindowSize.x / 4, WindowSize.y / 4 + 45)
+            end
         end
     elseif self.setting_section_size then
         self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
