@@ -474,12 +474,12 @@ function KaizoLevelEditor:render()
 
             if self.prev_current_tile ~= self.current_tile then
                 self.prev_current_tile = self.current_tile
-                if self.current_tile > 0 and KaizoFileHandler:FileExists("data/images/entities/entity_" .. tostring(self.current_tile) .. ".png") then
+                if self.current_tile > 0 and KaizoFileHandler:FileExists("data/images/tiles/tile_" .. tostring(self.current_tile) .. ".png") then
                     self.current_tile_image:load_tile_image_by_id(self.current_tile)
                 end
             end
 
-            if self.current_tile > 0 and self.current_tile_image.image and KaizoFileHandler:FileExists("data/images/entities/entity_" .. tostring(self.current_tile) .. ".png") then
+            if self.current_tile > 0 and self.current_tile_image.image and KaizoFileHandler:FileExists("data/images/tiles/tile_" .. tostring(self.current_tile) .. ".png") then
                 self.current_tile_image:render_to(WindowSize.x / 4, WindowSize.y / 4 + 45)
             end
         end
