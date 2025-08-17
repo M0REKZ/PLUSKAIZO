@@ -232,6 +232,9 @@ function KaizoPlayer:update()
 
     if not self.grounded then
         self.jumped = true
+    else
+        self.jumped = false  --i can jump now
+        self.is_spin_jump = false
     end
 
     self.pos.x = self.pos.x + self.vel.x
@@ -304,7 +307,7 @@ function KaizoPlayer:render()
             self.frame = 0
         end
 
-        if self.frametime == -1 then
+        if self.frametime <= -1 then
             self.frametime = 16
         end
 
@@ -361,9 +364,7 @@ function KaizoPlayer:handle_collision(collide, pos2, size2, ent)
     if collide.down == 1 and self.vel.y > 0 then
         self.vel.y = 0
         self.pos.y = pos2.y - self.size.y
-        self.jumped = false         --i can jump now
         self.grounded = true
-        self.is_spin_jump = false
     elseif not collide.down == 1 and not self.grounded then
         self.grounded = false
     end
