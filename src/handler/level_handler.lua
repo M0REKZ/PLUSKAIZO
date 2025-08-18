@@ -99,7 +99,9 @@ function KaizoLevelHandler:LoadTMJSectionFromString(str)
 end
 
 function KaizoLevelHandler:LoadLevelFromName(name)
-    love.audio.stop()
+    if not IS_KAIZO_SERVER then
+        love.audio.stop()
+    end
     KaizoContext.CurrentLevel = nil
 
     --always reset camera

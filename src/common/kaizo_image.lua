@@ -33,14 +33,16 @@ function KaizoImage:new()
 end
 
 function KaizoImage:load(imagePath)
-    self.image = love.graphics.newImage(imagePath)
-    if not self.image then
-        error("Failed to load image: " .. imagePath)
+    if not IS_KAIZO_SERVER then
+        self.image = love.graphics.newImage(imagePath)
+        if not self.image then
+            error("Failed to load image: " .. imagePath)
+        end
+        self.image_path = imagePath -- for save states
+        self.love2d_quad = love.graphics.newQuad(0, 0, self.image:getWidth(), self.image:getHeight(), self.image)
+        self.width = self.image:getWidth()
+        self.height = self.image:getHeight()
     end
-    self.image_path = imagePath -- for save states
-    self.love2d_quad = love.graphics.newQuad(0, 0, self.image:getWidth(), self.image:getHeight(), self.image)
-    self.width = self.image:getWidth()
-    self.height = self.image:getHeight()
 end
 
 function KaizoImage:load_entity_image_by_id(id)

@@ -28,6 +28,13 @@ KaizoFileHandler.PLUSKAIZO_CUSTOM_PATH = nil
 KaizoFileHandler.PLUSKAIZO_PLATFORM_PATH = ""
 
 function KaizoFileHandler:InitUserPath()
+
+    if IS_KAIZO_SERVER then
+        self.PLUSKAIZO_CUSTOM_PATH = os.getenv( "HOME" ).."/PLUSKAIZO/"
+        self.PLUSKAIZO_LOVE_PATH = os.getenv( "PWD" ).."/"
+        return
+    end
+
     local platform = love.system.getOS()
 
     if platform == "Linux" then
@@ -59,6 +66,22 @@ end
 -- since nativefs mounted PLUSKAIZO_USER_PATH, love will still read files
 -- from the custom PLUSKAIZO directory
 function KaizoFileHandler:GetFileAsString(filepath)
+
+    if IS_KAIZO_SERVER then
+        local f = io.open(self.PLUSKAIZO_CUSTOM_PATH..filepath, "r")
+        if not f then
+            print("Failed to open file: " .. self.PLUSKAIZO_CUSTOM_PATH..filepath)
+            f = io.open(self.PLUSKAIZO_LOVE_PATH..filepath, "r")
+            if not f then
+                print("Failed to open file: " .. self.PLUSKAIZO_LOVE_PATH..filepath)
+                return nil
+            end
+        end
+        local content = f:read("*all")
+        f:close()
+        return content
+    end
+
     if KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_LOVE_PATH or KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_CUSTOM_PATH then
         return love.filesystem.read(filepath)
     else
@@ -67,6 +90,25 @@ function KaizoFileHandler:GetFileAsString(filepath)
 end
 
 function KaizoFileHandler:GetFileLine(filepath)
+
+    if IS_KAIZO_SERVER then
+        local f = io.open(self.PLUSKAIZO_CUSTOM_PATH..filepath, "r")
+        if not f then
+            print("Failed to open file: " .. self.PLUSKAIZO_CUSTOM_PATH..filepath)
+            f = io.open(self.PLUSKAIZO_LOVE_PATH..filepath, "r")
+            if not f then
+                print("Failed to open file: " .. self.PLUSKAIZO_LOVE_PATH..filepath)
+                return nil
+            end
+        end
+        local lines = {}
+        for line in f:lines() do
+            lines[#lines + 1] = line
+        end
+        f:close()
+        return lines
+    end
+
     if KaizoFileHandler.PLUSKAIZO_USER_PATH == KaizoFileHandler.PLUSKAIZO_LOVE_PATH then
         return love.filesystem.lines(filepath)
     elseif KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_CUSTOM_PATH then
@@ -87,6 +129,16 @@ function KaizoFileHandler:WriteFileTo(filepath, content)
 end
 
 function KaizoFileHandler:FileExists(filepath)
+
+    if IS_KAIZO_SERVER then
+        local f = io.open(self.PLUSKAIZO_CUSTOM_PATH..filepath, "r")
+        if not f then
+            f = io.open(self.PLUSKAIZO_LOVE_PATH..filepath, "r")
+        end
+        if f then f:close() end
+        return f ~= nil
+    end
+
     if KaizoFileHandler.PLUSKAIZO_USER_PATH == KaizoFileHandler.PLUSKAIZO_LOVE_PATH or KaizoFileHandler.PLUSKAIZO_USER_PATH == self.PLUSKAIZO_CUSTOM_PATH then
         return love.filesystem.getInfo(filepath)
     else

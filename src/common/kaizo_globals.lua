@@ -26,6 +26,8 @@ Camera = {x = 0, y = 0}
 WindowSize = {x = 768, y = 512}
 RealWindowSize = {}
 
+IS_KAIZO_SERVER = false
+
 KaizoConfig = {
     "up", -- 1 up
     "down", -- 2 down

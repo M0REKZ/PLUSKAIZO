@@ -49,7 +49,9 @@ function KaizoContext:init()
         KaizoConfigHandler:SaveConfig()
     end
 
-    KaizoLevelHandler:LoadLevelFromName("init")
+    if not IS_KAIZO_SERVER then
+        KaizoLevelHandler:LoadLevelFromName("init")
+    end
 end
 
 function KaizoContext:update()

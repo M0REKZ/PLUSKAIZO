@@ -38,9 +38,11 @@ function KaizoSound:Load(soundPath, is_music)
         str = "static"
     end
 
-    self.sound = love.audio.newSource(soundPath, str)
-    if not self.sound then
-        error("failed to load sound: " .. soundPath)
+    if not IS_KAIZO_SERVER then
+        self.sound = love.audio.newSource(soundPath, str)
+        if not self.sound then
+            error("failed to load sound: " .. soundPath)
+        end
     end
 
     self.sound_path = soundPath
@@ -60,19 +62,27 @@ end
 
 function KaizoSound:Loop(b)
     local lb = b or true
-    self.sound:setLooping(lb)
+    if not IS_KAIZO_SERVER then
+        self.sound:setLooping(lb)
+    end
 end
 
 function KaizoSound:Play()
-    self.sound:play()
+    if not IS_KAIZO_SERVER then
+        self.sound:play()
+    end
 end
 
 function KaizoSound:Pause()
-    self.sound:pause()
+    if not IS_KAIZO_SERVER then
+        self.sound:pause()
+    end
 end
 
 function KaizoSound:Stop()
-    self.sound:stop()
+    if not IS_KAIZO_SERVER then
+        self.sound:stop()
+    end
 end
 
 function KaizoSound:SaveState()
