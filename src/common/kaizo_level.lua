@@ -74,6 +74,15 @@ function KaizoLevel:get_entity_image(image_id)
     return nil -- Image not found
 end
 
+function KaizoLevel:get_entity_image_by_path(image_path)
+    for _, image in ipairs(self.EntityImages) do
+        if image.image_path == image_path then
+            return image
+        end
+    end
+    return nil -- Image not found
+end
+
 function KaizoLevel:add_tile_image(image)
     self.TileImages[#self.TileImages + 1] = image
 end
@@ -81,6 +90,15 @@ end
 function KaizoLevel:get_tile_image(image_id)
     for _, image in ipairs(self.TileImages) do
         if image.id == image_id then
+            return image
+        end
+    end
+    return nil -- Image not found
+end
+
+function KaizoLevel:get_tile_image_by_path(image_path)
+    for _, image in ipairs(self.TileImages) do
+        if image.image_path == image_path then
             return image
         end
     end
