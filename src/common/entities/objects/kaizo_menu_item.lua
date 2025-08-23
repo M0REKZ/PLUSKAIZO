@@ -85,7 +85,7 @@ function KaizoMenuItem:update()
 
     if self.item > 0 then
         if not self.waiting_for_key_release then
-            if InputHandler.jump or LoveKeysPressed["return"] then
+            if InputHandler.jump or (LoveKeysPressed["return"] or SDLKeysPressed[SDL.SCANCODE_RETURN]) then
                 self.waiting_for_key_release = true
                 self.option_selected = true
             elseif InputHandler.up and self.option > 1 then
@@ -97,7 +97,7 @@ function KaizoMenuItem:update()
             end
         end
 
-        if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not LoveKeysPressed["return"] then
+        if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not (LoveKeysPressed["return"] or SDLKeysPressed[SDL.SCANCODE_RETURN]) then
             self.waiting_for_key_release = false
         end
 

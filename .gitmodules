@@ -1,0 +1,9 @@
+[submodule "src/external/sdl2"]
+	path = src/external/sdl2
+	url = https://github.com/torch/sdl2-ffi.git
+[submodule "src/external/sdl2_image"]
+	path = src/external/sdl2_image
+	url = https://github.com/dinau/luajit-sdl2_image.git
+[submodule "src/external/sdl2_ttf"]
+	path = src/external/sdl2_ttf
+	url = https://github.com/dinau/luajit-sdl2_ttf.git

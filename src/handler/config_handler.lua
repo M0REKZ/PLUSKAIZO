@@ -32,6 +32,34 @@ KaizoConfigHandler = {
 }
 
 function KaizoConfigHandler:init()
+    if IS_NOT_LOVE then
+        KaizoConfig = {
+        SDL.SCANCODE_UP, -- 1 up
+        SDL.SCANCODE_DOWN, -- 2 down
+        SDL.SCANCODE_LEFT, -- 3 left
+        SDL.SCANCODE_RIGHT, -- 4 right
+        SDL.SCANCODE_Z, -- 5 jump
+        SDL.SCANCODE_A, -- 6 spin jump
+        SDL.SCANCODE_S, -- 7 run
+        SDL.SCANCODE_L, -- 8 load state
+        SDL.SCANCODE_K, -- 9 save state
+        SDL.SCANCODE_R, -- 10 reset
+        }
+    else
+        KaizoConfig = {
+        "up", -- 1 up
+        "down", -- 2 down
+        "left", -- 3 left
+        "right", -- 4 right
+        "z", -- 5 jump
+        "a", -- 6 spin jump
+        "s", -- 7 run
+        "l", -- 8 load state
+        "k", -- 9 save state
+        "r", -- 10 reset
+        }
+    end
+
     self.background = KaizoImage:new()
     self.background:load("data/images/blacksquare.png")
 end
@@ -49,7 +77,7 @@ function KaizoConfigHandler:update()
 
     if self.active then
         if self.waiting_for_new_key and not self.waiting_for_key_release and LoveLastKeyPressed then
-            if not (LoveLastKeyPressed == "escape") and LoveKeysPressed[LoveLastKeyPressed] then
+            if not (LoveLastKeyPressed == "escape" or SDLLastKeyPressed == SDL.SCANCODE_ESCAPE) and (LoveKeysPressed[LoveLastKeyPressed] or SDLKeysPressed[SDLLastKeyPressed]) then
                 KaizoConfig[self.config_key] = LoveLastKeyPressed
                 self.waiting_for_new_key = false
                 self.waiting_for_key_release = true
@@ -70,11 +98,11 @@ function KaizoConfigHandler:update()
 
         end
 
-        if self.waiting_for_key_release and not LoveKeysPressed[LoveLastKeyPressed] and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not LoveKeysPressed["escape"] then
+        if self.waiting_for_key_release and not (LoveKeysPressed[LoveLastKeyPressed] or SDLKeysPressed[SDLLastKeyPressed]) and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not (LoveKeysPressed["escape"] or SDLKeysPressed[SDL.SCANCODE_ESCAPE]) then
             self.waiting_for_key_release = false
         end
 
-        if (not self.waiting_for_key_release) and LoveKeysPressed["escape"] then
+        if (not self.waiting_for_key_release) and (LoveKeysPressed["escape"] or SDLKeysPressed[SDL.SCANCODE_ESCAPE]) then
             self.active = false
             self.waiting_for_key_release = false
             self.config_key = 1
@@ -92,7 +120,11 @@ function KaizoConfigHandler:render()
     end
 
     self.background:render_scaled_to(0,0,256,32)
-    RenderHandler:Print("Handling key: " .. KaizoConfigNames[self.config_key] .. " which now is " .. KaizoConfig[self.config_key], 10 , 10)
+    if IS_NOT_LOVE then
+        RenderHandler:Print("Handling key: " .. KaizoConfigNames[self.config_key] .. " which now is " .. tostring(ffi.string(SDL.getScancodeName(KaizoConfig[self.config_key]))), 10 , 10)
+    else
+        RenderHandler:Print("Handling key: " .. KaizoConfigNames[self.config_key] .. " which now is " .. KaizoConfig[self.config_key], 10 , 10)
+    end
 end
 
 function KaizoConfigHandler:SaveConfig()
@@ -105,8 +137,21 @@ function KaizoConfigHandler:LoadConfig()
     local jsonstr = KaizoFileHandler:GetFileAsString("config/kzconfig.json")
     
     if jsonstr then
-        local configfile = nil
-        KaizoConfig = KaizoJSONHandler:FromJSON(jsonstr)
+        local config = KaizoJSONHandler:FromJSON(jsonstr)
+        if not config then
+            return false
+        end
+
+        if IS_NOT_LOVE then
+            if type(config[1]) ~= "number" then
+                return false
+            end
+        else
+            if type(config[1]) ~= "string" then
+                return false
+            end
+        end
+        KaizoConfig = config
         return true
     end
 

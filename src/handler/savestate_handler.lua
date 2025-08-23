@@ -39,7 +39,12 @@ function SaveStateHandler:LoadState()
 end
 
 function SaveStateHandler:LoadStateFrom(statepath)
-    love.audio.stop()
+    if IS_NOT_LOVE then
+        SDL_MIXER.HaltMusic()
+        SDL_MIXER.HaltChannel(-1)
+    else
+        love.audio.stop()
+    end
     KaizoContext.CurrentLevel = nil
     local jsonstr = KaizoFileHandler:GetFileAsString(statepath)
     if not jsonstr then

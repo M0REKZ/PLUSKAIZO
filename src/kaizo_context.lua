@@ -54,7 +54,6 @@ end
 
 function KaizoContext:update()
     InputHandler:UpdateInput()
-
     if self.LevelEditor then
         self:update_editor()
     else
@@ -115,7 +114,12 @@ function KaizoContext:update_level()
         Camera.x = 0
         Camera.y = 0
         self.GoToLevelEditor = false
-        love.audio.stop() --this should be under a handler
+        if IS_NOT_LOVE then --this should be under a handler
+            SDL_MIXER.HaltMusic()
+            SDL_MIXER.HaltChannel(-1)
+        else
+            love.audio.stop()
+        end
     end
 end
 

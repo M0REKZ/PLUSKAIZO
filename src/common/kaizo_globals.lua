@@ -26,18 +26,17 @@ Camera = {x = 0, y = 0}
 WindowSize = {x = 768, y = 512}
 RealWindowSize = {}
 
-KaizoConfig = {
-    "up", -- 1 up
-    "down", -- 2 down
-    "left", -- 3 left
-    "right", -- 4 right
-    "z", -- 5 jump
-    "a", -- 6 spin jump
-    "s", -- 7 run
-    "l", -- 8 load state
-    "k", -- 9 save state
-    "r", -- 10 reset
-}
+IS_NOT_LOVE = false
+KaizoSDLWindow = nil
+KaizoSDLRenderer = nil
+SDL = {}
+SDL_IMAGE = {}
+SDL_TTF = {}
+SDL_MIXER = {}
+SDL_MIXER_MAX_CHANNELS = 8
+SDL_MIXER_CHANNEL_SOUNDS = {}
+
+KaizoConfig = {}
 
 KaizoConfigNames = {
     "up", -- 1 up
@@ -55,6 +54,10 @@ KaizoConfigNames = {
 LoveKeysPressed = {}
 LoveLastKeyPressed = nil --for key config
 LoveTextInput = ""
+
+SDLKeysPressed = {}
+SDLLastKeyPressed = nil --for key config
+
 
 function FitCameraToSize(size)
     if Camera.x < 0 then
