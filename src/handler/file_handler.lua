@@ -17,7 +17,9 @@
 --]]
 
 require("common.kaizo_globals")
-local nativefs = require("external.nativefs")
+if not IS_NOT_LOVE then
+    local nativefs = require("external.nativefs")
+end
 
 KaizoFileHandler = {}
 

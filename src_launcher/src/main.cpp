@@ -55,7 +55,11 @@ int main()
 
 int create_directory(const char* filepath)
 {
+    #ifdef _WIN32
+    return mkdir(filepath);
+    #else
     return mkdir(filepath, 0755);
+    #endif
 }
 
 void set_current_directory(const char* filepath)
