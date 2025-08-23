@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --]]
-
 require("common.kaizo_globals")
 
 InputHandler = {
@@ -42,7 +41,106 @@ InputHandler = {
 
 function InputHandler:UpdateInput()
 
-    if not IS_MOBILE then
+    if IS_NOT_LOVE then
+        
+        local state = ffi.new("Uint8*")
+        state = SDL.getKeyboardState(nil)
+
+        if self.wait_before_pause > 0 then
+            self.wait_before_pause = self.wait_before_pause -1
+            self.pause = false
+        elseif(state[SDL.SCANCODE_ESCAPE] ~= 0) then
+            self.pause = true
+        else
+            self.pause = false
+        end
+
+        if state[KaizoConfig[3]] ~= 0 then
+            self.left = true
+        else
+            self.left = false
+        end
+
+        if state[KaizoConfig[4]] ~= 0 then
+            self.right = true
+        else
+            self.right = false
+        end
+
+        if state[KaizoConfig[2]] ~= 0 then
+            self.down = true
+        else
+            self.down = false
+        end
+
+        if state[KaizoConfig[1]] ~= 0 then
+            self.up = true
+        else
+            self.up = false
+        end
+
+        if state[KaizoConfig[5]] ~= 0 then
+            self.jump = true
+        else
+            self.jump = false
+        end
+
+        if state[KaizoConfig[6]] ~= 0 then
+            self.spinjump = true
+        else
+            self.spinjump = false
+        end
+
+        if state[KaizoConfig[7]] ~= 0 then
+            self.run = true
+        else
+            self.run = false
+        end
+
+        if state[KaizoConfig[8]] ~= 0 then
+            self.loadstate = true
+        else
+            self.loadstate = false
+        end
+
+        if state[KaizoConfig[9]] ~= 0 then
+            self.savestate = true
+        else
+            self.savestate = false
+        end
+
+        if state[KaizoConfig[10]] ~= 0 then
+            self.reset = true
+        else
+            self.reset = false
+        end
+
+        local state2 = ffi.new("Uint32")
+        local x = ffi.new("int[1]")
+        local y = ffi.new("int[1]")
+        state2 = SDL.getMouseState(x,y)
+        self.mouse_x, self.mouse_y = x[0], y[0]
+
+        if state2 == SDL.BUTTON_LMASK then
+            self.mouse_click = true
+        else
+            self.mouse_click = false
+        end
+
+        if state2 == SDL.BUTTON_RMASK then
+            self.mouse_right_click = true
+        else
+            self.mouse_right_click = false
+        end
+
+        if state2 == SDL.BUTTON_MMASK then
+            self.mouse_middle_click = true
+        else
+            self.mouse_middle_click = false
+        end
+
+
+    elseif not IS_MOBILE then
 
         if self.wait_before_pause > 0 then
             self.wait_before_pause = self.wait_before_pause -1

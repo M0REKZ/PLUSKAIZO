@@ -41,7 +41,7 @@ function KaizoLevelHandler:LoadTMJSectionFromString(str)
                         newsection.is_initial_section = property.value
                     elseif property.name == "music" then
                         local mus = KaizoSound:new()
-                        mus:Load(property.value)
+                        mus:Load(property.value, true)
                         newsection.Music = mus
                     end
                 end
@@ -99,7 +99,12 @@ function KaizoLevelHandler:LoadTMJSectionFromString(str)
 end
 
 function KaizoLevelHandler:LoadLevelFromName(name)
-    love.audio.stop()
+    if IS_NOT_LOVE then
+        SDL_MIXER.HaltMusic()
+        SDL_MIXER.HaltChannel(-1)
+    else
+        love.audio.stop()
+    end
     KaizoContext.CurrentLevel = nil
 
     --always reset camera

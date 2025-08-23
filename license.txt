@@ -6,9 +6,9 @@ and PLUSKAIZO is under the "GNU GENERAL PUBLIC LICENSE Version 3" that can be fo
 PLUSKAIZO implies all files located here, which are under the "GNU GENERAL PUBLIC LICENSE
 Version 3" that can be found below, however there are the next exceptions:
 
--   All files in the "src/external" directory are NOT under the "GNU GENERAL PUBLIC LICENSE
-    Version 3", since these are external libraries used by PLUSKAIZO, which have their own
-    license.
+-   All files in the "src/external" and "src_launcher/src/external" directories are NOT
+    under the "GNU GENERAL PUBLIC LICENSE Version 3", since these are external libraries
+    used by PLUSKAIZO, which have their own license.
 -   All files mentioned in the file "others.txt" (which is located in this same directory)
     are NOT under the "GNU GENERAL PUBLIC LICENSE Version 3".
 -   All files in the "data" directory that are not mentioned in the file "others.txt"

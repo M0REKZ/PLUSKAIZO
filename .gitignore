@@ -1,4 +1,8 @@
 PLUSKAIZO.love
+PLUSKAIZO
+PLUSKAIZO.exe
 build/*
 love-bin/bin/*
 .vscode/*
+src_launcher/build/*
+src_launcher/obj/*

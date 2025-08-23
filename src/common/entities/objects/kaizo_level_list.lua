@@ -51,6 +51,7 @@ function KaizoLevelList:new(x, y)
         levelname = o.levels[index]
 
         if string.gsub(levelname, ".lvlx", "") == "init" then
+            print("removing init")
             table.remove(o.levels, index)
         end
 
@@ -69,6 +70,7 @@ function KaizoLevelList:new(x, y)
             goto continue
         end
 
+        print("removing invalid level: " .. levelname)
         table.remove(o.levels, index)
 
         ::continue::
@@ -79,7 +81,7 @@ end
 
 function KaizoLevelList:update()
     if not self.waiting_for_key_release then
-        if InputHandler.jump or LoveKeysPressed["return"] then
+        if InputHandler.jump or (LoveKeysPressed["return"] or SDLKeysPressed[SDL.SCANCODE_RETURN]) then
             self.waiting_for_key_release = true
             local name = string.gsub(self.levels[self.level_selected],".lvlx","")
             name = string.gsub(name,".kzlvl","")
@@ -95,11 +97,11 @@ function KaizoLevelList:update()
         end
     end
 
-    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not LoveKeysPressed["escape"] and not LoveKeysPressed["return"] then
+    if self.waiting_for_key_release and not InputHandler.up and not InputHandler.down and not InputHandler.jump and not LoveKeysPressed["escape"] and not LoveKeysPressed["return"] and not SDLKeysPressed[SDL.SCANCODE_ESCAPE] and not SDLKeysPressed[SDL.SCANCODE_RETURN] then
         self.waiting_for_key_release = false
     end
 
-    if (not self.waiting_for_key_release) and LoveKeysPressed["escape"] then
+    if (not self.waiting_for_key_release) and (LoveKeysPressed["escape"] or SDLKeysPressed[SDL.SCANCODE_ESCAPE]) then
         self:destroy()
     end
 end

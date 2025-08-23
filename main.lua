@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --]]
 
-love.filesystem.setRequirePath("?.lua;?/init.lua;src/?.lua;src/?/init.lua")
+love.filesystem.setRequirePath("?.lua;?/init.lua;src/?.lua;src/?/init.lua;src/external/?.lua;src/external/?/init.lua")
 require("common/kaizo_globals")
 require("kaizo_context")
 require("common/kaizo_level")
