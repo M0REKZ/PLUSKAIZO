@@ -7,6 +7,9 @@ end
 ffi = require 'ffi'
 
 require("common.kaizo_globals")
+
+IS_NOT_LOVE = true
+
 require("kaizo_context")
 require("common.kaizo_level")
 require("handler.file_handler")
@@ -41,7 +44,6 @@ end
 set_current_directory(os.getenv( "PWD" ))
 
 local running = true
-IS_NOT_LOVE = true
 
 KaizoSDLWindow = ffi.new("SDL_Window*")
 KaizoSDLRenderer = ffi.new("SDL_Renderer*")
