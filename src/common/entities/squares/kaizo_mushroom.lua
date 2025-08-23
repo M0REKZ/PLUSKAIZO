@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --]]
 
-require("common/kaizo_image")
-require("common/kaizo_collision")
+require("common.kaizo_image")
+require("common.kaizo_collision")
 require("common.kaizo_globals")
 
 KaizoMushroom = setmetatable({}, {__index = KaizoSquare})

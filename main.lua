@@ -17,9 +17,9 @@
 --]]
 
 love.filesystem.setRequirePath("?.lua;?/init.lua;src/?.lua;src/?/init.lua;src/external/?.lua;src/external/?/init.lua")
-require("common/kaizo_globals")
+require("common.kaizo_globals")
 require("kaizo_context")
-require("common/kaizo_level")
+require("common.kaizo_level")
 require("handler.file_handler")
 require("handler.render_handler")
 push = require("external.push") --required for pixel perfect scaling

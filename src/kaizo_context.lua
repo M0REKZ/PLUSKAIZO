@@ -16,10 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --]]
 
-require("common/kaizo_level")
-require("common/entities/kaizo_square")
-require("common/kaizo_section")
-require("common/kaizo_layer")
+require("common.kaizo_level")
+require("common.entities.kaizo_square")
+require("common.kaizo_section")
+require("common.kaizo_layer")
 require("common.kaizo_image")
 require("common.entities.squares.kaizo_player")
 require("common.entities.squares.kaizo_egg")

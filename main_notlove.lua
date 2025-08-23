@@ -15,8 +15,8 @@ require("common.kaizo_level")
 require("handler.file_handler")
 
 SDL = require("sdl2")
-SDL_IMAGE = require("sdl2_image/sdl2_image")
-SDL_TTF = require("sdl2_ttf/sdl2_ttf")
+SDL_IMAGE = require("sdl2_image.sdl2_image")
+SDL_TTF = require("sdl2_ttf.sdl2_ttf")
 SDL_MIXER = require("lib.sdl2_mixer")
 
 if SDL.init(SDL.INIT_VIDEO) < 0 then
