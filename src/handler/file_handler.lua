@@ -33,7 +33,11 @@ function KaizoFileHandler:InitUserPath()
 
     if IS_NOT_LOVE then
         self.PLUSKAIZO_CUSTOM_PATH = os.getenv( "HOME" ).."/PLUSKAIZO/"
-        self.PLUSKAIZO_LOVE_PATH = os.getenv( "PWD" ).."/"
+        if ffi.os == "Windows" then
+            self.PLUSKAIZO_LOVE_PATH = os.getenv( "CD" ).."/"
+        else
+            self.PLUSKAIZO_LOVE_PATH = os.getenv( "PWD" ).."/"
+        end
         return
     end
 
