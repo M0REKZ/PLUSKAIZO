@@ -1,4 +1,4 @@
-package.path = package.path .. "?.lua;?/init.lua;src/?.lua;src/?/init.lua;src/external/?.lua;src/external/?/init.lua"
+package.path = package.path .. "./?.lua;./?/init.lua;./src/?.lua;./src/?/init.lua;./src/external/?.lua;./src/external/?/init.lua"
 
 if jit.arch == "arm" or jit.arch == "arm64" or jit.arch == "arm64be" then
     jit.off()
