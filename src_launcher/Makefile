@@ -61,8 +61,7 @@ $(BUILDDIR)/PLUSKAIZO: $(OBJECTS) | $(BUILDDIR)
 	$(CXXNAME) $(CXXFLAGS) -o $@ $(OBJECTS) $(LUAJITLIB)
 	
 clean:
-	rm $(OBJDIR)/*.o
-	rm $(OBJDIR)/*.d
+	rm -r $(BUILDDIR)
 
 $(OBJDIR)/winicon.o: $(OBJDIR) $(SRCDIR)/windows/icon.rc
 	$(CROSSCXXPREFIX)windres $(SRCDIR)/windows/icon.rc -o $(OBJDIR)/winicon.o

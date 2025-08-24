@@ -16,6 +16,7 @@ LOVEMACZIPNAME = PLUSKAIZO_macOS.zip
 LOVEMAC = $(LOVEBUILDBINDIR)/$(LOVEMACNAME)
 LOVEMACZIP = $(LOVEBUILDDIR)/$(LOVEMACZIPNAME)
 
+SUBBUILDDIR = $(LOVEBUILDDIR)
 LAUNCHERLIBS =
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -41,16 +42,16 @@ all: $(LOVEBUILDDIR) launcher-all
 	cp $(CURDIR)/src_launcher/build/PLUSKAIZO $(LOVEBUILDDIR)/PLUSKAIZO
 
 crosslinux64: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/linux64/*
-crosslinux64: $(LOVEBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64 $(LOVEBUILDDIR)/PLUSKAIZO
+crosslinux64: $(SUBBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64
+	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64 $(SUBBUILDDIR)/PLUSKAIZO
 
 crosswin32: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/win32/*
-crosswin32: $(LOVEBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe $(LOVEBUILDDIR)/PLUSKAIZO.exe
+crosswin32: $(SUBBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe
+	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe $(SUBBUILDDIR)/PLUSKAIZO.exe
 
 crosswin64: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/win64/*
-crosswin64: $(LOVEBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe $(LOVEBUILDDIR)/PLUSKAIZO.exe
+crosswin64: $(SUBBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe
+	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe $(SUBBUILDDIR)/PLUSKAIZO.exe
 
 macapp: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/macos/*
 macapp: $(LOVEBUILDDIR) $(CURDIR)/src_launcher/build/PLUSKAIZO
@@ -69,17 +70,29 @@ macapp: $(LOVEBUILDDIR) $(CURDIR)/src_launcher/build/PLUSKAIZO
 	cp license.txt $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/license.txt
 	cp main_notlove.lua $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/main_notlove.lua
 
-clean:
-	cd $(CURDIR)/src_launcher && make clean
+win32-release: SUBBUILDDIR=$(LOVEBUILDDIR)/win32
+win32-release: $(SUBBUILDDIR) crosswin32 launcher-all
+
+win64-release: SUBBUILDDIR=$(LOVEBUILDDIR)/win64
+win64-release: $(SUBBUILDDIR) crosswin64 launcher-all
+
+linux64-release: SUBBUILDDIR=$(LOVEBUILDDIR)/linux64
+linux64-release: $(SUBBUILDDIR) crosslinux64 launcher-all
+
+clean: clean-launcher
 	rm -r $(LOVEBUILDDIR)
 
-launcher-all:
-	cp $(LAUNCHERLIBS) $(LOVEBUILDDIR)/
-	cp -R $(CURDIR)/src/ $(LOVEBUILDDIR)/src/
-	cp -R $(CURDIR)/data/ $(LOVEBUILDDIR)/data/
-	cp readme.txt $(LOVEBUILDDIR)/readme.txt
-	cp license.txt $(LOVEBUILDDIR)/license.txt
-	cp main_notlove.lua $(LOVEBUILDDIR)/main_notlove.lua
+clean-launcher:
+	cd $(CURDIR)/src_launcher && make clean
+
+launcher-all: $(SUBBUILDDIR)
+	mkdir -p $(SUBBUILDDIR)
+	cp $(LAUNCHERLIBS) $(SUBBUILDDIR)/
+	cp -R $(CURDIR)/src/ $(SUBBUILDDIR)/src/
+	cp -R $(CURDIR)/data/ $(SUBBUILDDIR)/data/
+	cp readme.txt $(SUBBUILDDIR)/readme.txt
+	cp license.txt $(SUBBUILDDIR)/license.txt
+	cp main_notlove.lua $(SUBBUILDDIR)/main_notlove.lua
 
 $(CURDIR)/src_launcher/build/PLUSKAIZO:
 	cd $(CURDIR)/src_launcher && make all
@@ -140,3 +153,7 @@ love-release: $(LOVEBUILDBINDIR) $(LOVEZIP) $(LOVEWIN32) $(LOVEMAC) $(LOVELINUX6
 	cd $(LOVEBUILDBINDIR) && zip -r ../$(LOVELINUX64ZIPNAME) ./$(LOVELINUX64NAME)
 	cd $(LOVEBUILDDIR) && rm -r ./bin
 
+love: $(LOVEZIP)
+love-win32: $(LOVEWIN32)
+love-linux64: $(LOVELINUX64)
+love-mac: $(LOVEMAC)
