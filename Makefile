@@ -38,23 +38,36 @@ ifeq ($(OS),Windows_NT)
 endif
 
 all: $(LOVEBUILDDIR) launcher-all
-	cd $(CURDIR)/src_launcher && make all
 	cp $(CURDIR)/src_launcher/build/PLUSKAIZO $(LOVEBUILDDIR)/PLUSKAIZO
 
 crosslinux64: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/linux64/*
-crosslinux64: $(LOVEBUILDDIR) launcher-all
-	cd $(CURDIR)/src_launcher && make crosslinux64
+crosslinux64: $(LOVEBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64
 	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64 $(LOVEBUILDDIR)/PLUSKAIZO
 
 crosswin32: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/win32/*
-crosswin32: $(LOVEBUILDDIR) launcher-all
-	cd $(CURDIR)/src_launcher && make crosswin32
+crosswin32: $(LOVEBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe
 	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe $(LOVEBUILDDIR)/PLUSKAIZO.exe
 
 crosswin64: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/win64/*
-crosswin64: $(LOVEBUILDDIR) launcher-all
-	cd $(CURDIR)/src_launcher && make crosswin64
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x64.exe $(LOVEBUILDDIR)/PLUSKAIZO.exe
+crosswin64: $(LOVEBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe
+	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe $(LOVEBUILDDIR)/PLUSKAIZO.exe
+
+macapp: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/macos/*
+macapp: $(LOVEBUILDDIR) $(CURDIR)/src_launcher/build/PLUSKAIZO
+	mkdir -p $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS
+	mkdir -p $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/Resources
+
+	cp $(CURDIR)/src_launcher/build/PLUSKAIZO $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/PLUSKAIZO
+	cp $(CURDIR)/src_launcher/src/mac/Info.plist $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/Info.plist
+	cp $(CURDIR)/src_launcher/src/mac/run_PLUSKAIZO_mac.sh $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/run_PLUSKAIZO_mac.sh
+	cp $(CURDIR)/love-bin/icon.icns $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/Resources/icon.icns
+
+	cp $(LAUNCHERLIBS) $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/
+	cp -R $(CURDIR)/src/ $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/src/
+	cp -R $(CURDIR)/data/ $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/data/
+	cp readme.txt $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/readme.txt
+	cp license.txt $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/license.txt
+	cp main_notlove.lua $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/main_notlove.lua
 
 clean:
 	cd $(CURDIR)/src_launcher && make clean
@@ -67,6 +80,18 @@ launcher-all:
 	cp readme.txt $(LOVEBUILDDIR)/readme.txt
 	cp license.txt $(LOVEBUILDDIR)/license.txt
 	cp main_notlove.lua $(LOVEBUILDDIR)/main_notlove.lua
+
+$(CURDIR)/src_launcher/build/PLUSKAIZO:
+	cd $(CURDIR)/src_launcher && make all
+
+$(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64:
+	cd $(CURDIR)/src_launcher && make crosslinux64
+
+$(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe:
+	cd $(CURDIR)/src_launcher && make crosswin32
+
+$(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe:
+	cd $(CURDIR)/src_launcher && make crosswin64
 
 ${LOVEBUILDDIR} :
 	mkdir -p $@
