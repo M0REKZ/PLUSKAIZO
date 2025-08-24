@@ -168,7 +168,7 @@ end
 function KaizoFileHandler:CreateDirectory(filepath)
 
     if IS_NOT_LOVE then
-        return create_directory(filepath)
+        return create_directory(self.PLUSKAIZO_CUSTOM_PATH..filepath)
     end
     
     if KaizoFileHandler.PLUSKAIZO_USER_PATH == KaizoFileHandler.PLUSKAIZO_LOVE_PATH then
