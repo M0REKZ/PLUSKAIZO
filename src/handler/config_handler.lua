@@ -76,9 +76,13 @@ function KaizoConfigHandler:update()
     end
 
     if self.active then
-        if self.waiting_for_new_key and not self.waiting_for_key_release and LoveLastKeyPressed then
+        if self.waiting_for_new_key and not self.waiting_for_key_release and (LoveLastKeyPressed or SDLLastKeyPressed) then
             if not (LoveLastKeyPressed == "escape" or SDLLastKeyPressed == SDL.SCANCODE_ESCAPE) and (LoveKeysPressed[LoveLastKeyPressed] or SDLKeysPressed[SDLLastKeyPressed]) then
-                KaizoConfig[self.config_key] = LoveLastKeyPressed
+                if IS_NOT_LOVE then
+                    KaizoConfig[self.config_key] = SDLLastKeyPressed
+                else
+                    KaizoConfig[self.config_key] = LoveLastKeyPressed
+                end
                 self.waiting_for_new_key = false
                 self.waiting_for_key_release = true
             end
