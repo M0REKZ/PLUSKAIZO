@@ -17,8 +17,7 @@ CROSSCXX_LINUX64FLAGS = -I $(SRCDIR) -I $(SRCDIR)/external/ --std=c++17 `pkg-con
 CROSSCXXPREFIX =
 CXXNAME = $(CXX)
 CXXFLAGS = `pkg-config --cflags --libs luajit` -g -I $(SRCDIR) -I $(SRCDIR)/external/ --std=c++17 -O3
-SOURCES = $(call rwildcard,./src/,*.cpp)
-OBJECTS = $(patsubst %,$(OBJDIR)/%,$(notdir $(SOURCES:%.cpp=%.o)))
+OBJECTS = $(OBJDIR)/main.o
 
 all: $(BUILDDIR) $(OBJDIR) $(BUILDDIR)/PLUSKAIZO
 
