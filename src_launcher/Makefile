@@ -15,9 +15,34 @@ CROSSCXX_LINUX64 = x86_64-linux-musl-
 CROSSCXX_LINUX64LUAJITLIB = $(CURDIR)/libs/linux64/libluajit.so
 CROSSCXX_LINUX64FLAGS = -I $(SRCDIR) -I $(SRCDIR)/external/ --std=c++17 `pkg-config --cflags luajit`
 CROSSCXXPREFIX =
+
+LUAJITLIB =
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+    LUAJITLIB = $(CROSSCXX_LINUX64LUAJITLIB)
+endif
+ifeq ($(UNAME_S),Darwin)
+    LUAJITLIB = $(CURDIR)/libs/macos/libluajit.dylib
+endif
+ifeq ($(OS),Windows_NT)
+	ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
+        LUAJITLIB = $(CROSSCXX_WIN64LUAJITLIB)
+    else
+        ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
+            LUAJITLIB = $(CROSSCXX_WIN64LUAJITLIB)
+        endif
+        ifeq ($(PROCESSOR_ARCHITECTURE),x86)
+            LUAJITLIB = $(CROSSCXX_WIN32LUAJITLIB)
+        endif
+    endif
+endif
+
 CXXNAME = $(CXX)
-CXXFLAGS = `pkg-config --cflags --libs luajit` -g -I $(SRCDIR) -I $(SRCDIR)/external/ --std=c++17 -O3
+CXXFLAGS = `pkg-config --cflags luajit` -g -I $(SRCDIR) -I $(SRCDIR)/external/ --std=c++17 -O3
 OBJECTS = $(OBJDIR)/main.o
+
+
 
 all: $(BUILDDIR) $(OBJDIR) $(BUILDDIR)/PLUSKAIZO
 
@@ -33,7 +58,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 -include $(OBJDIR)/*.d
 
 $(BUILDDIR)/PLUSKAIZO: $(OBJECTS) | $(BUILDDIR)
-	$(CXXNAME) $(CXXFLAGS) -o $@ $(OBJECTS)
+	$(CXXNAME) $(CXXFLAGS) -o $@ $(OBJECTS) $(LUAJITLIB)
 	
 clean:
 	rm $(OBJDIR)/*.o
