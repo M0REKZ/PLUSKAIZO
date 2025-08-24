@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 #include <sol/sol.hpp>
 #include <filesystem>
+#include <iostream>
 
 sol::state GlobalLuaState;
 char* Path = nullptr;
@@ -45,21 +46,46 @@ int main()
 {
     init_launcher();
 
-    GlobalLuaState.script_file("main_notlove.lua");
-
-
+    try
+    {
+        GlobalLuaState.safe_script_file("main_notlove.lua");
+    }
+    catch( const sol::error& e ) {
+		std::cout << "an expected error has occurred: " << e.what() << std::endl;
+	}
     return 0;
 }
 
 //functions that are missing in lua
 
-int create_directory(const char* filepath)
-{
-    #ifdef _WIN32
-    return mkdir(filepath);
-    #else
-    return mkdir(filepath, 0755);
-    #endif
+int create_directory(const char *dir) {
+    char tmp[256];
+    char *p = NULL;
+    size_t len;
+    int result;
+
+    snprintf(tmp, sizeof(tmp),"%s",dir);
+    len = strlen(tmp);
+    if (tmp[len - 1] == '/' || tmp[len - 1] == '\\')
+        tmp[len - 1] = 0;
+    for (p = tmp + 1; *p; p++)
+        if (*p == '/' || *p == '\\') {
+            *p = 0;
+        #ifdef _WIN32
+            result = mkdir(tmp);
+        #else
+            result = mkdir(tmp, S_IRWXU);
+        #endif
+            *p = '/';
+
+            if (result != 0 && errno != EEXIST)
+                return result;
+        }
+#ifdef _WIN32
+    return mkdir(tmp);
+#else
+    return mkdir(tmp, S_IRWXU);
+#endif
 }
 
 void set_current_directory(const char* filepath)
@@ -69,21 +95,21 @@ void set_current_directory(const char* filepath)
 
 sol::table list_items_in_path(const char *path)
 {
+    printf("ListDir\n");
     sol::table result = GlobalLuaState.create_table();
+    try
+    {
     int i = 0;
 
     for (const auto & entry : std::filesystem::directory_iterator(path)) {
         i++;
         result[i] = entry.path().filename().string();
     }
-
-    std::string str;
-
-    for(int i = 1; i < 4; i++)
-    {
-        str = result[i];
-        printf("%s\n",str.c_str());
     }
-
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    printf("ListDirEnd\n");
     return result;
 }
