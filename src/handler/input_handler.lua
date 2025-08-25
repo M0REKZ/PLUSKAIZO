@@ -39,7 +39,22 @@ InputHandler = {
     mouse_prev_y = -1,
 }
 
+InputHandler.MustReleaseLoad = false
+InputHandler.MustReleaseSave = false
+
 function InputHandler:UpdateInput()
+
+    if self.loadstate then
+        self.MustReleaseLoad = true
+    else
+        self.MustReleaseLoad = false
+    end
+
+    if self.savestate then
+        self.MustReleaseSave = true
+    else
+        self.MustReleaseSave = false
+    end
 
     if IS_NOT_LOVE then
         

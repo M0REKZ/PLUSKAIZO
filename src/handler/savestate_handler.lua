@@ -19,10 +19,15 @@
 require("common.kaizo_globals")
 require("handler.json_handler")
 require("handler.file_handler")
+require("handler.input_handler")
 
 SaveStateHandler = {}
 
 function SaveStateHandler:SaveState()
+    if InputHandler.MustReleaseSave then
+        return
+    end
+
     KaizoFileHandler:CreateDirectory("saves")
     SaveStateHandler:SaveStateToFolder("saves","save","kzstate")
 end
@@ -35,6 +40,10 @@ function SaveStateHandler:SaveStateToFolder(path,name,extension)
 end
 
 function SaveStateHandler:LoadState()
+    if InputHandler.MustReleaseLoad then
+        return
+    end
+
     SaveStateHandler:LoadStateFrom("saves/save.kzstate")
 end
 

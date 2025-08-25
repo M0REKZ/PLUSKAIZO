@@ -144,19 +144,35 @@ void cpp_kaizo_game_frame_sleep(int ms)
     timespec nexttime = {0,0};
     timespec_get(&nexttime,TIME_UTC);
     timespec shouldtime = {0,0};
+    shouldtime.tv_sec = nexttime.tv_sec;
     shouldtime.tv_nsec = prevtime.tv_nsec + ms * 1000000;
 
-    if(shouldtime.tv_nsec > nexttime.tv_nsec)
+    if(shouldtime.tv_nsec >= 1000000000)
+    {
+        shouldtime.tv_sec++;
+        shouldtime.tv_nsec -= 1000000000;
+    }
+
+    if(shouldtime.tv_nsec > nexttime.tv_nsec && shouldtime.tv_sec >= nexttime.tv_sec)
     {
         timespec sleeptime;
         sleeptime.tv_sec = 0;
-        sleeptime.tv_nsec = (shouldtime.tv_nsec - nexttime.tv_nsec);
-        nanosleep(&sleeptime,nullptr);
+        sleeptime.tv_nsec = (shouldtime.tv_nsec - nexttime.tv_nsec)/4;
+        while(shouldtime.tv_nsec > nexttime.tv_nsec && shouldtime.tv_sec >= nexttime.tv_sec)
+        {
+            nanosleep(&sleeptime,nullptr);
+            timespec_get(&nexttime,TIME_UTC);
+        }
         timespec_get(&prevtime,TIME_UTC); //update timer
     }
     else
     {
         prevtime.tv_nsec += ms * 1000000; //dont sleep but advance the timer
+        if(prevtime.tv_nsec >= 1000000000)
+        {
+            prevtime.tv_sec++;
+            prevtime.tv_sec -= 1000000000;
+        }
     }
 }
 
