@@ -21,13 +21,17 @@
 #include <sol/sol.hpp>
 #include <filesystem>
 #include <iostream>
+#include <ctime>
 
 sol::state GlobalLuaState;
 char* Path = nullptr;
 
-extern int create_directory(const char* filepath);
-extern sol::table list_items_in_path(const char* path);
-extern void set_current_directory(const char* filepath);
+int cpp_kaizo_create_directory(const char* filepath);
+sol::table cpp_kaizo_list_items_in_path(const char* path);
+void cpp_kaizo_set_current_directory(const char* filepath);
+void cpp_kaizo_game_frame_sleep(int ms);
+void cpp_kaizo_set_vsync(int vsync);
+bool cpp_kaizo_can_render();
 
 void init_launcher()
 {
@@ -36,9 +40,12 @@ void init_launcher()
     GlobalLuaState.open_libraries();
     //GlobalLuaState["PLUSKAIZO_LAUNCHER_PATH"] = Path;
 
-    GlobalLuaState["create_directory"] = &create_directory;
-    GlobalLuaState["list_items_in_path"] = &list_items_in_path;
-    GlobalLuaState["set_current_directory"] = &set_current_directory;
+    GlobalLuaState["cpp_kaizo_create_directory"] = &cpp_kaizo_create_directory;
+    GlobalLuaState["cpp_kaizo_list_items_in_path"] = &cpp_kaizo_list_items_in_path;
+    GlobalLuaState["cpp_kaizo_set_current_directory"] = &cpp_kaizo_set_current_directory;
+    GlobalLuaState["cpp_kaizo_game_frame_sleep"] = &cpp_kaizo_game_frame_sleep;
+    GlobalLuaState["cpp_kaizo_set_vsync"] = &cpp_kaizo_set_vsync;
+    GlobalLuaState["cpp_kaizo_can_render"] = &cpp_kaizo_can_render;
     
 }
 
@@ -56,9 +63,10 @@ int main()
     return 0;
 }
 
-//functions that are missing in lua
+//functions that are missing in lua but are needed for PLUSKAIZO
+//TODO: prefix with cpp_kaizo in both lua and main.cpp
 
-int create_directory(const char *dir) {
+int cpp_kaizo_create_directory(const char *dir) {
     char tmp[256];
     char *p = NULL;
     size_t len;
@@ -88,28 +96,100 @@ int create_directory(const char *dir) {
 #endif
 }
 
-void set_current_directory(const char* filepath)
+void cpp_kaizo_set_current_directory(const char* filepath)
 {
     chdir(filepath);
 }
 
-sol::table list_items_in_path(const char *path)
+sol::table cpp_kaizo_list_items_in_path(const char *path)
 {
-    printf("ListDir\n");
     sol::table result = GlobalLuaState.create_table();
     try
     {
-    int i = 0;
+        int i = 0;
 
-    for (const auto & entry : std::filesystem::directory_iterator(path)) {
-        i++;
-        result[i] = entry.path().filename().string();
-    }
+        for (const auto & entry : std::filesystem::directory_iterator(path))
+        {
+            i++;
+            result[i] = entry.path().filename().string();
+        }
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
-    printf("ListDirEnd\n");
     return result;
+}
+
+clock_t prevtime = 0;
+
+void cpp_kaizo_game_frame_sleep(int ms)
+{
+    if(ms < 0)
+        return;
+
+    if(prevtime == 0)
+    {
+        prevtime = clock();
+        return;
+    }
+
+    //custom sleep function
+    //it will check the amount of time passed since we last sleeped
+    //if not enough time passed, we sleep the rest of time
+    //otherwise we dont sleep because we are delayed
+
+    clock_t nexttime = clock();
+    clock_t shouldtime = prevtime + ms * CLOCKS_PER_SEC/1000;
+
+    if(shouldtime > nexttime)
+    {
+        timespec sleeptime;
+        sleeptime.tv_sec = 0;
+        sleeptime.tv_nsec = (shouldtime - nexttime) * CLOCKS_PER_SEC/1000;
+        nanosleep(&sleeptime,nullptr);
+        prevtime = clock(); //update timer
+    }
+    else
+    {
+        prevtime += ms * CLOCKS_PER_SEC; //dont sleep but advance the timer
+    }
+}
+
+int kaizo_vsync_delay = 0;
+clock_t lastrender = 0;
+
+void cpp_kaizo_set_vsync(int vsync)
+{
+    if(vsync <= 0)
+    {
+        kaizo_vsync_delay = 0;
+        return;
+    }
+    kaizo_vsync_delay = (CLOCKS_PER_SEC/vsync)-(int)(CLOCKS_PER_SEC/1000)*26;
+}
+
+bool cpp_kaizo_can_render()
+{
+    if(kaizo_vsync_delay == 0)
+        return true;
+
+    if(lastrender == 0)
+    {
+        lastrender = clock();
+        return true;
+    }
+
+    clock_t nextrender = clock();
+
+    if(lastrender + kaizo_vsync_delay > nextrender)
+    {
+        return false;
+    }
+    else
+    {
+        lastrender = clock();
+        return true;
+    }
+
 }

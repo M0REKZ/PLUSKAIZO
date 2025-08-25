@@ -82,8 +82,9 @@ win32-zip: win32-release
 linux64-zip: linux64-release
 	cd $(LOVEBUILDDIR) && zip -r ./$(LOVELINUX64ZIPNAME) ./linux64
 
-clean: clean-launcher
+clean:
 	rm -r $(LOVEBUILDDIR)
+	cd $(CURDIR)/src_launcher && make clean
 
 clean-launcher:
 	cd $(CURDIR)/src_launcher && make clean

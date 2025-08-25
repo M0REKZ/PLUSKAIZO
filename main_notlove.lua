@@ -41,7 +41,7 @@ if SDL_MIXER.openAudio(44100, 0x8010,2,2048) < 0 then --0x8010 is AUDIO_S16SYS, 
     error("Failed to initialize SDL_mixer: " .. SDL_MIXER.getError())
 end
 
-set_current_directory(os.getenv( "PWD" ))
+cpp_kaizo_set_current_directory(os.getenv( "PWD" ))
 
 local running = true
 
@@ -65,6 +65,18 @@ if not KaizoSDLRenderer then
 end
 
 SDL.renderSetLogicalSize(KaizoSDLRenderer, WindowSize.x, WindowSize.y)
+
+if false then --vsync support, disabled for now
+    local displayindex = SDL.getWindowDisplayIndex(KaizoSDLWindow)
+    if displayindex >= 0 then
+        local mode = ffi.new("SDL_DisplayMode")
+        local res = SDL.getDesktopDisplayMode(displayindex, mode)
+        if res == 0 then
+            cpp_kaizo_set_vsync(mode.refresh_rate)
+        end
+    end
+end
+
 
 KaizoFileHandler:InitUserPath()
 RenderHandler:InitFont()
@@ -109,11 +121,14 @@ while not KaizoContext.Quit do
 
     KaizoContext:update()
 
-    SDL.renderClear(KaizoSDLRenderer)
-    KaizoContext:render()
-    SDL.renderPresent(KaizoSDLRenderer)
+    if cpp_kaizo_can_render() then
+        SDL.renderClear(KaizoSDLRenderer)
+        KaizoContext:render()
+        SDL.renderPresent(KaizoSDLRenderer)
+    end
 
-    SDL.delay(1000/50)
+    --SDL.delay(1000/50)
+    cpp_kaizo_game_frame_sleep(20) --1000/50 fps
 end
 
 RenderHandler:FreeFont()

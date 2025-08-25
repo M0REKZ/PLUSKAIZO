@@ -170,7 +170,7 @@ end
 function KaizoFileHandler:CreateDirectory(filepath)
 
     if IS_NOT_LOVE then
-        return create_directory(self.PLUSKAIZO_CUSTOM_PATH..filepath)
+        return cpp_kaizo_create_directory(self.PLUSKAIZO_CUSTOM_PATH..filepath)
     end
     
     if KaizoFileHandler.PLUSKAIZO_USER_PATH == KaizoFileHandler.PLUSKAIZO_LOVE_PATH then
@@ -185,8 +185,8 @@ end
 function KaizoFileHandler:GetItemsInDirectory(dirpath)
 
     if IS_NOT_LOVE then
-        local temp = list_items_in_path(dirpath)
-        local temp2 = list_items_in_path(self.PLUSKAIZO_CUSTOM_PATH..dirpath)
+        local temp = cpp_kaizo_list_items_in_path(dirpath)
+        local temp2 = cpp_kaizo_list_items_in_path(self.PLUSKAIZO_CUSTOM_PATH..dirpath)
         for i=1,#temp2 do
             temp[#temp+1] = temp2[i]
         end
