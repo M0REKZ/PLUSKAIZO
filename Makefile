@@ -16,6 +16,8 @@ LOVEMACZIPNAME = PLUSKAIZO_macOS.zip
 LOVEMAC = $(LOVEBUILDBINDIR)/$(LOVEMACNAME)
 LOVEMACZIP = $(LOVEBUILDDIR)/$(LOVEMACZIPNAME)
 
+#SRCFILES = $(shell find src -name '*' !  -name '*.git*' ! -name '*.DS_Store' | sed 's@ @\\ @g') #https://stackoverflow.com/a/78880090
+
 SUBBUILDDIR = $(LOVEBUILDDIR)
 LAUNCHERLIBS =
 UNAME_S := $(shell uname -s)
@@ -98,16 +100,21 @@ launcher-all: $(SUBBUILDDIR)
 	cp license.txt $(SUBBUILDDIR)/license.txt
 	cp main_notlove.lua $(SUBBUILDDIR)/main_notlove.lua
 
-$(CURDIR)/src_launcher/build/PLUSKAIZO:
+
+$(CURDIR)/src_launcher/build/PLUSKAIZO: launcher-make-all
+launcher-make-all:
 	cd $(CURDIR)/src_launcher && make all
 
-$(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64:
+$(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64: launcher-make-crosslinux64
+launcher-make-crosslinux64:
 	cd $(CURDIR)/src_launcher && make crosslinux64
 
-$(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe:
+$(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe: launcher-make-crosswin32
+launcher-make-crosswin32:
 	cd $(CURDIR)/src_launcher && make crosswin32
 
-$(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe:
+$(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe: launcher-make-crosswin64
+launcher-make-crosswin64:
 	cd $(CURDIR)/src_launcher && make crosswin64
 
 ${LOVEBUILDDIR} :
