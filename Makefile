@@ -40,7 +40,7 @@ ifeq ($(OS),Windows_NT)
     endif
 endif
 
-all: $(LOVEBUILDDIR) launcher-all
+all: $(LOVEBUILDDIR) launcher-make-all launcher-all
 	cp $(CURDIR)/src_launcher/build/PLUSKAIZO $(LOVEBUILDDIR)/PLUSKAIZO
 
 crosslinux64: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/linux64/*
@@ -86,10 +86,10 @@ linux64-zip: linux64-release
 
 clean:
 	rm -r $(LOVEBUILDDIR)
-	cd $(CURDIR)/src_launcher && make clean
+	cd $(CURDIR)/src_launcher && $(MAKE) clean
 
 clean-launcher:
-	cd $(CURDIR)/src_launcher && make clean
+	cd $(CURDIR)/src_launcher && $(MAKE) clean
 
 launcher-all: $(SUBBUILDDIR)
 	mkdir -p $(SUBBUILDDIR)
@@ -103,19 +103,19 @@ launcher-all: $(SUBBUILDDIR)
 
 $(CURDIR)/src_launcher/build/PLUSKAIZO: launcher-make-all
 launcher-make-all:
-	cd $(CURDIR)/src_launcher && make all
+	cd $(CURDIR)/src_launcher && $(MAKE) all
 
 $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64: launcher-make-crosslinux64
 launcher-make-crosslinux64:
-	cd $(CURDIR)/src_launcher && make crosslinux64
+	cd $(CURDIR)/src_launcher && $(MAKE) crosslinux64
 
 $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe: launcher-make-crosswin32
 launcher-make-crosswin32:
-	cd $(CURDIR)/src_launcher && make crosswin32
+	cd $(CURDIR)/src_launcher && $(MAKE) crosswin32
 
 $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe: launcher-make-crosswin64
 launcher-make-crosswin64:
-	cd $(CURDIR)/src_launcher && make crosswin64
+	cd $(CURDIR)/src_launcher && $(MAKE) crosswin64
 
 ${LOVEBUILDDIR} :
 	mkdir -p $@
