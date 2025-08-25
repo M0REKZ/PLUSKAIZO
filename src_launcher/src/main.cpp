@@ -121,16 +121,16 @@ sol::table cpp_kaizo_list_items_in_path(const char *path)
     return result;
 }
 
-clock_t prevtime = 0;
+timespec prevtime = {0,0};
 
 void cpp_kaizo_game_frame_sleep(int ms)
 {
     if(ms < 0)
         return;
 
-    if(prevtime == 0)
+    if(prevtime.tv_nsec == 0)
     {
-        prevtime = clock();
+        timespec_get(&prevtime,TIME_UTC);
         return;
     }
 
@@ -139,20 +139,24 @@ void cpp_kaizo_game_frame_sleep(int ms)
     //if not enough time passed, we sleep the rest of time
     //otherwise we dont sleep because we are delayed
 
-    clock_t nexttime = clock();
-    clock_t shouldtime = prevtime + ms * CLOCKS_PER_SEC/1000;
+    ms -= 1; //decrease 1
 
-    if(shouldtime > nexttime)
+    timespec nexttime = {0,0};
+    timespec_get(&nexttime,TIME_UTC);
+    timespec shouldtime = {0,0};
+    shouldtime.tv_nsec = prevtime.tv_nsec + ms * 1000000;
+
+    if(shouldtime.tv_nsec > nexttime.tv_nsec)
     {
         timespec sleeptime;
         sleeptime.tv_sec = 0;
-        sleeptime.tv_nsec = (shouldtime - nexttime) * CLOCKS_PER_SEC/1000;
+        sleeptime.tv_nsec = (shouldtime.tv_nsec - nexttime.tv_nsec);
         nanosleep(&sleeptime,nullptr);
-        prevtime = clock(); //update timer
+        timespec_get(&prevtime,TIME_UTC); //update timer
     }
     else
     {
-        prevtime += ms * CLOCKS_PER_SEC; //dont sleep but advance the timer
+        prevtime.tv_nsec += ms * 1000000; //dont sleep but advance the timer
     }
 }
 
