@@ -143,6 +143,14 @@ void cpp_kaizo_game_frame_sleep(int ms)
 
     timespec nexttime = {0,0};
     timespec_get(&nexttime,TIME_UTC);
+
+    //just in case, to prevent looooooong loops/sleeps
+    if(prevtime.tv_sec > nexttime.tv_sec && prevtime.tv_nsec > nexttime.tv_nsec)
+    {
+        prevtime.tv_sec = nexttime.tv_sec;
+         prevtime.tv_nsec = nexttime.tv_nsec;
+    }
+
     timespec shouldtime = {0,0};
     shouldtime.tv_sec = nexttime.tv_sec;
     shouldtime.tv_nsec = prevtime.tv_nsec + ms * 1000000;
