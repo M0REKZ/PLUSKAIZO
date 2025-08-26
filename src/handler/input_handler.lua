@@ -43,7 +43,6 @@ InputHandler.MustReleaseLoad = false
 InputHandler.MustReleaseSave = false
 
 function InputHandler:UpdateInput()
-
     if self.loadstate then
         self.MustReleaseLoad = true
     else
@@ -134,7 +133,33 @@ function InputHandler:UpdateInput()
         local x = ffi.new("int[1]")
         local y = ffi.new("int[1]")
         state2 = SDL.getMouseState(x,y)
-        self.mouse_x, self.mouse_y = x[0], y[0]
+        local tempx,tempy = x[0], y[0]
+
+        if RealWindowSize.x ~= WindowSize.x or RealWindowSize.y ~= WindowSize.y  then
+            local windowstart = {x = 0, y = 0}
+
+            local proportionx = RealWindowSize.x/WindowSize.x
+            local proportiony = RealWindowSize.y/WindowSize.y
+
+            if proportionx > proportiony then
+                proportionx = proportiony
+                windowstart.x = math.floor(((RealWindowSize.x/proportiony) - (WindowSize.x))/2)
+            elseif proportiony > proportionx then
+                proportiony = proportionx
+                windowstart.y = math.floor(((RealWindowSize.y/proportionx) - (WindowSize.y))/2)
+            end
+
+            tempx = math.floor(tempx/proportionx) - windowstart.x
+            tempy = math.floor(tempy/proportiony) - windowstart.y
+        end
+
+        if tempx >= 0 and tempx <= WindowSize.x then
+            self.mouse_x = tempx
+        end 
+        
+        if tempy >= 0 and tempy <= WindowSize.y then
+            self.mouse_y = tempy
+        end
 
         if state2 == SDL.BUTTON_LMASK then
             self.mouse_click = true
