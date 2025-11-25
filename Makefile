@@ -61,6 +61,7 @@ $(LOVEMAC): $(LOVEBUILDBINDIR) $(LOVEZIP)
 	cp $(LOVEZIP) ./build/bin/PLUSKAIZO.app/Contents/Resources/$(LOVEZIPNAME)
 	cp ./love-bin/Info.plist ./build/bin/PLUSKAIZO.app/Contents/Info.plist
 	cp ./love-bin/icon.icns ./build/bin/PLUSKAIZO.app/Contents/Resources/icon.icns
+	xattr -cr $(LOVEMAC)
 
 $(LOVELINUX64): $(LOVEBUILDBINDIR) $(LOVEZIP)
 	7zz x ./love-bin/bin/love-11.5-x86_64.AppImage -o$(LOVELINUX64)
