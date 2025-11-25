@@ -63,7 +63,7 @@ function KaizoContext:update()
 end
 
 function KaizoContext:update_level()
-    if not KaizoConfigHandler.active and InputHandler.pause then
+    if not KaizoConfigHandler.active and InputHandler.pause and not self.CurrentLevel.ConfigNotAllowed then
         KaizoConfigHandler.activate = true
     end
 

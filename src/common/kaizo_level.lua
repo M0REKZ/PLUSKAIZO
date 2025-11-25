@@ -32,6 +32,7 @@ function KaizoLevel:new(o)
     o.TileImages = {}
     o.Sounds = {}
     o.Name = nil
+    o.ConfigNotAllowed = false;
     return o
 end
 
@@ -153,6 +154,8 @@ function KaizoLevel:SaveState()
     temp.Lives = Lives --should i remove this?...
     temp.MainWorldLevel = KaizoContext.MainWorldLevel
 
+    temp.ConfigNotAllowed = self.ConfigNotAllowed; -- for main menu level (init.kzlvl)
+
     for num, image in ipairs(self.EntityImages) do
         temp.EntityImages[num] = image:SaveState()
     end
@@ -183,6 +186,8 @@ function KaizoLevel:LoadState(state)
     Lives = state.Lives
     Camera = state.Camera
     KaizoContext.MainWorldLevel = state.MainWorldLevel
+
+    self.ConfigNotAllowed = state.ConfigNotAllowed; -- for main menu level (init.kzlvl)
     
     for ind, image in pairs(state.EntityImages) do
         self.EntityImages[ind] = KaizoImage:new()
