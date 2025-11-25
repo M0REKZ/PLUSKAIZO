@@ -19,62 +19,8 @@ LOVEMACZIP = $(LOVEBUILDDIR)/$(LOVEMACZIPNAME)
 #SRCFILES = $(shell find src -name '*' !  -name '*.git*' ! -name '*.DS_Store' | sed 's@ @\\ @g') #https://stackoverflow.com/a/78880090
 
 SUBBUILDDIR = $(LOVEBUILDDIR)
-LAUNCHERLIBS =
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
-    LAUNCHERLIBS = $(CURDIR)/src_launcher/libs/linux64/*
-endif
-ifeq ($(UNAME_S),Darwin)
-    LAUNCHERLIBS = $(CURDIR)/src_launcher/libs/macos/*
-endif
-ifeq ($(OS),Windows_NT)
-	ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
-        LAUNCHERLIBS = $(CURDIR)/src_launcher/libs/win64/*
-    else
-        ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-            LAUNCHERLIBS = $(CURDIR)/src_launcher/libs/win64/*
-        endif
-        ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-            LAUNCHERLIBS = $(CURDIR)/src_launcher/libs/win32/*
-        endif
-    endif
-endif
 
-all: $(LOVEBUILDDIR) launcher-make-all launcher-all
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO $(LOVEBUILDDIR)/PLUSKAIZO
-
-crosslinux64: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/linux64/*
-crosslinux64: $(SUBBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64 $(SUBBUILDDIR)/PLUSKAIZO
-
-crosswin32: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/win32/*
-crosswin32: $(SUBBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe $(SUBBUILDDIR)/PLUSKAIZO.exe
-
-crosswin64: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/win64/*
-crosswin64: $(SUBBUILDDIR) launcher-all $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe $(SUBBUILDDIR)/PLUSKAIZO.exe
-
-macapp: LAUNCHERLIBS=$(CURDIR)/src_launcher/libs/macos/*
-macapp: SUBBUILDDIR=$(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS
-macapp: $(LOVEBUILDDIR) $(CURDIR)/src_launcher/build/PLUSKAIZO
-	mkdir -p $(SUBBUILDDIR)
-	mkdir -p $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/Resources
-
-	cp $(CURDIR)/src_launcher/build/PLUSKAIZO $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/PLUSKAIZO
-	cp $(CURDIR)/src_launcher/src/mac/Info.plist $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/Info.plist
-	cp $(CURDIR)/src_launcher/src/mac/run_PLUSKAIZO_mac.sh $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/MacOS/run_PLUSKAIZO_mac.sh
-	cp $(CURDIR)/love-bin/icon.icns $(LOVEBUILDDIR)/PLUSKAIZO.app/Contents/Resources/icon.icns
-macapp: launcher-all
-
-win32-release: SUBBUILDDIR=$(LOVEBUILDDIR)/win32
-win32-release: $(SUBBUILDDIR) crosswin32 launcher-all
-
-win64-release: SUBBUILDDIR=$(LOVEBUILDDIR)/win64
-win64-release: $(SUBBUILDDIR) crosswin64 launcher-all
-
-linux64-release: SUBBUILDDIR=$(LOVEBUILDDIR)/linux64
-linux64-release: $(SUBBUILDDIR) crosslinux64 launcher-all
+all: $(LOVEBUILDDIR) love
 
 love-zip: love
 mac-zip: macapp
@@ -86,36 +32,6 @@ linux64-zip: linux64-release
 
 clean:
 	rm -r $(LOVEBUILDDIR)
-	cd $(CURDIR)/src_launcher && $(MAKE) clean
-
-clean-launcher:
-	cd $(CURDIR)/src_launcher && $(MAKE) clean
-
-launcher-all: $(SUBBUILDDIR)
-	mkdir -p $(SUBBUILDDIR)
-	cp $(LAUNCHERLIBS) $(SUBBUILDDIR)/
-	cp -R $(CURDIR)/src/ $(SUBBUILDDIR)/src/
-	cp -R $(CURDIR)/data/ $(SUBBUILDDIR)/data/
-	cp readme.txt $(SUBBUILDDIR)/readme.txt
-	cp license.txt $(SUBBUILDDIR)/license.txt
-	cp main_notlove.lua $(SUBBUILDDIR)/main_notlove.lua
-
-
-$(CURDIR)/src_launcher/build/PLUSKAIZO: launcher-make-all
-launcher-make-all:
-	cd $(CURDIR)/src_launcher && $(MAKE) all
-
-$(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64: launcher-make-crosslinux64
-launcher-make-crosslinux64:
-	cd $(CURDIR)/src_launcher && $(MAKE) crosslinux64
-
-$(CURDIR)/src_launcher/build/PLUSKAIZO-x86.exe: launcher-make-crosswin32
-launcher-make-crosswin32:
-	cd $(CURDIR)/src_launcher && $(MAKE) crosswin32
-
-$(CURDIR)/src_launcher/build/PLUSKAIZO-x86_64.exe: launcher-make-crosswin64
-launcher-make-crosswin64:
-	cd $(CURDIR)/src_launcher && $(MAKE) crosswin64
 
 ${LOVEBUILDDIR} :
 	mkdir -p $@
@@ -124,7 +40,7 @@ ${LOVEBUILDBINDIR} : | ${LOVEBUILDDIR}
 	mkdir -p $@
 
 $(LOVEZIP): $(LOVEBUILDBINDIR)
-	zip -r $(LOVEZIP) ./ -x "./love-bin/**" -x "./build/**" -x "./.git/**" -x "*.DS_Store" -x "./src_launcher/**" -x "./.vscode/**"
+	zip -r $(LOVEZIP) ./ -x "./love-bin/**" -x "./build/**" -x "./.git/**" -x "*.DS_Store" -x "./.vscode/**"
 
 $(LOVEWIN32): $(LOVEBUILDBINDIR) $(LOVEZIP)
 	mkdir -p $(LOVEWIN32)
