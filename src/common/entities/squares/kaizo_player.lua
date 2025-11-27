@@ -259,6 +259,11 @@ function KaizoPlayer:update()
             self.ref_layer:add_entity(self.grabbed_entity)
             self.grabbed_entity = nil
         end
+        local effect = KaizoDeathEffect:new(self.pos.x - 7, self.pos.y - 1)
+        effect.size.x = 25
+        effect.size.y = 32
+        effect.image_id = self.image_id
+        self.ref_layer:add_entity(effect)
         self:destroy()
         self.hurt_sound:Play()
         KaizoContext.DeathLoadState = 50
