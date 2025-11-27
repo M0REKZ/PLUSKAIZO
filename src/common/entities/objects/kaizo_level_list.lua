@@ -55,6 +55,11 @@ function KaizoLevelList:new(x, y)
             table.remove(o.levels, index)
         end
 
+        if string.gsub(levelname, ".kzlvl", "") == "init" then
+            print("removing init")
+            table.remove(o.levels, index)
+        end
+
         --check for kzlvl
         if KaizoFileHandler:FileExists("data/levels/" .. levelname) and levelname:match("^.+(%..+)$") == ".kzlvl" then
             goto continue
