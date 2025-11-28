@@ -136,15 +136,20 @@ function KaizoLayer:get_tile_id(x,y)
     if (y > sec.Size.y * 32) then
         return -2
     end
-    if (x < 0) or (y < 0) or (x > sec.Size.x * 32) then
+    if (x < 0) or (x > sec.Size.x * 32) then
         return -1
     end
-    if (x + 1 < self.Offset.x) or (y + 1 < self.Offset.y) or (x + 1 > self.Offset.x + self.Width * 32) or (y + 1 > self.Offset.y + self.Height * 32) then
+    if (x + 1 < self.Offset.x) or (y >= 0 and y + 1 < self.Offset.y) or (x + 1 > self.Offset.x + self.Width * 32) or (y >= 0 and y + 1 > self.Offset.y + self.Height * 32) then
         return 0
     end
 
     local localx = math.floor((x)/32)
-    local localy = math.floor((y)/32)
+    local localy
+    if (y < 0) then
+        localy = 0
+    else
+        localy = math.floor((y)/32)
+    end
 
     localx = localx - math.floor(self.Offset.x/32)
     localy = localy - math.floor(self.Offset.y/32)
