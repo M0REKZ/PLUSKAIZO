@@ -631,6 +631,9 @@ function KaizoLevelEditor:edit_entity_properties()
         local tempent = KaizoEntitiesCreator[self.current_entity]:new() -- to generate default values
         for index, name in ipairs(KaizoEntitiesCreator[self.current_entity].editor_properties) do
             self.entity_properties_values[name] = tempent[name]
+            if index == 1 and type(self.entity_properties_values[name]) == "string" then
+                LoveTextInput = self.entity_properties_values[name] -- default text if first property is string
+            end
         end
     end
 end

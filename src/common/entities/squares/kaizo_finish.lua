@@ -42,8 +42,6 @@ function KaizoFinish:new(x, y)
     o.image = nil
     o.seconds_for_go_back = -1
 
-    o.background_image = nil
-
     o.active_out_of_camera = true
     o.always_render = true
 
@@ -74,17 +72,7 @@ end
 
 function KaizoFinish:render()
     if self.seconds_for_go_back >= 0 then
-
-        if not self.background_image then
-            self.background_image = KaizoImage:new()
-            self.background_image:load("data/images/blacksquare.png")
-        end
-
-        if self.background_image then
-            self.background_image:render_scaled_to(WindowSize.x/4,WindowSize.y/2,128,32)
-        end
-
-        RenderHandler:Print("Level Complete", WindowSize.x/4,WindowSize.y/2)
+        RenderHandler:Print2("Level Complete", 0,WindowSize.y/2, WindowSize.x, true, true)
     else
         KaizoSquare.render(self)
     end

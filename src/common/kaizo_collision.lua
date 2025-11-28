@@ -371,6 +371,26 @@ function IsPosInCamera(pos, size)
     return IsInCamera(pos.x, pos.y, size.x, size.y)
 end
 
+function IsEntityColliding(ent1, ent2)
+	if ent1.pos.x > ent2.pos.x + ent2.size.x then
+		return false
+	end
+
+	if ent1.pos.x + ent1.size.x < ent2.pos.x then
+		return false
+	end
+
+	if ent1.pos.y > ent2.pos.y + ent2.size.y then
+		return false
+	end
+
+	if ent1.pos.y + ent1.size.y < ent2.pos.y then
+		return false
+	end
+
+	return true
+end
+
 function ManipulateTileSizeForSlopes(alt1, alt2, rotation, x, y, w, h, x2, y2, w2, h2, id)
 
 	local tempx = x2

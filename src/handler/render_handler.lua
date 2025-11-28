@@ -86,8 +86,11 @@ function RenderHandler:Print(text,x,y)
     end
 end
 
-function RenderHandler:Print2(text,x,y,w,outline)
+function RenderHandler:Print2(text,x,y,w,outline,center)
 
+    if center and w == nil then
+        error("If center is true, width (w) must be provided")
+    end
     if outline == nil then
         outline = true -- default = true
     end
@@ -98,7 +101,11 @@ function RenderHandler:Print2(text,x,y,w,outline)
     end
     love.graphics.setFont(RenderHandler.MainFont)
     if w then
-        love.graphics.printf(text, x, y, w)
+        local align = "left"
+        if center then
+            align = "center"
+        end
+        love.graphics.printf(text, x, y, w, align)
     else
         love.graphics.print(text,x,y)
     end
