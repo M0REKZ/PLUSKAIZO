@@ -543,7 +543,15 @@ function KaizoLevelEditor:new_level()
     local sec = KaizoSection:new()
     sec.Size.x = 50
     sec.Size.y = 50
-    sec:add_layer(KaizoLayer:new())
+    local tiles = {}
+    local layer = KaizoLayer:new()
+    for y = 0, sec.Size.y - 1, 1 do
+        for x = 1, sec.Size.x, 1 do
+            tiles[sec.Size.x * y + x] = 0
+        end
+    end
+    layer:set_tiles(tiles,sec.Size.x,sec.Size.y)
+    sec:add_layer(layer)
     KaizoContext.CurrentLevel:add_section(sec)
     KaizoContext.CurrentLevel:set_current_section(1)
     --self.current_section = KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection]
@@ -551,9 +559,17 @@ end
 
 function KaizoLevelEditor:add_section()
     local sec = KaizoSection:new()
-    sec:add_layer(KaizoLayer:new())
     sec.Size.x = 50
     sec.Size.y = 50
+    local tiles = {}
+    local layer = KaizoLayer:new()
+    for y = 0, sec.Size.y - 1, 1 do
+        for x = 1, sec.Size.x, 1 do
+            tiles[sec.Size.x * y + x] = 0
+        end
+    end
+    layer:set_tiles(tiles,sec.Size.x,sec.Size.y)
+    sec:add_layer(layer)
     KaizoContext.CurrentLevel:add_section(sec)
 end
 
