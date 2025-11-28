@@ -119,12 +119,12 @@ function KaizoLevelList:render()
     end
 
     if self.image then
-        self.image:render_scaled_to(self.pos.x, self.pos.y, self.size.x, self.size.y)
-        RenderHandler:Print("^", self.pos.x, self.pos.y)
+        --self.image:render_scaled_to(self.pos.x, self.pos.y, self.size.x, self.size.y)
+        RenderHandler:Print2("^", self.pos.x, self.pos.y)
         local name = string.gsub(self.levels[self.level_selected],".lvlx","")
         name = string.gsub(name,".kzlvl","")
-        RenderHandler:Print(name, self.pos.x, self.pos.y + 15)
-        RenderHandler:Print("v", self.pos.x, self.pos.y + 30)
+        RenderHandler:Print2(name, self.pos.x, self.pos.y + 15)
+        RenderHandler:Print2("v", self.pos.x, self.pos.y + 30)
     end
 end
 

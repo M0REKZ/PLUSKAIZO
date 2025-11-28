@@ -428,19 +428,19 @@ end
 
 function KaizoLevelEditor:render()
     if self.warning_time > 0 then
-        RenderHandler:Print(
+        RenderHandler:Print2(
         "WARNING: Editor is still in development, expect crashes and bugs\nUse ESC to select a option\nPress K (Save State Key) to save level\nPress L (Load State Key) to load",
             5, 5)
         self.warning_time = self.warning_time - 1
     else
-        RenderHandler:Print(
+        RenderHandler:Print2(
         "Current Section: "..KaizoContext.CurrentLevel.CurrentSection.."\nCurrent Layer: "..self.current_layer,
             5, 5)
         if self.current_entity then
-            RenderHandler:Print("\n\nEntity: "..self.current_entity,
+            RenderHandler:Print2("\n\nEntity: "..self.current_entity,
             5, 5)
         elseif self.current_tile then
-            RenderHandler:Print("\n\nTile: "..self.current_tile,
+            RenderHandler:Print2("\n\nTile: "..self.current_tile,
             5, 5)
         end
     end
@@ -450,27 +450,27 @@ function KaizoLevelEditor:render()
             self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
                 (WindowSize.y / 4) * 2)
 
-            RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
-            RenderHandler:Print(self.menu_options[self.menu_selected].text, WindowSize.x / 4, WindowSize.y / 4 + 15)
-            RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+            RenderHandler:Print2("^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print2(self.menu_options[self.menu_selected].text, WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print2("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
     elseif self.selecting_entity then
         if self.background then
             self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
                 (WindowSize.y / 4) * 2)
 
-            RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
-            RenderHandler:Print(KaizoEntitiesNames[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
-            RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+            RenderHandler:Print2("^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print2(KaizoEntitiesNames[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print2("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
     elseif self.selecting_tile then
         if self.background then
             self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
                 (WindowSize.y / 4) * 2)
 
-            RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
-            RenderHandler:Print("Tile ID: "..self.current_tile, WindowSize.x / 4, WindowSize.y / 4 + 15)
-            RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+            RenderHandler:Print2("^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print2("Tile ID: "..self.current_tile, WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print2("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
 
             if self.prev_current_tile ~= self.current_tile then
                 self.prev_current_tile = self.current_tile
@@ -486,39 +486,39 @@ function KaizoLevelEditor:render()
     elseif self.setting_section_size then
         self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
             (WindowSize.y / 4) * 2)
-        RenderHandler:Print("           +1\n            ^", WindowSize.x / 4, WindowSize.y / 4)
+        RenderHandler:Print2("           +1\n            ^", WindowSize.x / 4, WindowSize.y / 4)
         if self.setting_section_height then
-            RenderHandler:Print("-10 <- Height: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y.." -> +10", WindowSize.x / 4, WindowSize.y / 4 + 30)
+            RenderHandler:Print2("-10 <- Height: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.y.." -> +10", WindowSize.x / 4, WindowSize.y / 4 + 30)
         else
-            RenderHandler:Print("-10 <- Width: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x.." -> +10", WindowSize.x / 4, WindowSize.y / 4 + 30)
+            RenderHandler:Print2("-10 <- Width: "..KaizoContext.CurrentLevel.Sections[KaizoContext.CurrentLevel.CurrentSection].Size.x.." -> +10", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
-        RenderHandler:Print("           v\n             -1", WindowSize.x / 4, WindowSize.y / 4 + 45)
+        RenderHandler:Print2("           v\n             -1", WindowSize.x / 4, WindowSize.y / 4 + 45)
     elseif self.setting_level_background then
         if self.background then
             self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
                 (WindowSize.y / 4) * 2)
 
-            RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
-            RenderHandler:Print(""..self.level_background_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
-            RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+            RenderHandler:Print2("^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print2(""..self.level_background_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print2("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
     elseif self.setting_level_music then
         if self.background then
             self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
                 (WindowSize.y / 4) * 2)
 
-            RenderHandler:Print("^", WindowSize.x / 4, WindowSize.y / 4)
-            RenderHandler:Print(""..self.level_music_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
-            RenderHandler:Print("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+            RenderHandler:Print2("^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print2(""..self.level_music_list[self.menu_selected], WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print2("v", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
     elseif self.editing_entity_properties then
         if self.background then
             self.background:render_scaled_to(WindowSize.x / 4, WindowSize.y / 4, (WindowSize.x / 4) * 2,
                 (WindowSize.y / 4) * 2)
 
-            RenderHandler:Print("               ^", WindowSize.x / 4, WindowSize.y / 4)
-            RenderHandler:Print("Property: "..KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected].." Value: < "..tostring(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]).." >", WindowSize.x / 4, WindowSize.y / 4 + 15)
-            RenderHandler:Print("               v", WindowSize.x / 4, WindowSize.y / 4 + 30)
+            RenderHandler:Print2("               ^", WindowSize.x / 4, WindowSize.y / 4)
+            RenderHandler:Print2("Property: "..KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected].." Value: < "..tostring(self.entity_properties_values[KaizoEntitiesCreator[self.current_entity].editor_properties[self.menu_selected]]).." >", WindowSize.x / 4, WindowSize.y / 4 + 15)
+            RenderHandler:Print2("               v", WindowSize.x / 4, WindowSize.y / 4 + 30)
         end
     elseif self.setting_level_name then
         if self.background then
@@ -526,9 +526,9 @@ function KaizoLevelEditor:render()
                 (WindowSize.y / 4) * 2)
 
             if KaizoContext.CurrentLevel.Name == "init" then
-                RenderHandler:Print("Name \"init\" is not allowed", WindowSize.x / 4, WindowSize.y / 4)
+                RenderHandler:Print2("Name \"init\" is not allowed", WindowSize.x / 4, WindowSize.y / 4)
             end
-                RenderHandler:Print("Level Name: ".. KaizoContext.CurrentLevel.Name, WindowSize.x / 4, WindowSize.y / 4 + 15)
+                RenderHandler:Print2("Level Name: ".. KaizoContext.CurrentLevel.Name, WindowSize.x / 4, WindowSize.y / 4 + 15)
         end
     end
 end

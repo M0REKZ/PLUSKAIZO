@@ -15,6 +15,33 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --]]
+
+local OutlineShader = love.graphics.newShader[[
+    extern float outlineSize;
+    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
+    {
+        vec4 pixel = Texel(texture, texture_coords);
+        float alpha = pixel.a;
+
+        // Check neighboring pixels for alpha
+        for (float x = -outlineSize; x <= outlineSize; x += outlineSize)
+        {
+            for (float y = -outlineSize; y <= outlineSize; y += outlineSize)
+            {
+                if (x == 0.0 && y == 0.0) continue; // Skip the center pixel
+                vec4 neighborPixel = Texel(texture, texture_coords + vec2(x, y) / love_ScreenSize.xy);
+                alpha = max(alpha, neighborPixel.a);
+            }
+        }
+
+        if (pixel.a == 0.0 && alpha > 0.0)
+        {
+            return vec4(0.0, 0.0, 0.0, 1.0); // Outline color (black)
+        }
+        return pixel;
+    }
+]]
+
 RenderHandler = {}
 
 RenderHandler.MainFont = nil
@@ -57,6 +84,28 @@ function RenderHandler:Print(text,x,y)
         love.graphics.setFont(RenderHandler.MainFont)
         love.graphics.print(text,x,y)
     end
+end
+
+function RenderHandler:Print2(text,x,y,w,outline)
+
+    if outline == nil then
+        outline = true -- default = true
+    end
+
+    OutlineShader:send("outlineSize", 12)
+    if outline then
+        love.graphics.setShader(OutlineShader)
+    end
+    love.graphics.setFont(RenderHandler.MainFont)
+    if w then
+        love.graphics.printf(text, x, y, w)
+    else
+        love.graphics.print(text,x,y)
+    end
+    if outline then
+        love.graphics.setShader()
+    end
+    
 end
 
 function RenderHandler:FreeFont()
