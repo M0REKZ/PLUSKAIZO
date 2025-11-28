@@ -541,6 +541,8 @@ function KaizoLevelEditor:new_level()
     KaizoContext.CurrentLevel = KaizoLevel:new()
     KaizoContext.CurrentLevel.Name = "MyOwnLevel"
     local sec = KaizoSection:new()
+    sec.Size.x = 50
+    sec.Size.y = 50
     sec:add_layer(KaizoLayer:new())
     KaizoContext.CurrentLevel:add_section(sec)
     KaizoContext.CurrentLevel:set_current_section(1)
@@ -550,6 +552,8 @@ end
 function KaizoLevelEditor:add_section()
     local sec = KaizoSection:new()
     sec:add_layer(KaizoLayer:new())
+    sec.Size.x = 50
+    sec.Size.y = 50
     KaizoContext.CurrentLevel:add_section(sec)
 end
 
