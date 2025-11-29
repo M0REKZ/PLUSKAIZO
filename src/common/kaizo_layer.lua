@@ -63,7 +63,7 @@ function KaizoLayer:render_back()
         if not entity.is_on_background then
             goto continue
         end
-        if IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) or entity.always_render then
+        if not entity.dont_render and IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) or entity.always_render then
             entity:render()
         end
         ::continue::
@@ -84,7 +84,7 @@ function KaizoLayer:render()
         if entity.is_on_background then
             goto continue
         end
-        if IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) or entity.always_render then
+        if not entity.dont_render and IsPosInCamera(entity.pos or Camera, entity.size or {x = 0,y = 0}) or entity.always_render then
             entity:render()
         end
         ::continue::

@@ -35,6 +35,7 @@ require("common.entities.squares.kaizo_death_effect")
 require("common.entities.squares.kaizo_door")
 require("common.entities.squares.kaizo_coco")
 require("common.entities.squares.kaizo_sign")
+require("common.entities.squares.kaizo_shooter_ball")
 
 
 KaizoEntitiesCreator = {} --to register entities
@@ -87,3 +88,5 @@ KaizoEntitiesCreator[KaizoCoco.name] = KaizoCoco
 KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoCoco.name 
 KaizoEntitiesCreator[KaizoSign.name] = KaizoSign
 KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoSign.name
+KaizoEntitiesCreator[KaizoShooterBall.name] = KaizoShooterBall
+KaizoEntitiesNames[#KaizoEntitiesNames + 1] = KaizoShooterBall.name
