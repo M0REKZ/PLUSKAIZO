@@ -1,0 +1,18 @@
+PLUSKAIZO (c) Copyright Benjamín Gajardo All rights reserved
+
+PLUSKAIZO (also known as "+KAIZO") is made and owned by Benjamín Gajardo (also known as "+KZ")
+and PLUSKAIZO is currently not under a permissive license, you are not allowed to use or read this source without my explicit permission
+
+PLUSKAIZO implies all files located here, which you are not allowed to use or read without my explicit permission, however there are the next exceptions:
+
+-   All files in the "src/external" and "src_launcher/src/external" directories are NOT
+    under the same terms, since these are external libraries
+    used by PLUSKAIZO, which have their own license.
+-   All files mentioned in the file "others.txt" (which is located in this same directory)
+    are NOT under the same terms.
+-   All files in the "data" directory that are not mentioned in the file "others.txt"
+    (which is located in this same directory) are NOT under the same terms, instead they are under "CC BY-SA 4.0" License, which can be found in
+    this file.
+
+Original official author of PLUSKAIZO: Benjamín Gajardo
+E-mail: pluskaizo@gmail.com

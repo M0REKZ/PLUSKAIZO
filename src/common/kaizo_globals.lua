@@ -1,0 +1,67 @@
+--[[
+    PLUSKAIZO
+    Copyright (c) Benjamín Gajardo All rights reserved
+
+    You are not allowed to use or read this code without my explicit permission
+--]]
+
+require("common.kaizo_collision")
+
+IS_MOBILE = false
+
+Lives = 0
+
+Camera = {x = 0, y = 0}
+WindowSize = {x = 768, y = 512}
+RealWindowSize = {}
+
+IS_NOT_LOVE = false
+KaizoSDLWindow = nil
+KaizoSDLRenderer = nil
+SDL = {}
+SDL_IMAGE = {}
+SDL_TTF = {}
+SDL_MIXER = {}
+SDL_MIXER_MAX_CHANNELS = 8
+SDL_MIXER_CHANNEL_SOUNDS = {}
+
+KaizoConfig = {}
+
+KaizoConfigNames = {
+    "up", -- 1 up
+    "down", -- 2 down
+    "left", -- 3 left
+    "right", -- 4 right
+    "jump", -- 5 jump
+    "spin jump", -- 6 spin jump
+    "run", -- 7 run
+    "load state", -- 8 load state
+    "save state", -- 9 save state
+    "reset", -- 10 reset
+}
+
+LoveKeysPressed = {}
+LoveLastKeyPressed = nil --for key config
+LoveTextInput = ""
+
+SDLKeysPressed = {}
+SDLLastKeyPressed = nil --for key config
+
+
+function FitCameraToSize(size)
+    if Camera.x < 0 then
+        Camera.x = 0
+    end
+
+    if Camera.y < 0 then
+        Camera.y = 0
+    end
+
+    if Camera.x + WindowSize.x > size.x * 32 then
+        Camera.x = size.x * 32 - WindowSize.x
+    end
+
+    if Camera.y + WindowSize.y > size.y * 32 then
+        Camera.y = size.y * 32 - WindowSize.y
+    end
+end

@@ -1,0 +1,116 @@
+--[[
+    PLUSKAIZO
+    Copyright (c) Benjamín Gajardo All rights reserved
+
+    You are not allowed to use or read this code without my explicit permission
+--]]
+
+local OutlineShader = love.graphics.newShader[[
+    extern float outlineSize;
+    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
+    {
+        vec4 pixel = Texel(texture, texture_coords);
+        float alpha = pixel.a;
+
+        // Check neighboring pixels for alpha
+        for (float x = -outlineSize; x <= outlineSize; x += outlineSize)
+        {
+            for (float y = -outlineSize; y <= outlineSize; y += outlineSize)
+            {
+                if (x == 0.0 && y == 0.0) continue; // Skip the center pixel
+                vec4 neighborPixel = Texel(texture, texture_coords + vec2(x, y) / love_ScreenSize.xy);
+                alpha = max(alpha, neighborPixel.a);
+            }
+        }
+
+        if (pixel.a == 0.0 && alpha > 0.0)
+        {
+            return vec4(0.0, 0.0, 0.0, 1.0); // Outline color (black)
+        }
+        return pixel;
+    }
+]]
+
+RenderHandler = {}
+
+RenderHandler.MainFont = nil
+
+function RenderHandler:InitFont()
+    if IS_NOT_LOVE then
+        -- Load the font using SDL_ttf
+        local font_path = "data/images/Snowstorm.otf"
+        RenderHandler.MainFont = SDL_TTF.openFont(font_path, 50)
+        if RenderHandler.MainFont == 0 then
+            error("Failed to load font: " .. font_path)
+        end
+    else
+        -- Load the font using Love2D
+        RenderHandler.MainFont = love.graphics.newFont("data/images/Snowstorm.otf", 15)
+    end
+end
+
+function RenderHandler:Print(text,x,y)
+
+    if IS_NOT_LOVE then
+        local tempsurface = nil
+        tempsurface = SDL_TTF.renderText_Solid_Wrapped(RenderHandler.MainFont, text, ffi.new("SDL_Color",{r=255, g=255, b=255}), 0)
+
+        if tempsurface == 0 then
+            error("Failed to render text as surface: " .. text)
+        end
+
+        local temptexture = nil
+        temptexture = SDL.createTextureFromSurface(KaizoSDLRenderer, tempsurface)
+
+        if temptexture == 0 then
+            error("Failed to create text texture from surface: " .. text)
+        end
+
+        SDL.renderCopy(KaizoSDLRenderer, temptexture, nil, ffi.new("SDL_Rect", {x = x, y = y, w = tempsurface.w/4, h = tempsurface.h/4}))
+        SDL.destroyTexture(temptexture) -- evil to create and destroy every frame, but text can be different on every frame and is not worth it to have it saved in memory
+        SDL.freeSurface(tempsurface)
+    else
+        love.graphics.setFont(RenderHandler.MainFont)
+        love.graphics.print(text,x,y)
+    end
+end
+
+function RenderHandler:Print2(text,x,y,w,outline,center)
+
+    if center and w == nil then
+        error("If center is true, width (w) must be provided")
+    end
+    if outline == nil then
+        outline = true -- default = true
+    end
+
+    OutlineShader:send("outlineSize", 12)
+    if outline then
+        love.graphics.setShader(OutlineShader)
+    end
+    love.graphics.setFont(RenderHandler.MainFont)
+    if w then
+        local align = "left"
+        if center then
+            align = "center"
+        end
+        love.graphics.printf(text, x, y, w, align)
+    else
+        love.graphics.print(text,x,y)
+    end
+    if outline then
+        love.graphics.setShader()
+    end
+    
+end
+
+function RenderHandler:FreeFont()
+    if IS_NOT_LOVE then
+        if RenderHandler.MainFont then
+            SDL_TTF.closeFont(RenderHandler.MainFont)
+            RenderHandler.MainFont = nil
+        end
+    else
+        RenderHandler.MainFont = nil
+    end
+end
